@@ -1,0 +1,349 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>Registro de clientes Kiru</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Marcellus&family=Figtree:wght@400;500;600&display=swap">
+<style>
+/* Layout: one scrolling work sheet, grouped like a site survey (relevamiento); sticky save bar at the bottom */
+:root{
+  --bg:#EDEFEA; --surface:#F8F9F6; --ink:#1E2421; --muted:#5E6862; --line:#D3D8D1;
+  --accent:#2F4A3E; --accent-ink:#F4F6F2; --accent-soft:#DCE5DE; --warn:#9A3B2A;
+  --display:"Marcellus","Didot","Times New Roman",serif;
+  --body:"Figtree","Segoe UI",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#151A17; --surface:#1D2420; --ink:#E6EAE5; --muted:#9BA69F; --line:#2E3832;
+  --accent:#9FC2AE; --accent-ink:#122019; --accent-soft:#25352C; --warn:#E08A74; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#151A17; --surface:#1D2420; --ink:#E6EAE5; --muted:#9BA69F; --line:#2E3832;
+  --accent:#9FC2AE; --accent-ink:#122019; --accent-soft:#25352C; --warn:#E08A74; color-scheme:dark}
+*{box-sizing:border-box}
+html,body{margin:0}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5;padding:0 16px}
+.wrap{max-width:680px;margin:0 auto;padding-block:28px 130px}
+header.brand{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding-bottom:20px;border-bottom:2px solid var(--accent);margin-bottom:28px}
+.logo{font-family:var(--display);font-size:22px;letter-spacing:.32em}
+.tag{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+h1{font-family:var(--display);font-weight:400;font-size:clamp(30px,7vw,40px);line-height:1.1;margin:0;text-wrap:balance}
+.lead{color:var(--muted);margin:10px 0 0;max-width:60ch}
+section{margin-top:36px;display:grid;gap:18px}
+h2{font-family:var(--display);font-weight:400;font-size:24px;margin:0;padding-bottom:6px;border-bottom:1px solid var(--line)}
+.field{display:grid;gap:8px}
+.label{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.label em{font-style:normal;text-transform:none;letter-spacing:0}
+.row2{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px}
+input[type=text],input[type=number],input[type=date],textarea{width:100%;font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:11px 13px}
+textarea{min-height:90px;resize:vertical}
+input:focus-visible,textarea:focus-visible,button:focus-visible,label.drop:focus-within{outline:2px solid var(--accent);outline-offset:2px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;align-items:flex-start}
+.field{align-content:start}
+.chip{font:inherit;font-size:15px;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:8px 15px;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.stepper{display:inline-flex;align-items:center;border:1px solid var(--line);border-radius:999px;background:var(--surface);overflow:hidden;width:max-content}
+.stepper button{font:inherit;font-size:20px;width:44px;height:42px;border:0;background:none;color:var(--accent);cursor:pointer}
+.stepper output{min-width:38px;text-align:center;font-weight:600;font-variant-numeric:tabular-nums}
+.rooms{display:grid;gap:10px}
+.room{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:12px 14px}
+.room b{font-weight:600;min-width:110px}
+.room .chips{gap:6px}
+.room .chip{font-size:14px;padding:6px 12px}
+.yesno{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.hint{font-size:13px;color:var(--muted)}
+.allbtn{font:inherit;font-size:14px;color:var(--accent);background:none;border:0;text-decoration:underline;cursor:pointer;padding:0;width:max-content}
+label.drop{display:grid;place-items:center;text-align:center;gap:6px;padding:26px 16px;border:1.5px dashed var(--line);border-radius:8px;background:var(--surface);cursor:pointer;color:var(--muted)}
+label.drop.over{border-color:var(--accent);background:var(--accent-soft)}
+label.drop strong{color:var(--ink);font-weight:600}
+label.drop input{position:absolute;opacity:0;width:1px;height:1px}
+.files{list-style:none;padding:0;margin:0;display:grid;gap:6px}
+.files li{display:flex;justify-content:space-between;gap:10px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:8px 12px;font-size:14px}
+.files li span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.files li small{color:var(--muted);font-variant-numeric:tabular-nums;flex:none}
+.files li button{font:inherit;border:0;background:none;color:var(--warn);cursor:pointer;flex:none}
+.err{color:var(--warn);font-size:14px;margin:0}
+.bar{position:fixed;left:0;right:0;bottom:0;background:var(--bg);border-top:1px solid var(--line);padding:12px 16px calc(12px + env(safe-area-inset-bottom,0px))}
+.bar-in{max-width:680px;margin:0 auto;display:flex;gap:14px;align-items:center;justify-content:space-between}
+.bar-in p{margin:0;font-size:14px;color:var(--muted);min-width:0}
+.btn{font:inherit;font-weight:600;font-size:15px;border-radius:999px;padding:13px 26px;cursor:pointer;border:1px solid var(--accent);background:var(--accent);color:var(--accent-ink);flex:none}
+.btn:disabled{opacity:.55;cursor:default}
+.done{margin-top:40px}
+.linkbox{margin:26px 0;display:grid;gap:10px;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:18px}
+.linkbox input{font-size:14px}
+.actions{display:flex;flex-wrap:wrap;gap:10px}
+a.btn{text-decoration:none;display:inline-flex;align-items:center}
+.btn-ghost{background:none;color:var(--accent)}
+.code{font-family:var(--display);font-size:28px;letter-spacing:.04em;color:var(--accent)}
+.switch{display:flex;align-items:center;gap:10px;font-size:15px;cursor:pointer;width:max-content}
+.switch input{width:18px;height:18px;accent-color:var(--accent)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="brand"><span class="logo">KIRU</span><span class="tag">SRC · Uso interno</span></header>
+
+  <form id="form" novalidate>
+    <h1>Registro de cliente</h1>
+    <p class="lead">Lo cargamos nosotros después del primer contacto o la visita. Genera el código de proyecto, crea la carpeta en Drive y te da el link del cuestionario para el cliente.</p>
+
+    <section>
+      <h2>Cliente</h2>
+      <div class="field"><div class="chips" data-one="quien"></div></div>
+      <div class="field solo-existente"><label class="label" for="buscar">Buscar cliente</label>
+        <input type="text" id="buscar" list="lista-clientes" placeholder="Escribí el nombre o el número (ej. C1118)" autocomplete="off">
+        <datalist id="lista-clientes"></datalist>
+        <span class="hint" id="hint-buscar">Se usa el mismo número de cliente, sus datos y su carpeta. Solo cambia lo que va después del número.</span></div>
+      <div class="row2 solo-nuevo">
+        <div class="field"><label class="label" for="cliente">Nombre del cliente</label>
+          <input type="text" id="cliente" autocomplete="off"></div>
+        <div class="field"><label class="label" for="telefono">Teléfono / WhatsApp</label>
+          <input type="text" id="telefono" inputmode="tel" placeholder="+52 984…" autocomplete="off"></div>
+      </div>
+      <div class="row2">
+        <div class="field solo-nuevo"><label class="label" for="email">Email <em>· opcional</em></label>
+          <input type="text" id="email" inputmode="email" autocomplete="off"></div>
+        <div class="field"><label class="label" for="cargado">Cargado por</label>
+          <input type="text" id="cargado" placeholder="Gon, Nahuel…" autocomplete="off"></div>
+      </div>
+      <div class="row2 solo-nuevo">
+        <div class="field"><label class="label" for="broker">Broker / referido <em>· si aplica</em></label>
+          <input type="text" id="broker" autocomplete="off"></div>
+        <div class="field"><label class="label" for="cbroker">Contacto broker <em>· si aplica</em></label>
+          <input type="text" id="cbroker" autocomplete="off"></div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Servicio</h2>
+      <div class="field"><div class="chips" data-one="servicio"></div>
+        <span class="hint" id="hint-servicio"></span></div>
+    </section>
+
+    <section>
+      <h2>Propiedad</h2>
+      <div class="row2">
+        <div class="field"><label class="label" for="desarrollo">Desarrollo / inmueble</label>
+          <input type="text" id="desarrollo" placeholder="Ej. Selvanoba Coto 14" autocomplete="off"></div>
+        <div class="field"><label class="label" for="m2">m² aprox <em>· opcional</em></label>
+          <input type="number" id="m2" min="0" inputmode="numeric" placeholder="Ej. 120"></div>
+      </div>
+      <div class="field"><span class="label">Tipo de propiedad</span><div class="chips" data-one="tipo"></div></div>
+
+      <div class="field solo-int"><span class="label">Recámaras</span>
+        <div class="stepper" data-step="recamaras"><button type="button" data-d="-1" aria-label="Menos recámaras">−</button><output id="out-recamaras">0</output><button type="button" data-d="1" aria-label="Más recámaras">+</button></div>
+        <div class="rooms" id="rooms"></div>
+      </div>
+      <div class="row2">
+        <div class="field"><span class="label">Baños</span>
+          <div class="stepper" data-step="banos"><button type="button" data-d="-1" aria-label="Menos baños">−</button><output id="out-banos">0</output><button type="button" data-d="1" aria-label="Más baños">+</button></div></div>
+        <div class="field"><span class="label">Comedor (personas)</span>
+          <div class="stepper" data-step="comedor"><button type="button" data-d="-2" aria-label="Menos personas">−</button><output id="out-comedor">0</output><button type="button" data-d="2" aria-label="Más personas">+</button></div></div>
+      </div>
+      <div class="row2 solo-int">
+        <div class="field"><span class="label">Balcón / terraza</span><div class="chips" data-one="balcon"></div></div>
+        <div class="field"><span class="label">Estudio / oficina para amueblar</span><div class="chips" data-one="estudio"></div></div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Alcance</h2>
+      <div class="field solo-int"><span class="label">Paquete</span><div class="chips" data-one="paquete"></div>
+        <span class="hint">Si todavía no lo definió, dejalo en "Lo elige el cliente": lo marca él en el cuestionario y el código se completa solo.</span></div>
+      <div class="field"><label class="label" for="conservar">Muebles que se conservan <em>· opcional</em></label>
+        <textarea id="conservar" placeholder="Ej. cama King de la principal, refrigerador"></textarea></div>
+      <div class="field"><label class="label" for="notas">Notas</label>
+        <textarea id="notas" placeholder="Lo que comentó el cliente, accesos, pedidos especiales…"></textarea></div>
+    </section>
+
+    <section>
+      <h2>Planos y fotos</h2>
+      <label class="drop" id="drop">
+        <input type="file" id="archivos" multiple accept=".pdf,.jpg,.jpeg,.png,.heic,.webp,.dwg">
+        <strong>Tocá para subir o arrastrá acá</strong>
+        <span>Quedan en la carpeta del proyecto · hasta 25 MB en total</span>
+      </label>
+      <ul class="files" id="files"></ul>
+    </section>
+    <p class="err" id="err" hidden></p>
+  </form>
+
+  <div class="done" id="done" hidden>
+    <span class="label">Cliente registrado</span>
+    <h1 id="done-name"></h1>
+    <p class="code" id="done-code"></p>
+    <p class="lead" id="done-msg"></p>
+    <div class="linkbox" id="linkbox">
+      <span class="label">Link del cuestionario para el cliente</span>
+      <input type="text" id="link" readonly>
+      <div class="actions">
+        <a class="btn" id="wa" href="#" target="_blank" rel="noopener">Enviar por WhatsApp</a>
+        <button class="btn btn-ghost" type="button" id="copiar">Copiar link</button>
+      </div>
+      <span class="hint" id="copiado" hidden>Link copiado.</span>
+    </div>
+    <button class="allbtn" type="button" id="otro">Registrar otro cliente</button>
+  </div>
+</div>
+
+<nav class="bar" id="bar"><div class="bar-in">
+  <p id="status">Completá lo que sepas. Lo demás se puede cargar después.</p>
+  <button class="btn" type="button" id="guardar">Guardar registro</button>
+</div></nav>
+
+<script>
+const SCRIPT_URL="https://script.google.com/macros/s/AKfycbyPxz7iZikEmNlYQPzhr8ySz61Gay_cBFzjcXxhsDrdRfCl_8NN-Y5iY6d0kzbBJET88A/exec";
+const OPC={
+  tipo:["Casa","Apartamento","Villa"],
+  quien:["Cliente nuevo","Ya es cliente"],
+  servicio:["Interiorismo","Arquitectura (obra nueva)","Remodelación"],
+  balcon:["No tiene","Sí, amueblar","Sí, no amueblar"],
+  estudio:["No","Sí"],
+  paquete:["Lo elige el cliente","Muebles y deco","Llave en mano"]
+};
+const PAQ_COD={"Muebles y deco":"MD","Llave en mano":"LM","Arquitectura / diseño":"ARQ"};
+const CAMAS=["King","Queen","Matrimonial","1 Individual","2 Individuales","Literas"];
+const MAX=25*1024*1024;
+let S, files;
+function reset(){S={tipo:"",quien:"Cliente nuevo",servicio:"Interiorismo",balcon:"",estudio:"",paquete:"Lo elige el cliente",recamaras:0,banos:0,comedor:0,camas:[]};files=[]}
+reset();
+const $=s=>document.querySelector(s);
+const esc=t=>String(t).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const kb=n=>n>1048576?(n/1048576).toFixed(1)+" MB":Math.max(1,Math.round(n/1024))+" KB";
+
+function paintChips(){
+  document.querySelectorAll("[data-one]").forEach(box=>{
+    const k=box.dataset.one;
+    box.innerHTML=OPC[k].map(v=>`<button type="button" class="chip" data-k="${k}" data-v="${esc(v)}" aria-pressed="${S[k]===v}">${esc(v)}</button>`).join("");
+  });
+  paintServicio();
+}
+let CLIENTES=[],cargando=false;
+async function cargarClientes(){
+  if(CLIENTES.length||cargando)return;cargando=true;
+  try{
+    const res=await fetch(SCRIPT_URL+"?accion=clientes");const j=await res.json();
+    CLIENTES=j.clientes||[];
+    $("#lista-clientes").innerHTML=CLIENTES.map(c=>`<option value="${esc(c.num+" – "+c.nombre+(c.desarrollo?" · "+c.desarrollo:""))}">`).join("");
+  }catch(x){$("#hint-buscar").textContent="No pude traer la lista. Escribí el número del cliente (ej. C1118): se usan sus datos y su carpeta."}
+  cargando=false;
+}
+const esArq=()=>S.servicio!=="Interiorismo";
+const SERV_COD={"Arquitectura (obra nueva)":"ARQ","Remodelación":"REM"};
+function paintServicio(){
+  const ex=S.quien==="Ya es cliente";
+  document.querySelectorAll(".solo-nuevo").forEach(el=>el.hidden=ex);
+  document.querySelectorAll(".solo-existente").forEach(el=>el.hidden=!ex);
+  if(ex)cargarClientes();
+  document.querySelectorAll(".solo-int").forEach(el=>el.hidden=esArq());
+  $("#hint-servicio").textContent=S.servicio==="Remodelación"
+    ?"Remodelación con obra (pisos, baños, cocina, muros). El código sale REM (ej. C1118-REM). El cliente recibe el cuestionario de gustos, sin elegir paquete."
+    :S.servicio==="Interiorismo"
+    ?"Amueblar y decorar. El código lleva recámaras y paquete (ej. C1118-2R-LM)."
+    :"Proyecto de arquitectura de obra nueva. El código sale ARQ (ej. C1118-ARQ). El cliente recibe el cuestionario de gustos, sin elegir paquete.";
+}
+function paintRooms(){
+  while(S.camas.length<S.recamaras)S.camas.push("");
+  S.camas.length=S.recamaras;
+  $("#rooms").innerHTML=S.camas.map((c,i)=>`<div class="room"><b>${i===0?"Principal":"Recámara "+(i+1)}</b><div class="chips">${CAMAS.map(v=>`<button type="button" class="chip" data-cama="${i}" data-v="${v}" aria-pressed="${c===v}">${v}</button>`).join("")}</div></div>`).join("");
+  ["recamaras","banos","comedor"].forEach(k=>$("#out-"+k).textContent=S[k]);
+}
+function paintFiles(){
+  const total=files.reduce((a,f)=>a+f.size,0);
+  $("#files").innerHTML=files.map((f,i)=>`<li><span>${esc(f.name)}</span><small>${kb(f.size)}</small><button type="button" data-rm="${i}" aria-label="Quitar ${esc(f.name)}">Quitar</button></li>`).join("");
+  if(total>MAX)showErr("Los archivos suman "+kb(total)+". El máximo es 25 MB: quitá alguno o subí los más pesados directo a la carpeta del proyecto.");
+  else hideErr();
+}
+function showErr(m){const e=$("#err");e.textContent=m;e.hidden=false;e.scrollIntoView({behavior:"smooth",block:"center"})}
+function hideErr(){$("#err").hidden=true}
+
+document.addEventListener("click",e=>{
+  const b=e.target.closest("button");if(!b)return;
+  if(b.dataset.k){const k=b.dataset.k,v=b.dataset.v;if(k==="servicio")hideErr();S[k]=(S[k]===v&&k!=="paquete"&&k!=="servicio"&&k!=="quien")?"":v;paintChips();return}
+  if(b.dataset.cama!==undefined){const i=+b.dataset.cama;S.camas[i]=S.camas[i]===b.dataset.v?"":b.dataset.v;paintRooms();return}
+  if(b.dataset.d){const k=b.closest("[data-step]").dataset.step;S[k]=Math.max(0,Math.min(k==="comedor"?20:10,S[k]+ +b.dataset.d));paintRooms();return}
+  if(b.dataset.rm!==undefined){files.splice(+b.dataset.rm,1);paintFiles();return}
+});
+function addFiles(list){for(const f of list){if(!files.some(x=>x.name===f.name&&x.size===f.size))files.push(f)}paintFiles()}
+$("#buscar").addEventListener("change",()=>{const n=(val("buscar").match(/C\d+/i)||[""])[0].toUpperCase();const c=CLIENTES.find(x=>x.num===n);if(c&&c.desarrollo&&!val("desarrollo"))$("#desarrollo").value=c.desarrollo});
+$("#archivos").onchange=e=>{addFiles(e.target.files);e.target.value=""};
+const drop=$("#drop");
+["dragenter","dragover"].forEach(t=>drop.addEventListener(t,e=>{e.preventDefault();drop.classList.add("over")}));
+["dragleave","drop"].forEach(t=>drop.addEventListener(t,e=>{e.preventDefault();drop.classList.remove("over")}));
+drop.addEventListener("drop",e=>addFiles(e.dataTransfer.files));
+
+const leer=f=>new Promise((ok,no)=>{const r=new FileReader();r.onload=()=>ok(String(r.result).split(",")[1]);r.onerror=no;r.readAsDataURL(f)});
+const val=id=>$("#"+id).value.trim();
+
+function detalle(){
+  const p=[];
+  if(esArq())p.push(S.servicio);
+  if(S.tipo)p.push(S.tipo);
+  if(val("m2"))p.push(val("m2")+" m²");
+  if(!esArq()&&S.recamaras)p.push("Camas: "+S.camas.map((c,i)=>(i===0?"principal":"rec. "+(i+1))+" "+(c||"sin definir")).join(", "));
+  if(S.banos)p.push("Baños: "+S.banos);
+  if(S.comedor)p.push("Comedor: "+S.comedor+" personas");
+  if(!esArq()&&S.balcon)p.push("Balcón: "+S.balcon.toLowerCase());
+  if(!esArq()&&S.estudio==="Sí")p.push("Con estudio/oficina");
+  if(val("conservar"))p.push("Conserva: "+val("conservar"));
+  if(val("cargado"))p.push("Cargado por "+val("cargado"));
+  return p.join(" · ");
+}
+
+function mostrarListo(r,cliente){
+  $("#done-name").textContent=cliente;
+  $("#done-code").textContent=r.codigo||"";
+  if(r.link){
+    $("#link").value=r.link;$("#wa").href=r.wa;$("#linkbox").hidden=false;
+    $("#done-msg").textContent="Ya está en la Base de datos del SRC y tiene su carpeta en Drive. Ahora mandale su link: lo saluda por su nombre y no le pide sus datos.";
+  }else{
+    $("#linkbox").hidden=true;
+    $("#done-msg").textContent="Registro enviado. En un momento te llega el mail con el código, la carpeta y el botón para mandarle el cuestionario por WhatsApp.";
+  }
+  $("#form").hidden=true;$("#bar").hidden=true;$("#done").hidden=false;window.scrollTo(0,0);
+}
+
+$("#guardar").onclick=async()=>{
+  hideErr();
+  const ex=S.quien==="Ya es cliente";
+  const numero=ex?((val("buscar").match(/C\d+/i)||[""])[0].toUpperCase()):"";
+  if(ex&&!numero){showErr("Elegí el cliente de la lista (o escribí su número, ej. C1118).");$("#buscar").focus();return}
+  const elegido=ex?CLIENTES.find(c=>c.num===numero):null;
+  const cliente=ex?(elegido?elegido.nombre:""):val("cliente");
+  if(!ex&&!cliente){showErr("Escribí el nombre del cliente.");$("#cliente").focus();return}
+  if(!esArq()&&!S.recamaras){showErr("Indicá cuántas recámaras tiene.");return}
+  const total=files.reduce((a,f)=>a+f.size,0);
+  if(total>MAX){paintFiles();return}
+  const btn=$("#guardar");btn.disabled=true;btn.textContent=files.length?"Subiendo archivos…":"Guardando…";
+  const archivos=[];
+  try{for(const f of files)archivos.push({nombre:f.name,mime:f.type||"application/octet-stream",datos:await leer(f)})}
+  catch(x){showErr("No se pudo leer un archivo. Quitalo y probá de nuevo.");btn.disabled=false;btn.textContent="Guardar registro";return}
+  const fila={
+    numero,cliente,telefono:ex?"":val("telefono"),email:ex?"":val("email"),desarrollo:val("desarrollo"),
+    recamaras:S.recamaras,servicio:SERV_COD[S.servicio]||"",paquete:esArq()?"":(PAQ_COD[S.paquete]||""),
+    entrega:"",inversion:"",broker:ex?"":val("broker"),contactoBroker:ex?"":val("cbroker"),
+    notas:val("notas"),detalle:detalle()
+  };
+  const body=JSON.stringify({tipo:"interno",fila,archivos});
+  let r=null;
+  try{
+    const res=await fetch(SCRIPT_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body});
+    r=await res.json();
+  }catch(x){
+    // El registro igual se procesa aunque el navegador no pueda leer la respuesta: llega por mail.
+    r={};
+  }
+  btn.disabled=false;btn.textContent="Guardar registro";
+  if(r&&r.error){showErr("No se pudo guardar: "+r.error);return}
+  mostrarListo(r||{},cliente||numero);
+};
+$("#copiar").onclick=async()=>{const i=$("#link");try{await navigator.clipboard.writeText(i.value)}catch(_){i.select();try{document.execCommand("copy")}catch(__){}}$("#copiado").hidden=false};
+$("#otro").onclick=()=>{reset();$("#form").reset();paintChips();paintRooms();paintFiles();$("#form").hidden=false;$("#bar").hidden=false;$("#done").hidden=true;$("#copiado").hidden=true;window.scrollTo(0,0)};
+
+paintChips();paintRooms();
+</script>
+</body>
+</html>

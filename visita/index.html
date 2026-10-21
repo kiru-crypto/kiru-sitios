@@ -1,0 +1,456 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex">
+<style>[hidden]{display:none!important}:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}img{max-width:100%}</style>
+<title>Checklist de visita Kiru</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500&family=Source+Sans+3:wght@400;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* Layout: one narrow column for the phone, sticky header with the client code and progress, one folding block per area of the house, summary at the end. */
+:root{
+  --bg:#f6f3f1; --surface:#ffffff; --ink:#2e2723; --muted:#7a6c64; --line:#e4dbd5;
+  --brand:#6b4435; --brand-2:#a17e76; --chip:#efe7e2; --ok:#3f6d42; --okbg:#e6efe3; --warn:#9a6a14; --warnbg:#f7ecd6;
+  --display:"Jost",ui-sans-serif,system-ui,sans-serif;
+  --body:"Source Sans 3",ui-sans-serif,system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#1c1816; --surface:#26201d; --ink:#f0e9e4; --muted:#b3a59c; --line:#3a312c;
+  --brand:#d9a796; --brand-2:#b98d82; --chip:#332a26; --ok:#9fd09a; --okbg:#24321f; --warn:#e8bf73; --warnbg:#3a2f1a; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#1c1816; --surface:#26201d; --ink:#f0e9e4; --muted:#b3a59c; --line:#3a312c;
+  --brand:#d9a796; --brand-2:#b98d82; --chip:#332a26; --ok:#9fd09a; --okbg:#24321f; --warn:#e8bf73; --warnbg:#3a2f1a; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.4;margin:0}
+.wrap{max-width:640px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 48px}
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);padding-block:14px 10px;border-bottom:1px solid var(--line)}
+.brandrow{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+.brandrow h1{font-family:var(--display);font-weight:400;font-size:1.35rem;letter-spacing:.02em;margin:0;text-wrap:balance}
+.brandrow h1 b{font-weight:500;color:var(--brand)}
+.pct{font-family:var(--mono);font-size:.85rem;color:var(--muted);white-space:nowrap}
+.bar{height:4px;background:var(--line);border-radius:4px;margin-top:8px;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--brand);transition:width .25s}
+.meta{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
+.meta label{display:flex;flex-direction:column;gap:4px;font-size:.78rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.meta .full{grid-column:1/-1}
+input[type=text],input[type=number],input[type=date],textarea{font:inherit;font-size:16px;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:9px 10px;width:100%;min-width:0}
+textarea{min-height:64px;resize:vertical}
+input:focus-visible,textarea:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+.intro{color:var(--muted);font-size:.92rem;margin:14px 0 6px}
+details.sec{background:var(--surface);border:1px solid var(--line);border-radius:12px;margin-top:12px}
+details.sec>summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:10px;padding:14px 14px}
+details.sec>summary::-webkit-details-marker{display:none}
+.sec h2{font-family:var(--display);font-weight:500;font-size:1.08rem;margin:0;flex:1;min-width:0}
+.sec .why{display:block;font-family:var(--body);font-weight:400;font-size:.8rem;color:var(--muted);margin-top:2px}
+.count{font-family:var(--mono);font-size:.78rem;padding:3px 8px;border-radius:999px;background:var(--chip);color:var(--muted);white-space:nowrap}
+.count.done{background:var(--okbg);color:var(--ok)}
+.chev{width:10px;height:10px;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:rotate(45deg);transition:transform .2s;margin-left:2px}
+details[open] .chev{transform:rotate(225deg)}
+.items{display:flex;flex-direction:column;border-top:1px solid var(--line)}
+.it{padding:12px 14px;border-bottom:1px solid var(--line);display:flex;flex-direction:column;gap:8px}
+.it:last-child{border-bottom:0}
+.q{font-weight:600;font-size:.98rem}
+.hint{font-size:.82rem;color:var(--muted);margin-top:-4px}
+.seg{display:flex;flex-wrap:wrap;gap:6px}
+.seg button{font:inherit;font-size:.92rem;border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:999px;padding:7px 13px;cursor:pointer;min-height:36px}
+.seg button[aria-pressed="true"]{background:var(--brand);border-color:var(--brand);color:var(--surface)}
+.meas{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.meas label{display:flex;flex-direction:column;gap:3px;font-size:.75rem;color:var(--muted)}
+.meas .u{position:relative}
+.meas .u input{padding-right:30px;font-family:var(--mono);font-variant-numeric:tabular-nums}
+.meas .u span{position:absolute;right:9px;top:50%;transform:translateY(-50%);font-size:.75rem;color:var(--muted);pointer-events:none}
+.cnt{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.step{display:flex;align-items:center;justify-content:space-between;gap:6px;border:1px solid var(--line);border-radius:8px;padding:4px 4px 4px 10px;background:var(--bg)}
+.step span{font-size:.88rem}
+.step .ctl{display:flex;align-items:center;gap:4px}
+.step button{width:32px;height:32px;border-radius:6px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font-size:1.1rem;cursor:pointer}
+.step output{font-family:var(--mono);min-width:1.6em;text-align:center}
+.flag{font-size:.84rem;border-radius:8px;padding:8px 10px;background:var(--warnbg);color:var(--warn)}
+.flag.ok{background:var(--okbg);color:var(--ok)}
+.res{margin-top:22px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px}
+.res h2{font-family:var(--display);font-weight:500;font-size:1.15rem;margin:0 0 4px}
+.res .sub{color:var(--muted);font-size:.85rem;margin:0 0 12px}
+.dec{display:grid;grid-template-columns:auto minmax(0,1fr);gap:6px 12px;font-size:.95rem;margin-bottom:12px}
+.dec dt{color:var(--muted)}
+.dec dd{margin:0;font-weight:600}
+.dec dd.pend{color:var(--warn);font-weight:400}
+pre.out{white-space:pre-wrap;word-break:break-word;font-family:var(--mono);font-size:.78rem;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:10px;max-height:300px;overflow:auto;margin:0}
+.actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.btn{font:inherit;font-weight:600;border-radius:8px;padding:10px 14px;border:1px solid var(--brand);background:var(--brand);color:var(--surface);cursor:pointer}
+.btn.ghost{background:transparent;color:var(--brand)}
+.toast{font-size:.85rem;color:var(--ok);align-self:center}
+.confirm{display:flex;flex-wrap:wrap;align-items:center;gap:8px;font-size:.9rem;margin-top:10px}
+.crm{margin-top:16px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px}
+.crmtop{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px}
+.crm h2{font-family:var(--display);font-weight:500;font-size:1.05rem;margin:0}
+.tag{font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;padding:3px 8px;border-radius:999px;background:var(--chip);color:var(--muted)}
+.tag.demo{background:var(--warnbg);color:var(--warn)}
+.crmdl{display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 12px;margin:0;font-size:.95rem}
+.crmdl dt{color:var(--muted)}
+.crmdl dd{margin:0;font-weight:600;overflow-wrap:anywhere}
+.pkgrow{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;margin-top:12px;padding-top:12px;border-top:1px solid var(--line)}
+.pkgl{color:var(--muted);font-size:.9rem}
+.pkgnote{font-size:.84rem;color:var(--muted);margin:8px 0 0}
+@media (max-width:420px){.meas{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="brandrow">
+      <h1><b>KIRU</b> · Checklist de visita</h1>
+      <span class="pct" id="pct">0 de 0</span>
+    </div>
+    <div class="bar"><i id="barfill"></i></div>
+  </header>
+
+  <section class="crm" aria-labelledby="crmh">
+    <div class="crmtop"><h2 id="crmh">Datos del cliente</h2><span class="tag" id="crmtag">Desde el CRM</span></div>
+    <dl class="crmdl" id="crmdl"></dl>
+    <div class="pkgrow"><span class="pkgl" id="pkgl">Paquete</span><div class="seg" id="pkgseg" role="group" aria-labelledby="pkgl"></div></div>
+    <p class="pkgnote" id="pkgnote"></p>
+  </section>
+  <div class="meta">
+    <label class="full" id="codewrap">Código del cliente<input type="text" id="m_codigo" placeholder="C1116-3R-LM" autocomplete="off"></label>
+    <label>Fecha de visita<input type="date" id="m_fecha"></label>
+    <label>Visitó<input type="text" id="m_quien" placeholder="Gon / Nahuel / Eler"></label>
+  </div>
+  <p class="intro">Marcá lo que vas viendo. Lo que dice <b>Sí / No</b> alcanza con un toque; las medidas van en centímetros. Se guarda en este teléfono mientras completás.</p>
+
+  <div id="secs"></div>
+
+  <section class="res" aria-labelledby="resh">
+    <h2 id="resh">Resultado para la cotización</h2>
+    <p class="sub">Esto es lo que se usa en la lista aproximada y en los kits fijos.</p>
+    <dl class="dec" id="dec"></dl>
+    <pre class="out" id="out"></pre>
+    <div class="actions">
+      <button class="btn" id="send" type="button">Enviar a Kiru</button>
+      <button class="btn ghost" id="copy" type="button">Copiar resumen</button>
+      <button class="btn ghost" id="reset" type="button">Empezar otra visita</button>
+      <span class="toast" id="toast" role="status"></span>
+    </div>
+    <div class="confirm" id="confirm" hidden>
+      <span>¿Borrar todo lo cargado en esta visita?</span>
+      <button class="btn" id="yes" type="button">Sí, borrar</button>
+      <button class="btn ghost" id="no" type="button">Cancelar</button>
+    </div>
+  </section>
+</div>
+
+<script>
+const SN=['Sí','No'];
+const SECTIONS=[
+ {id:'ocup',lm:1,t:'Camas, baños y huéspedes',why:'Para el kit de blancos',items:[
+  {id:'camas',q:'Camas por tamaño',type:'count',f:['King','Queen','Matrimonial','Individual']},
+  {id:'banos',q:'Baños',type:'count',f:['Con ducha','Solo toilet']},
+  {id:'huesp',q:'Huéspedes (personas)',type:'count',f:['Huéspedes']},
+ ]},
+ {id:'lav',lm:1,t:'Lavado',why:'Define centro de lavado, lavasecadora o nada',items:[
+  {id:'lav_con',q:'¿Hay conexión para lavadora?',type:'seg',o:SN},
+  {id:'lav_agua',q:'Toma de agua y desagüe',type:'seg',o:['Las dos','Falta alguna']},
+  {id:'lav_volt',q:'Voltaje del contacto',type:'seg',o:['127 V','220 V','No sé']},
+  {id:'lav_tab',q:'¿Circuito directo al tablero?',type:'seg',o:SN},
+  {id:'lav_aire',q:'¿Hay salida de aire para la secadora?',type:'seg',o:SN,hintNo:'Sin salida de aire: sumar filtros para la secadora en la cotización.'},
+  {id:'lav_tipo',q:'La secadora va',type:'seg',o:['Eléctrica','Mixta gas + luz']},
+  {id:'lav_gas',q:'Si es mixta: tipo de gas',type:'seg',o:['LP','Natural','No aplica']},
+  {id:'lav_med',q:'Medidas del hueco',type:'meas',f:['Ancho','Alto','Fondo']},
+  {id:'lav_eq',q:'¿Qué equipo entra?',type:'seg',o:['Centro de lavado','Lavasecadora','No lleva'],hint:'Centro de lavado: lavadora y secadora apiladas. Lavasecadora: un solo equipo.'},
+ ]},
+ {id:'refri',lm:1,t:'Refrigerador',why:'Define dúplex o simple',items:[
+  {id:'ref_med',q:'Medidas del hueco',type:'meas',f:['Ancho','Alto','Fondo'],hint:'Dejá unos 5 cm libres a los lados y atrás para ventilación.'},
+  {id:'ref_puerta',q:'¿Abre la puerta completa sin chocar?',type:'seg',o:SN},
+  {id:'ref_cont',q:'¿Contacto cerca?',type:'seg',o:SN},
+  {id:'ref_agua',q:'¿Toma de agua (para dispensador)?',type:'seg',o:SN},
+  {id:'ref_eq',q:'¿Qué refrigerador entra?',type:'seg',o:['Dúplex','Simple'],hint:'Dúplex Mabe 19 pies ≈ 80 cm de ancho. Simple Mabe 14 pies ≈ 70 cm. Medidas aproximadas: confirmar con la ficha.'},
+  {id:'ref_bis',q:'¿De qué lado van las bisagras de la puerta?',type:'seg',o:['Bisagra izquierda','Bisagra derecha'],when:['ref_eq','Simple'],hint:'Bisagras del lado del muro o del extremo; la puerta abre hacia la barra. Parado de frente al refri: bisagra derecha = la manija queda a la izquierda. Sacá una foto del espacio del refri.'},
+ ]},
+ {id:'coc',lm:1,t:'Cocina',why:'Estufa, microondas y contactos',items:[
+  {id:'coc_est',q:'Estufa / parrilla',type:'seg',o:['Ya hay','No hay']},
+  {id:'coc_estt',q:'Tipo',type:'seg',o:['Gas','Eléctrica','Inducción']},
+  {id:'coc_horno',q:'¿Hay horno?',type:'seg',o:SN},
+  {id:'coc_camp',q:'¿Hay campana?',type:'seg',o:SN},
+  {id:'coc_mic',q:'¿Nicho o mueble para microondas?',type:'seg',o:SN},
+  {id:'coc_micm',q:'Medidas del nicho del microondas',type:'meas',f:['Ancho','Alto','Fondo']},
+  {id:'coc_barra',q:'¿Contactos en la barra para cafetera, licuadora, tostador?',type:'seg',o:SN},
+ ]},
+ {id:'tv',lm:1,t:'Pantallas',why:'Altura, conexiones y soporte',items:[
+  {id:'tv_sala',q:'Sala: contacto y ducto para cables',type:'seg',o:['Los dos','Falta alguno']},
+  {id:'tv_salah',q:'Sala: altura del centro de la pantalla',type:'meas',f:['Altura']},
+  {id:'tv_rec',q:'Recámaras con TV',type:'count',f:['Recámaras']},
+  {id:'tv_recc',q:'Recámaras: contacto y ducto',type:'seg',o:['En todas','Falta en alguna']},
+  {id:'tv_net',q:'Internet o cable en esos muros',type:'seg',o:SN},
+  {id:'tv_muro',q:'Tipo de muro',type:'seg',o:['Concreto','Tablaroca','Mixto'],hintPick:{'Tablaroca':'Tablaroca: llevar taquetes especiales o reforzar antes de colgar.'}},
+ ]},
+ {id:'luz',t:'Iluminación',why:'Salidas de luz y contactos',items:[
+  {id:'col',q:'Lámparas colgantes',type:'multi',o:['Barra de cocina','Comedor','Burós'],hint:'Marcá dónde van colgantes. Si no marcás nada, no van.'},
+  {id:'col_bar_con',q:'Barra de cocina: ¿hay salida de luz para las colgantes?',type:'seg',o:SN,when:['col','Barra de cocina'],hintNo:'Sin salida: sumar a la cotización llevar la conexión al techo de la barra.'},
+  {id:'col_bar_ref',q:'Barra de cocina: ¿hay que reforzar el techo para colgarlas?',type:'seg',o:['No, es concreto','Sí, es plafón / tablaroca'],when:['col','Barra de cocina'],hintPick:{'Sí, es plafón / tablaroca':'Sumar refuerzo en el plafón a la cotización.'}},
+  {id:'col_com_con',q:'Comedor: ¿hay salida de luz sobre la mesa para la colgante?',type:'seg',o:SN,when:['col','Comedor'],hintNo:'Sin salida: sumar a la cotización llevar la conexión al centro de la mesa.'},
+  {id:'col_com_ref',q:'Comedor: ¿hay que reforzar el techo para colgarla?',type:'seg',o:['No, es concreto','Sí, es plafón / tablaroca'],when:['col','Comedor'],hintPick:{'Sí, es plafón / tablaroca':'Sumar refuerzo en el plafón a la cotización.'}},
+  {id:'col_bur_con',q:'Burós: ¿hay salida de luz arriba de los burós para colgantes?',type:'seg',o:['En todos','Falta en alguno','No hay'],when:['col','Burós'],hintPick:{'Falta en alguno':'Sumar a la cotización las salidas que faltan.','No hay':'Sumar a la cotización las salidas arriba de los burós.'}},
+  {id:'col_bur_ref',q:'Burós: ¿hay que reforzar el techo para colgarlas?',type:'seg',o:['No, es concreto','Sí, es plafón / tablaroca'],when:['col','Burós'],hintPick:{'Sí, es plafón / tablaroca':'Sumar refuerzo en el plafón a la cotización.'}},
+  {id:'luz_com',q:'¿Salida de luz sobre la mesa del comedor?',type:'seg',o:SN,unless:['col','Comedor']},
+  {id:'luz_bur',q:'¿Contactos junto a los burós?',type:'seg',o:['En todas','Falta en alguna']},
+  {id:'luz_pie',q:'¿Contacto para lámpara de pie en sala?',type:'seg',o:SN},
+  {id:'luz_ap',q:'Apagadores en buen estado',type:'seg',o:SN},
+ ]},
+ {id:'cor',lm:1,t:'Cortinas',why:'Van en Llave en mano',items:[
+  {id:'cor_n',q:'Ventanas con cortina',type:'count',f:['Ventanas']},
+  {id:'cor_med',q:'Medida de la ventana más grande (techo a piso)',type:'meas',f:['Ancho','Alto']},
+  {id:'cor_techo',q:'Techo para el riel',type:'seg',o:['Concreto','Plafón','Ya hay riel']},
+  {id:'cor_nota',q:'Medidas del resto de las ventanas',type:'text',ph:'Ej.: Rec 01 140×240 · Suite 220×260'},
+ ]},
+ {id:'acc',t:'Accesos',why:'Que entren sofá, colchones y refrigerador',items:[
+  {id:'acc_puerta',q:'Ancho de puerta de entrada',type:'meas',f:['Ancho']},
+  {id:'acc_elev',q:'Elevador',type:'seg',o:['Hay','No hay','Planta baja']},
+  {id:'acc_elevm',q:'Medidas del elevador',type:'meas',f:['Ancho','Fondo','Alto']},
+  {id:'acc_esc',q:'Escaleras o pasillos angostos',type:'seg',o:SN},
+ ]},
+ {id:'ban',lm:1,t:'Baños',why:'Accesorios que ya existen',items:[
+  {id:'ban_toal',q:'¿Hay toalleros y ganchos?',type:'seg',o:['En todos','Falta en alguno']},
+  {id:'ban_esp',q:'¿Hay espejo?',type:'seg',o:['En todos','Falta en alguno']},
+ ]},
+ {id:'ext',t:'Exterior',why:'Alberca y terraza',items:[
+  {id:'ext_alb',lm:1,q:'¿Hay alberca?',type:'seg',o:['Privada','Del condominio','No hay'],hintPick:{'No hay':'Sin alberca: se pueden sacar las toallas de alberca del kit.'}},
+  {id:'ext_ter',q:'¿Hay terraza o balcón?',type:'seg',o:SN},
+  {id:'ext_cont',q:'¿Contactos en el exterior?',type:'seg',o:SN},
+ ]},
+ {id:'seg',lm:1,t:'Seguridad e internet',why:'Caja de seguridad, regulador y router',items:[
+  {id:'seg_caja',q:'Clóset donde va la caja de seguridad',type:'text',ph:'Ej.: clóset de la Suite'},
+  {id:'seg_anc',q:'¿Se puede anclar?',type:'seg',o:SN},
+  {id:'seg_rout',q:'Ubicación del router',type:'text',ph:'Ej.: mueble de TV de la sala'},
+ ]},
+ {id:'cond',t:'Condominio',why:'Entregas y mudanza',items:[
+  {id:'cond_reg',q:'¿Pediste el reglamento?',type:'seg',o:SN},
+  {id:'cond_hor',q:'Horarios para entregas y mudanza',type:'text',ph:'Ej.: lun–sáb 9 a 17 h, avisar 24 h antes'},
+ ]},
+ {id:'med',t:'Medidas clave y minisplits',why:'Para elegir y acomodar muebles',items:[
+  {id:'med_alto',q:'Altura de piso a techo',type:'meas',f:['Altura'],hint:'Medila en la sala. Si alguna recámara es distinta, anotalo en las notas.'},
+  {id:'med_sofa',q:'Muro del sofá',type:'meas',f:['Ancho'],hint:'Largo libre del muro donde va el sofá.'},
+  {id:'med_com',q:'Espacio del comedor',type:'meas',f:['Largo','Ancho']},
+  {id:'med_cama',q:'Muro de la cama · recámara principal',type:'meas',f:['Ancho'],hint:'Largo libre del muro de la cabecera.'},
+  {id:'med_cama2',q:'Muro de la cama · otras recámaras',type:'text',ph:'Ej.: Rec 2: 320 cm · Rec 3: 290 cm'},
+  {id:'mini',q:'¿Hay minisplits?',type:'seg',o:SN},
+  {id:'mini_donde',q:'¿Dónde están los minisplits?',type:'text',ph:'Ej.: sala sobre el muro del sofá a 2.40 m · rec. principal arriba de la cama',when:['mini','Sí'],hint:'En qué muro y a qué altura, para no taparlos con muebles ni cuadros. Sacá foto.'},
+ ]},
+ {id:'fot',t:'Fotos y medidas generales',why:'Para el diseño',items:[
+  {id:'fot_ok',q:'¿Fotos y video de cada espacio?',type:'seg',o:SN},
+  {id:'fot_med',q:'¿Medidas generales de cada ambiente?',type:'seg',o:SN},
+  {id:'fot_nota',q:'Notas de la visita',type:'text',ph:'Lo que no entra en ninguna casilla'},
+ ]},
+];
+
+// Datos que manda el CRM en el link: ?c=Código&n=Cliente&t=Teléfono&d=Desarrollo&r=Recámaras&p=Paquete&u=Ubicación&det=Detalle
+const P=(()=>{try{return new URLSearchParams(location.search)}catch(e){return new URLSearchParams()}})();
+const FROM_CRM=P.has('c');
+const CRM=FROM_CRM?{id:P.get('id'),c:P.get('c'),n:P.get('n'),t:P.get('t'),d:P.get('d'),r:P.get('r'),p:P.get('p'),u:P.get('u'),b:P.get('b'),cam:P.get('cam'),det:P.get('det')}
+  :{c:'C1120-2R-LM',n:'Mariana Ortiz',t:'+52 984 000 0000',d:'Aldea Zamá · Torre B 304',r:'2',p:'Llave en mano',u:'Tulum',b:'2',cam:'1 King, 2 individuales'};
+const HOOK='https://kiru.smarketics.com/web/hook/f34066ba-67c5-418d-afb2-5c7c8840cabe';
+const pkgOf=(p,c)=>/muebles|m&d|md/i.test(p||'')||/-M&?D$/i.test(c||'')?'MD':(/llave|lm/i.test(p||'')||/-LM$/i.test(c||'')?'LM':null);
+const KEY='kiru-checklist-visita-v1:'+(CRM.c||'sin-codigo');
+let S={meta:{},v:{}};
+try{const r=localStorage.getItem(KEY);if(r)S=JSON.parse(r)}catch(e){}
+S.meta.codigo=CRM.c||S.meta.codigo;
+let PKG=S.meta.pkg||pkgOf(CRM.p,CRM.c);
+const SEC=()=>SECTIONS.filter(s=>!s.lm||PKG==='LM').map(s=>({...s,items:s.items.filter(i=>!i.lm||PKG==='LM')}));
+const PKGNAME={LM:'Llave en mano',MD:'Muebles y deco'};
+if(!S.v.tv_rec&&CRM.r&&!isNaN(+CRM.r))S.v.tv_rec={'Recámaras':+CRM.r};
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
+
+const has=(k,val)=>{const x=S.v[k];return Array.isArray(x)?x.includes(val):x===val};
+const shown=it=>(!it.when||has(it.when[0],it.when[1]))&&(!it.unless||!has(it.unless[0],it.unless[1]));
+const ITEMS={};SECTIONS.forEach(s=>s.items.forEach(i=>ITEMS[i.id]=i));
+const vis=s=>s.items.filter(shown);
+function applyWhen(){document.querySelectorAll('[data-iid]').forEach(b=>{b.hidden=!shown(ITEMS[b.dataset.iid])})}
+const filled=it=>{const v=S.v[it.id];
+  if(it.type==='seg')return !!v;
+  if(it.type==='multi')return true;
+  if(it.type==='text')return !!(v&&v.trim());
+  if(it.type==='meas')return v&&it.f.every(f=>v[f]!==undefined&&v[f]!=='');
+  if(it.type==='count')return v&&Object.values(v).some(n=>n>0);
+  return false};
+
+function el(tag,attrs={},...kids){const e=document.createElement(tag);for(const[k,v]of Object.entries(attrs)){if(k==='class')e.className=v;else if(k.startsWith('on'))e.addEventListener(k.slice(2),v);else e.setAttribute(k,v)}kids.flat().forEach(k=>k!=null&&e.append(k));return e}
+
+function renderItem(it){
+  const box=el('div',{class:'it'},el('div',{class:'q',id:'q_'+it.id},it.q));
+  if(it.when||it.unless){box.dataset.iid=it.id;box.hidden=!shown(it)}
+  if(it.hint)box.append(el('div',{class:'hint'},it.hint));
+  const flag=el('div',{class:'flag',hidden:''});
+  const upd=()=>{const v=S.v[it.id];let msg='';
+    if(it.hintNo&&v==='No')msg=it.hintNo;
+    if(it.hintPick&&it.hintPick[v])msg=it.hintPick[v];
+    flag.textContent=msg;flag.hidden=!msg};
+  if(it.type==='seg'){
+    const g=el('div',{class:'seg',role:'group','aria-labelledby':'q_'+it.id});
+    it.o.forEach(o=>{const b=el('button',{type:'button','aria-pressed':String(S.v[it.id]===o)},o);
+      b.addEventListener('click',()=>{S.v[it.id]=S.v[it.id]===o?undefined:o;
+        g.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',String(x.textContent===S.v[it.id])));upd();changed()});
+      g.append(b)});
+    box.append(g);
+  }else if(it.type==='multi'){
+    const g=el('div',{class:'seg',role:'group','aria-labelledby':'q_'+it.id});
+    const cur=()=>Array.isArray(S.v[it.id])?S.v[it.id]:[];
+    it.o.forEach(o=>{const b=el('button',{type:'button','aria-pressed':String(cur().includes(o))},o);
+      b.addEventListener('click',()=>{const c=cur();S.v[it.id]=c.includes(o)?c.filter(x=>x!==o):[...c,o];
+        b.setAttribute('aria-pressed',String(S.v[it.id].includes(o)));changed()});
+      g.append(b)});
+    box.append(g);
+  }else if(it.type==='meas'){
+    const g=el('div',{class:'meas'});S.v[it.id]=S.v[it.id]||{};
+    it.f.forEach(f=>{const inp=el('input',{type:'number',inputmode:'decimal',min:'0',id:`${it.id}_${f}`,'aria-label':`${it.q}: ${f}`});
+      if(S.v[it.id][f]!==undefined)inp.value=S.v[it.id][f];
+      inp.addEventListener('input',()=>{S.v[it.id][f]=inp.value;changed()});
+      g.append(el('label',{for:`${it.id}_${f}`},f,el('div',{class:'u'},inp,el('span',{},'cm'))))});
+    box.append(g);
+  }else if(it.type==='count'){
+    const g=el('div',{class:'cnt'});S.v[it.id]=S.v[it.id]||{};
+    it.f.forEach(f=>{const o=el('output',{},String(S.v[it.id][f]||0));
+      const set=d=>{S.v[it.id][f]=Math.max(0,(S.v[it.id][f]||0)+d);o.textContent=S.v[it.id][f];changed()};
+      g.append(el('div',{class:'step'},el('span',{},f),el('div',{class:'ctl'},
+        el('button',{type:'button','aria-label':`Restar ${f}`,onclick:()=>set(-1)},'−'),o,
+        el('button',{type:'button','aria-label':`Sumar ${f}`,onclick:()=>set(1)},'+'))))});
+    box.append(g);
+  }else if(it.type==='text'){
+    const t=el('textarea',{id:'t_'+it.id,placeholder:it.ph||'','aria-labelledby':'q_'+it.id});
+    t.value=S.v[it.id]||'';t.addEventListener('input',()=>{S.v[it.id]=t.value;changed()});box.append(t);
+  }
+  box.append(flag);upd();return box;
+}
+
+const counters={};
+function render(){
+  const root=document.getElementById('secs');
+  const ps=document.getElementById('pkgseg');ps.replaceChildren();
+  ['LM','MD'].forEach(k=>{const b=el('button',{type:'button','aria-pressed':String(PKG===k)},PKGNAME[k]);
+    b.addEventListener('click',()=>{PKG=k;S.meta.pkg=k;save();document.getElementById('secs').replaceChildren();render()});ps.append(b)});
+  document.getElementById('pkgnote').textContent=PKG==='MD'
+    ?'Muebles y deco: sin blancos, línea blanca, cocina, pantallas, cortinas ni accesorios de baño. Solo se revisa lo que afecta a muebles, deco e iluminación.'
+    :(PKG==='LM'?'Llave en mano: checklist completo, incluye lo que necesitan los kits de blancos y electrónica.':'Elegí el paquete para ver el checklist que corresponde.');
+  if(!PKG){changed();return}
+  SEC().forEach((s,i)=>{
+    const c=el('span',{class:'count'});counters[s.id]=c;
+    const d=el('details',{class:'sec',id:'sec_'+s.id},
+      el('summary',{},el('h2',{},s.t,el('span',{class:'why'},s.why)),c,el('span',{class:'chev','aria-hidden':'true'})),
+      el('div',{class:'items'},s.items.map(renderItem)));
+    if(i<2)d.open=true;root.append(d)});
+  const dl=document.getElementById('crmdl');dl.replaceChildren();
+  [['Cliente',CRM.n],['Código',CRM.c],['Teléfono',CRM.t],['Inmueble',CRM.d],['Ubicación',CRM.u],['Recámaras',CRM.r],['Baños',CRM.b],['Camas (cuestionario)',CRM.cam],['Paquete',CRM.p],['Detalle',CRM.det]]
+    .filter(([k,v])=>v).forEach(([k,v])=>dl.append(el('dt',{},k),el('dd',{},v)));
+  const tag=document.getElementById('crmtag');
+  if(!FROM_CRM){tag.textContent='Ejemplo';tag.classList.add('demo')}
+  document.getElementById('codewrap').hidden=!!CRM.c;
+  if(!S.meta.fecha)S.meta.fecha=new Date().toISOString().slice(0,10);
+  ['codigo','fecha','quien'].forEach(k=>{const i=document.getElementById('m_'+k);i.value=S.meta[k]||'';
+    i.addEventListener('input',()=>{S.meta[k]=i.value;changed()})});
+  changed();
+}
+
+function lavadoResult(){
+  const v=S.v;
+  if(v.lav_eq)return v.lav_eq;
+  if(v.lav_con==='No')return 'No lleva';
+  return null;
+}
+function colgTxt(){const v=S.v,c=Array.isArray(v.col)?v.col:[];if(!c.length)return 'No van';
+  const z={'Barra de cocina':['Barra','col_bar'],'Comedor':['Comedor','col_com'],'Burós':['Burós','col_bur']};
+  return c.map(k=>{const [n,p]=z[k],con=v[p+'_con'],ref=v[p+'_ref'],x=[];
+    if(con==='No'||con==='No hay')x.push('falta conexión');else if(con==='Falta en alguno')x.push('falta conexión en alguno');
+    if(ref&&ref.startsWith('Sí'))x.push('reforzar');
+    if(!con||!ref)x.push('revisar');
+    return n+(x.length?' ('+x.join(', ')+')':' (ok)')}).join(' · ')}
+function summary(){
+  const v=S.v,L=[];const m=S.meta;
+  const cam=v.camas||{},ban=v.banos||{},h=(v.huesp||{})['Huéspedes']||0;
+  const camTxt=Object.entries(cam).filter(([k,n])=>n>0).map(([k,n])=>`${n} ${k}`).join(', ');
+  const dec=PKG!=='LM'?[['Paquete',PKG?PKGNAME[PKG]+' (sin kits fijos)':null],['Accesos',v.acc_puerta&&v.acc_puerta['Ancho']?`Puerta ${v.acc_puerta['Ancho']} cm · elevador: ${v.acc_elev||'?'}`:null],['Luz sobre comedor',(Array.isArray(v.col)&&v.col.includes('Comedor'))?null:(v.luz_com||null)],['Lámparas colgantes',colgTxt()]].filter(([k,x])=>k!=='Luz sobre comedor'||x!==null||!(Array.isArray(v.col)&&v.col.includes('Comedor'))):[
+    ['Paquete','Llave en mano'],
+    ['Huéspedes',h?String(h):null],
+    ['Camas',camTxt||null],
+    ['Baños',(ban['Con ducha']||ban['Solo toilet'])?`${ban['Con ducha']||0} con ducha · ${ban['Solo toilet']||0} solo toilet`:null],
+    ['Refrigerador',v.ref_eq||null],
+    ...(v.ref_eq==='Simple'?[['Puerta del refri',v.ref_bis||null]]:[]),
+    ['Lavado',lavadoResult()],
+    ['Filtros secadora',v.lav_aire==='No'?'Sí, sumar a la cotización':(v.lav_aire==='Sí'?'No hace falta':null)],
+    ['Pantallas',(v.tv_rec&&v.tv_rec['Recámaras'])?`Sala + ${v.tv_rec['Recámaras']} recámara(s)`:null],
+    ['Lámparas colgantes',colgTxt()],
+    ['Alberca',v.ext_alb||null],
+  ];
+  const dl=document.getElementById('dec');dl.replaceChildren();
+  dec.forEach(([k,val])=>{dl.append(el('dt',{},k),el('dd',{class:val?'':'pend'},val||'Pendiente'))});
+  L.push(`CHECKLIST DE VISITA · ${m.codigo||'(sin código)'}${CRM.n?' · '+CRM.n:''}`);
+  if(CRM.d)L.push(`Inmueble: ${CRM.d}${CRM.u?' ('+CRM.u+')':''}`);
+  L.push(`Fecha: ${m.fecha||'-'} · Visitó: ${m.quien||'-'}`);
+  L.push('');L.push('PARA LA COTIZACIÓN');
+  dec.forEach(([k,val])=>L.push(`- ${k}: ${val||'PENDIENTE'}`));
+  SEC().forEach(s=>{
+    const rows=[];
+    vis(s).forEach(it=>{const val=v[it.id];if(!filled(it)||it.type==='multi')return;let t;
+      if(it.type==='meas')t=it.f.map(f=>`${f} ${val[f]} cm`).join(' · ');
+      else if(it.type==='multi')t=(val&&val.length)?val.join(', '):'No van';
+      else if(it.type==='count')t=Object.entries(val).filter(([k,n])=>n>0).map(([k,n])=>`${k}: ${n}`).join(' · ');
+      else t=String(val).trim();
+      rows.push(`- ${it.q}: ${t}`)});
+    if(rows.length){L.push('');L.push(s.t.toUpperCase());L.push(...rows)}
+  });
+  return L.join('\n');
+}
+
+function changed(){
+  let tot=0,done=0;
+  applyWhen();
+  if(PKG)SEC().forEach(s=>{const its=vis(s),n=its.length,d=its.filter(filled).length;tot+=n;done+=d;
+    counters[s.id].textContent=`${d}/${n}`;counters[s.id].classList.toggle('done',d===n)});
+  document.getElementById('pct').textContent=`${done} de ${tot}`;
+  document.getElementById('barfill').style.width=(tot?done/tot*100:0)+'%';
+  document.getElementById('out').textContent=summary();
+  save();
+}
+
+document.getElementById('copy').addEventListener('click',()=>{
+  const txt=summary(),t=document.getElementById('toast');
+  navigator.clipboard.writeText(txt).then(()=>{t.textContent='Resumen copiado'},()=>{
+    const r=document.createRange();r.selectNodeContents(document.getElementById('out'));
+    const sel=getSelection();sel.removeAllRanges();sel.addRange(r);t.textContent='Seleccioné el texto: copialo a mano'});
+  setTimeout(()=>t.textContent='',3000)});
+const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+function summaryHtml(){
+  const lines=summary().split('\n');let h='',inList=false;
+  lines.forEach(l=>{
+    if(l.startsWith('- ')){if(!inList){h+='<ul>';inList=true}h+='<li>'+esc(l.slice(2))+'</li>';return}
+    if(inList){h+='</ul>';inList=false}
+    if(!l.trim())return;
+    h+=(l===l.toUpperCase()&&/[A-ZÁÉÍÓÚÑ]/.test(l))?'<h4>'+esc(l)+'</h4>':'<p>'+esc(l)+'</p>'});
+  if(inList)h+='</ul>';return h}
+document.getElementById('send').addEventListener('click',async()=>{
+  const t=document.getElementById('toast');
+  if(!FROM_CRM||!CRM.id){t.textContent='Enviar funciona cuando el checklist se abre desde el botón del CRM.';return}
+  if(!(S.meta.quien||'').trim()){t.textContent='Completá quién visitó antes de enviar.';document.getElementById('m_quien').focus();return}
+  const v=S.v,cam=v.camas||{};
+  const payload={id:CRM.id,codigo:CRM.c,fecha:S.meta.fecha||'',quien:S.meta.quien||'',html:summaryHtml(),
+    refri:{'Dúplex':'duplex','Simple':'simple'}[v.ref_eq]||'',
+    refri_puerta:v.ref_eq==='Simple'?({'Bisagra izquierda':'izquierda','Bisagra derecha':'derecha'}[v.ref_bis]||''):'',
+    lavado:{'Centro de lavado':'centro','Lavasecadora':'lavasecadora','No lleva':'no'}[lavadoResult()]||'',
+    camas:Object.entries(cam).filter(([k,n])=>n>0).map(([k,n])=>`${n} ${k}`).join(', ')};
+  t.textContent='Enviando…';
+  try{await fetch(HOOK,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain'},body:JSON.stringify(payload)});
+    S.meta.enviado=new Date().toISOString();save();t.textContent='Enviado. Ya está en la tarjeta del cliente, pestaña Visita.'}
+  catch(e){t.textContent='No se pudo enviar. Revisá la conexión y probá de nuevo, o usá Copiar resumen.'}
+});
+document.getElementById('reset').addEventListener('click',()=>{document.getElementById('confirm').hidden=false});
+document.getElementById('no').addEventListener('click',()=>{document.getElementById('confirm').hidden=true});
+document.getElementById('yes').addEventListener('click',()=>{S={meta:{codigo:CRM.c,pkg:S.meta.pkg},v:{}};save();
+  document.getElementById('secs').replaceChildren();document.getElementById('confirm').hidden=true;render()});
+
+render();
+</script>
+
+</body>
+</html>
