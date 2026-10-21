@@ -217,6 +217,7 @@ const GOOD=new Set(['Sí','Las dos','Los dos','En todos','En todas','Hay','Ya ha
 const BAD=new Set(['No','Falta alguna','Falta alguno','Falta en alguno','Falta en alguna','No hay','No sé']);
 const BEDS=['King','Queen','Matrimonial','Individual','2 Individuales','Sofá cama','Sin cama'];
 
+const PISOS=['Planta baja','1','2','3','4','5','6','7','8','9','10'];
 const SECTIONS=[
  {id:'ocup',t:'Recámaras, camas y baños',why:'Qué cama va en cada espacio',items:[
   {id:'camas',q:'Camas por espacio',type:'beds'},
@@ -313,8 +314,9 @@ const SECTIONS=[
   {id:'cond_hor',q:'Horarios para entregas y mudanza',type:'text',ph:'Ej.: lun–sáb 9 a 17 h, avisar 24 h antes'},
  ]},
  {id:'acc',g:'cond',t:'Accesos',why:'Que entren sofá, colchones y refrigerador',items:[
+  {id:'acc_piso',q:'¿En qué piso está?',type:'seg',o:PISOS,hint:'Define el acarreo de refri y lavado: planta baja y 1.º piso $500 por equipo; desde el 2.º se suman $250 por piso.'},
   {id:'acc_puerta',q:'Ancho de puerta de entrada',type:'meas',f:['Ancho']},
-  {id:'acc_elev',q:'Elevador',type:'seg',o:['Hay','No hay','Planta baja']},
+  {id:'acc_elev',q:'Elevador',type:'seg',o:['Hay','No hay'],unless:['acc_piso','Planta baja']},
   {id:'acc_elevm',q:'Medidas del elevador',type:'meas',f:['Ancho','Fondo','Alto'],when:['acc_elev','Hay'],sub:1},
   {id:'acc_esc',q:'Escaleras o pasillos angostos',type:'seg',o:SN},
  ]},
@@ -558,9 +560,17 @@ function colgTxt(){const v=S.v,c=Array.isArray(v.col)?v.col:[];if(!c.length)retu
     if(ref&&ref.startsWith('Sí'))x.push('reforzar');
     if(!con||!ref)x.push('revisar');
     return n+(x.length?' ('+x.join(', ')+')':' (ok)')}).join(' · ')}
+function pisoN(){const p=S.v.acc_piso;return p===undefined?null:(p==='Planta baja'?0:+p)}
+const money=n=>'$'+n.toLocaleString('es-MX');
+function acarreoTxt(){const n=pisoN();if(n===null)return null;
+  const eq=[];if(S.v.ref_eq)eq.push('refri');const l=lavadoResult();if(l&&l!=='No lleva')eq.push(l==='Centro de lavado'?'centro de lavado':'lavasecadora');
+  const u=500+250*Math.max(0,n-1),pis=n===0?'Planta baja':n+'.º piso';
+  if(!eq.length)return `${pis} · ${money(u)} por equipo (falta definir refri y lavado)`;
+  return `${pis} · ${money(u)} × ${eq.length} (${eq.join(' + ')}) = ${money(u*eq.length)}`}
 function decisions(){
   const v=S.v,ban=v.banos||{};
   if(PKG!=='LM')return [['Paquete',PKG?PKGNAME[PKG]+' (sin kits fijos)':null],['Camas',camasTxt()||null],
+    ['Piso',pisoN()===null?null:(pisoN()===0?'Planta baja':pisoN()+'.º piso')],
     ['Accesos',v.acc_puerta&&v.acc_puerta['Ancho']?`Puerta ${v.acc_puerta['Ancho']} cm · elevador: ${v.acc_elev||'?'}`:null],['Lámparas colgantes',colgTxt()]];
   const f=lavFaltan();
   return [
@@ -575,6 +585,7 @@ function decisions(){
     ['Pantallas',(v.tv_rec&&v.tv_rec['Recámaras'])?`Sala + ${v.tv_rec['Recámaras']} recámara(s)`:null],
     ['Lámparas colgantes',colgTxt()],
     ['Alberca',v.ext_alb||null],
+    ['Acarreo',acarreoTxt()],
   ];
 }
 function summary(){
@@ -638,7 +649,7 @@ document.getElementById('send').addEventListener('click',async()=>{
     refri:{'Dúplex':'duplex','Simple':'simple'}[v.ref_eq]||'',
     refri_puerta:v.ref_eq==='Simple'?({'Bisagra izquierda':'izquierda','Bisagra derecha':'derecha'}[v.ref_bis]||''):'',
     lavado:{'Centro de lavado':'centro','Lavasecadora':'lavasecadora','No lleva':'no'}[lavadoResult()]||'',
-    camas:camasTxt(),fotos:photosPayload()};
+    camas:camasTxt(),piso:pisoN(),acarreo:PKG==='LM'?(acarreoTxt()||''):'',fotos:photosPayload()};
   t.textContent='Enviando…';
   try{await fetch(HOOK,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain'},body:JSON.stringify(payload)});
     S.meta.enviado=new Date().toISOString();save();t.textContent='Enviado. Ya está en la tarjeta del cliente, pestaña Visita.'}
