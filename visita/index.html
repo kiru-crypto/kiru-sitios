@@ -469,7 +469,7 @@ function renderStart(){
     :(PKG==='LM'?'Llave en mano: checklist completo, incluye lo que necesitan los kits de blancos y electrónica.':'');
   const o=document.getElementById('h_o');o.textContent=S.v.huesp||0;
   document.getElementById('hfrom').textContent=CRM.h?('Según el CRM: '+CRM.h):'';
-  document.getElementById('huespwrap').hidden=PKG==='MD';
+  document.getElementById('huespwrap').hidden=PKG!=='LM';
 }
 function renderAll(){
   renderStart();
