@@ -119,6 +119,7 @@ input:focus-visible,textarea:focus-visible,button:focus-visible,summary:focus-vi
 
 .flag{font-size:.84rem;border-radius:8px;padding:8px 10px;background:var(--warnbg);color:var(--warn)}
 .flag.bad{background:var(--badbg);color:var(--bad)}
+.grp{margin:22px 4px 2px;font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;font-weight:600;color:var(--muted)}
 .lock{margin-top:14px;border:1px dashed var(--chipline);border-radius:14px;padding:18px;text-align:center;color:var(--muted);font-size:.95rem;background:var(--surface)}
 
 .res{padding:14px}
@@ -219,6 +220,16 @@ const SECTIONS=[
   {id:'camas',q:'Camas por espacio',type:'beds'},
   {id:'banos',q:'Baños',type:'count',f:['Con ducha','Solo toilet'],lm:1},
  ]},
+ {id:'med',t:'Medidas clave y minisplits',why:'Para elegir y acomodar muebles',items:[
+  {id:'med_alto',q:'Altura de piso a techo',type:'meas',f:['Altura'],hint:'Medila en la sala. Si alguna recámara es distinta, anotalo en las notas.'},
+  {id:'med_sofa',q:'Muro del sofá',type:'meas',f:['Ancho'],hint:'Largo libre del muro donde va el sofá.'},
+  {id:'med_com',q:'Espacio del comedor',type:'meas',f:['Largo','Ancho']},
+  {id:'med_cama',q:'Muro de la cama · recámara principal',type:'meas',f:['Ancho'],hint:'Largo libre del muro de la cabecera.'},
+  {id:'med_cama2',q:'Muro de la cama · otras recámaras',type:'text',ph:'Ej.: Rec 2: 320 cm · Rec 3: 290 cm'},
+  {id:'mini',q:'¿Hay minisplits?',type:'seg',o:SN},
+  {id:'mini_donde',q:'¿Dónde están los minisplits?',type:'text',ph:'Ej.: sala sobre el muro del sofá a 2.40 m · rec. principal arriba de la cama',when:['mini','Sí'],sub:1,hint:'En qué muro y a qué altura, para no taparlos con muebles ni cuadros.'},
+  {id:'mini_foto',q:'Foto de los minisplits',type:'photo',when:['mini','Sí'],sub:1},
+ ]},
  {id:'lav',lm:1,t:'Lavado',why:'Define centro de lavado, lavasecadora o nada',items:[
   {id:'lav_agua',q:'¿Hay toma de agua para la lavadora?',type:'seg',o:SN,hintNo:'Sin toma de agua: sumarla a la cotización como trabajo de obra.'},
   {id:'lav_des',q:'¿Hay desagüe?',type:'seg',o:SN,hintNo:'Sin desagüe: sumarlo a la cotización como trabajo de obra.'},
@@ -271,50 +282,39 @@ const SECTIONS=[
   {id:'luz_pie',q:'¿Contacto para lámpara de pie en sala?',type:'seg',o:SN},
   {id:'luz_ap',q:'Apagadores en buen estado',type:'seg',o:SN},
  ]},
- {id:'cor',lm:1,t:'Cortinas',why:'Van en Llave en mano',items:[
-  {id:'cor_n',q:'Ventanas con cortina',type:'count',f:['Ventanas']},
-  {id:'cor_med',q:'Medida de la ventana más grande (techo a piso)',type:'meas',f:['Ancho','Alto']},
-  {id:'cor_techo',q:'Techo para el riel',type:'seg',o:['Concreto','Plafón','Ya hay riel']},
-  {id:'cor_nota',q:'Medidas del resto de las ventanas',type:'text',ph:'Ej.: Rec 01 140×240 · Suite 220×260'},
- ]},
- {id:'acc',t:'Accesos',why:'Que entren sofá, colchones y refrigerador',items:[
-  {id:'acc_puerta',q:'Ancho de puerta de entrada',type:'meas',f:['Ancho']},
-  {id:'acc_elev',q:'Elevador',type:'seg',o:['Hay','No hay','Planta baja']},
-  {id:'acc_elevm',q:'Medidas del elevador',type:'meas',f:['Ancho','Fondo','Alto'],when:['acc_elev','Hay'],sub:1},
-  {id:'acc_esc',q:'Escaleras o pasillos angostos',type:'seg',o:SN},
+ {id:'cor',lm:1,t:'Cortinas',why:'Por ambiente: foto y medidas',items:[
+  {id:'cort',q:'Cortinas por ambiente',type:'curt'},
+  {id:'cor_techo',q:'Techo para el riel',type:'seg',o:['Concreto','Plafón','Ya hay riel'],hint:'Si cambia según el ambiente, anotalo en el nombre del ambiente.'},
  ]},
  {id:'ban',lm:1,t:'Baños',why:'Accesorios que ya existen',items:[
   {id:'ban_toal',q:'¿Hay toalleros y ganchos?',type:'seg',o:['En todos','Falta en alguno']},
   {id:'ban_esp',q:'¿Hay espejo?',type:'seg',o:['En todos','Falta en alguno']},
+ ]},
+ {id:'seg',lm:1,t:'Seguridad e internet',why:'Caja de seguridad, regulador y router',items:[
+  {id:'seg_caja',q:'Clóset donde va la caja de seguridad',type:'text',ph:'Ej.: clóset de la Suite'},
+  {id:'seg_foto',q:'Foto del clóset donde va la caja',type:'photo'},
+  {id:'seg_anc',q:'¿Se puede anclar?',type:'seg',o:SN},
+  {id:'seg_rout',q:'Ubicación del router',type:'text',ph:'Ej.: mueble de TV de la sala'},
  ]},
  {id:'ext',t:'Exterior',why:'Alberca y terraza',items:[
   {id:'ext_alb',lm:1,q:'¿Hay alberca?',type:'seg',o:['Privada','Del condominio','No hay'],hintPick:{'No hay':'Sin alberca: se pueden sacar las toallas de alberca del kit.'}},
   {id:'ext_ter',q:'¿Hay terraza o balcón?',type:'seg',o:SN},
   {id:'ext_cont',q:'¿Contactos en el exterior?',type:'seg',o:SN},
  ]},
- {id:'seg',lm:1,t:'Seguridad e internet',why:'Caja de seguridad, regulador y router',items:[
-  {id:'seg_caja',q:'Clóset donde va la caja de seguridad',type:'text',ph:'Ej.: clóset de la Suite'},
-  {id:'seg_anc',q:'¿Se puede anclar?',type:'seg',o:SN},
-  {id:'seg_rout',q:'Ubicación del router',type:'text',ph:'Ej.: mueble de TV de la sala'},
- ]},
- {id:'cond',t:'Condominio',why:'Entregas y mudanza',items:[
-  {id:'cond_reg',q:'¿Pediste el reglamento?',type:'seg',o:SN},
-  {id:'cond_hor',q:'Horarios para entregas y mudanza',type:'text',ph:'Ej.: lun–sáb 9 a 17 h, avisar 24 h antes'},
- ]},
- {id:'med',t:'Medidas clave y minisplits',why:'Para elegir y acomodar muebles',items:[
-  {id:'med_alto',q:'Altura de piso a techo',type:'meas',f:['Altura'],hint:'Medila en la sala. Si alguna recámara es distinta, anotalo en las notas.'},
-  {id:'med_sofa',q:'Muro del sofá',type:'meas',f:['Ancho'],hint:'Largo libre del muro donde va el sofá.'},
-  {id:'med_com',q:'Espacio del comedor',type:'meas',f:['Largo','Ancho']},
-  {id:'med_cama',q:'Muro de la cama · recámara principal',type:'meas',f:['Ancho'],hint:'Largo libre del muro de la cabecera.'},
-  {id:'med_cama2',q:'Muro de la cama · otras recámaras',type:'text',ph:'Ej.: Rec 2: 320 cm · Rec 3: 290 cm'},
-  {id:'mini',q:'¿Hay minisplits?',type:'seg',o:SN},
-  {id:'mini_donde',q:'¿Dónde están los minisplits?',type:'text',ph:'Ej.: sala sobre el muro del sofá a 2.40 m · rec. principal arriba de la cama',when:['mini','Sí'],sub:1,hint:'En qué muro y a qué altura, para no taparlos con muebles ni cuadros.'},
-  {id:'mini_foto',q:'Foto de los minisplits',type:'photo',when:['mini','Sí'],sub:1},
- ]},
  {id:'fot',t:'Fotos y medidas generales',why:'Para el diseño',items:[
   {id:'fot_ok',q:'¿Fotos y video de cada espacio?',type:'seg',o:SN},
   {id:'fot_med',q:'¿Medidas generales de cada ambiente?',type:'seg',o:SN},
   {id:'fot_nota',q:'Notas de la visita',type:'text',ph:'Lo que no entra en ninguna casilla'},
+ ]},
+ {id:'cond',g:'cond',t:'Condominio',why:'Entregas y mudanza',items:[
+  {id:'cond_reg',q:'¿Pediste el reglamento?',type:'seg',o:SN},
+  {id:'cond_hor',q:'Horarios para entregas y mudanza',type:'text',ph:'Ej.: lun–sáb 9 a 17 h, avisar 24 h antes'},
+ ]},
+ {id:'acc',g:'cond',t:'Accesos',why:'Que entren sofá, colchones y refrigerador',items:[
+  {id:'acc_puerta',q:'Ancho de puerta de entrada',type:'meas',f:['Ancho']},
+  {id:'acc_elev',q:'Elevador',type:'seg',o:['Hay','No hay','Planta baja']},
+  {id:'acc_elevm',q:'Medidas del elevador',type:'meas',f:['Ancho','Fondo','Alto'],when:['acc_elev','Hay'],sub:1},
+  {id:'acc_esc',q:'Escaleras o pasillos angostos',type:'seg',o:SN},
  ]},
 ];
 
@@ -360,6 +360,8 @@ function bedsFromCRM(){
 if(!Array.isArray(S.v.camas))S.v.camas=bedsFromCRM();
 if(S.v.huesp===undefined&&CRM.h&&!isNaN(+CRM.h))S.v.huesp=+CRM.h;
 if(!S.v.tv_rec&&CRM.r&&!isNaN(+CRM.r))S.v.tv_rec={'Recámaras':+CRM.r};
+function cortFromCRM(){const o=[{n:'Sala',a:'',h:'',f:[]}];(S.v.camas||bedsFromCRM()).forEach(x=>{if(!/descanso/i.test(x.n))o.push({n:x.n,a:'',h:'',f:[]})});return o}
+if(!Array.isArray(S.v.cort))S.v.cort=cortFromCRM();
 const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S));return true}catch(e){return false}};
 
 const has=(k,val)=>{const x=S.v[k];return Array.isArray(x)?x.includes(val):x===val};
@@ -375,6 +377,7 @@ const filled=it=>{const v=S.v[it.id];
   if(it.type==='count')return v&&Object.values(v).some(n=>n>0);
   if(it.type==='beds')return Array.isArray(v)&&v.length&&v.every(x=>x.b);
   if(it.type==='photo')return Array.isArray(v)&&v.length>0;
+  if(it.type==='curt')return Array.isArray(v)&&v.length>0&&v.every(x=>x.a&&x.h);
   return false};
 
 function el(tag,attrs={},...kids){const e=document.createElement(tag);for(const[k,v]of Object.entries(attrs)){if(k==='class')e.className=v;else if(k.startsWith('on'))e.addEventListener(k.slice(2),v);else e.setAttribute(k,v)}kids.flat().forEach(k=>k!=null&&e.append(k));return e}
@@ -445,6 +448,32 @@ function renderItem(it){
     const add=el('button',{type:'button',class:'add'},'+ Agregar otro espacio con cama');
     add.addEventListener('click',()=>{const n=S.v.camas.filter(x=>/^Recámara/.test(x.n)).length;S.v.camas.push({n:'Recámara '+(n+1),b:null});draw();changed()});
     box.append(list,add);
+  }else if(it.type==='curt'){
+    box.append(el('div',{class:'hint'},'Una fila por ambiente con ventana: medida de techo a piso y foto. Agregá o quitá ambientes según lo que veas.'));
+    const list=el('div',{class:'beds'});
+    const draw=()=>{list.replaceChildren();
+      S.v.cort.forEach((x,i)=>{x.f=x.f||[];
+        const name=el('input',{type:'text',value:x.n,placeholder:'Ambiente','aria-label':'Ambiente'});
+        name.addEventListener('input',()=>{x.n=name.value;changed()});
+        const del=el('button',{type:'button','aria-label':'Quitar '+x.n,title:'Quitar'},'×');
+        del.addEventListener('click',()=>{S.v.cort.splice(i,1);draw();changed()});
+        const g=el('div',{class:'meas'});
+        [['a','Ancho'],['h','Alto']].forEach(([k,lab])=>{const id=`cort_${i}_${k}`,inp=el('input',{type:'number',inputmode:'decimal',min:'0',id,'aria-label':`${x.n}: ${lab}`});
+          inp.value=x[k]||'';inp.addEventListener('input',()=>{x[k]=inp.value;changed()});
+          g.append(el('label',{for:id},lab,el('div',{class:'u'},inp,el('span',{},'cm'))))});
+        const ph=el('div',{class:'photos'});
+        const dp=()=>{ph.replaceChildren();x.f.forEach((d,j)=>{const xb=el('button',{type:'button','aria-label':'Borrar foto'},'✕');xb.addEventListener('click',()=>{x.f.splice(j,1);dp();changed()});
+            ph.append(el('div',{class:'ph'},el('img',{src:d,alt:x.n+' '+(j+1)}),xb))});
+          const inp=el('input',{type:'file',accept:'image/*',capture:'environment',multiple:''});
+          inp.addEventListener('change',async()=>{for(const f of [...inp.files]){try{x.f.push(await shrink(f))}catch(e){}}dp();changed()});
+          ph.append(el('label',{class:'cam'},'📷 ',x.f.length?'Otra foto':'Foto de la ventana',inp))};
+        dp();
+        list.append(el('div',{class:'bed'},el('div',{class:'bedh'},name,del),g,ph))});
+    };
+    draw();
+    const add=el('button',{type:'button',class:'add'},'+ Agregar ambiente');
+    add.addEventListener('click',()=>{S.v.cort.push({n:'',a:'',h:'',f:[]});draw();changed();const ins=list.querySelectorAll('.bedh input');ins[ins.length-1].focus()});
+    box.append(list,add);
   }else if(it.type==='photo'){
     const wrap=el('div',{class:'photos'});
     const draw=()=>{wrap.replaceChildren();(S.v[it.id]||[]).forEach((d,i)=>{
@@ -480,7 +509,9 @@ function renderAll(){
   document.getElementById('lock').hidden=!!PKG;
   document.getElementById('intro').hidden=!PKG;
   document.getElementById('rescard').hidden=!PKG;
+  let lastG=null;
   if(PKG)SEC().forEach((s,i)=>{
+    const g=s.g||'prop';if(g!==lastG){root.append(el('div',{class:'grp'},g==='cond'?'El condominio':'La propiedad'));lastG=g}
     const c=el('span',{class:'count'});counters[s.id]=c;
     const d=el('details',{class:'card sec',id:'sec_'+s.id},
       el('summary',{class:'cardh'},el('span',{class:'num'},String(i+2)),el('h2',{},s.t,el('span',{class:'why'},s.why)),c,el('span',{class:'chev','aria-hidden':'true'})),
@@ -555,6 +586,7 @@ function summary(){
       else if(it.type==='count')t=Object.entries(val).filter(([k,n])=>n>0).map(([k,n])=>`${k}: ${n}`).join(' · ');
       else if(it.type==='beds')t=camasTxt();
       else if(it.type==='photo')t=`${val.length} foto(s)`;
+      else if(it.type==='curt')t=val.map(x=>`${x.n||'Ambiente'} ${x.a||'?'}×${x.h||'?'} cm${x.f&&x.f.length?' ('+x.f.length+' foto)':''}`).join(' · ');
       else t=String(val).trim();
       rows.push(`- ${it.q}: ${t}`)});
     if(rows.length){L.push('');L.push(s.t.toUpperCase());L.push(...rows)}
@@ -587,7 +619,7 @@ function summaryHtml(){
     if(!l.trim())return;
     h+=(l===l.toUpperCase()&&/[A-ZÁÉÍÓÚÑ]/.test(l))?'<h4>'+esc(l)+'</h4>':'<p>'+esc(l)+'</p>'});
   if(inList)h+='</ul>';return h}
-function photosPayload(){const out=[];SEC().forEach(s=>vis(s).forEach(it=>{if(it.type==='photo'&&Array.isArray(S.v[it.id]))S.v[it.id].forEach((d,i)=>out.push({nombre:`${s.t} - ${it.q} ${i+1}.jpg`,data:d.split(',')[1]}))}));return out}
+function photosPayload(){const out=[];SEC().forEach(s=>vis(s).forEach(it=>{if(it.type==='photo'&&Array.isArray(S.v[it.id]))S.v[it.id].forEach((d,i)=>out.push({nombre:`${s.t} - ${it.q} ${i+1}.jpg`,data:d.split(',')[1]}));if(it.type==='curt')(S.v.cort||[]).forEach(x=>(x.f||[]).forEach((d,i)=>out.push({nombre:`Cortinas - ${x.n||'Ambiente'} ${x.a||'?'}x${x.h||'?'} ${i+1}.jpg`,data:d.split(',')[1]})))}));return out}
 document.getElementById('send').addEventListener('click',async()=>{
   const t=document.getElementById('toast');
   if(!FROM_CRM||!CRM.id){t.textContent='Enviar funciona cuando el checklist se abre desde el botón del CRM.';return}
@@ -607,7 +639,7 @@ document.getElementById('send').addEventListener('click',async()=>{
 });
 document.getElementById('reset').addEventListener('click',()=>{document.getElementById('confirm').hidden=false});
 document.getElementById('no').addEventListener('click',()=>{document.getElementById('confirm').hidden=true});
-document.getElementById('yes').addEventListener('click',()=>{S={meta:{codigo:CRM.c},v:{}};PKG=null;S.v.camas=bedsFromCRM();if(CRM.h)S.v.huesp=+CRM.h;save();
+document.getElementById('yes').addEventListener('click',()=>{S={meta:{codigo:CRM.c},v:{}};PKG=null;S.v.camas=bedsFromCRM();S.v.cort=cortFromCRM();if(CRM.h)S.v.huesp=+CRM.h;save();
   document.getElementById('confirm').hidden=true;renderAll()});
 
 renderOnce();renderAll();
