@@ -150,6 +150,14 @@ pre.out{white-space:pre-wrap;word-break:break-word;font-family:var(--mono);font-
     <div class="bar"><i id="barfill"></i></div>
   </header>
 
+  <section class="card" aria-label="Visita">
+    <div class="meta">
+      <label class="full" id="codewrap">Código del cliente<input type="text" id="m_codigo" placeholder="C1116-3R-LM" autocomplete="off"></label>
+      <label>Fecha de visita<input type="date" id="m_fecha"></label>
+      <label>Visitó<input type="text" id="m_quien" placeholder="Gon / Nahuel / Eler"></label>
+    </div>
+  </section>
+
   <details class="card sec" id="crmcard" open>
     <summary class="cardh"><h2>Datos del cliente<span class="why" id="crmwhy"></span></h2><span class="tag" id="crmtag">Desde el CRM</span><span class="chev" aria-hidden="true"></span></summary>
     <dl class="crmdl" id="crmdl"></dl>
@@ -170,11 +178,6 @@ pre.out{white-space:pre-wrap;word-break:break-word;font-family:var(--mono);font-
       <div class="cnt" style="grid-template-columns:1fr"><div class="step"><span>Personas</span><div class="ctl">
         <button type="button" aria-label="Restar persona" id="h_m">−</button><output id="h_o">0</output><button type="button" aria-label="Sumar persona" id="h_p">+</button></div></div></div>
       <div class="from" id="hfrom"></div>
-    </div>
-    <div class="meta">
-      <label class="full" id="codewrap">Código del cliente<input type="text" id="m_codigo" placeholder="C1116-3R-LM" autocomplete="off"></label>
-      <label>Fecha de visita<input type="date" id="m_fecha"></label>
-      <label>Visitó<input type="text" id="m_quien" placeholder="Gon / Nahuel / Eler"></label>
     </div>
   </section>
 
