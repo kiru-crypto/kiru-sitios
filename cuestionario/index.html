@@ -93,6 +93,10 @@ input:focus-visible,textarea:focus-visible,button:focus-visible{outline:2px soli
 .yn{display:grid;gap:8px}
 .yn-row{display:flex;justify-content:space-between;align-items:center;gap:12px;background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:10px 10px 10px 16px}
 .yn-row span{min-width:0}
+.alc{border:1px solid var(--line,#d8d4cb);border-radius:12px;padding:14px 16px;margin:4px 0 14px;background:rgba(255,255,255,.5);font-size:14px;line-height:1.45}
+.alc b{display:block;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:500;margin-bottom:4px}
+.alc ul{margin:0 0 10px;padding:0;list-style:none}.alc li{padding:1px 0}.alc li:before{content:"✓ ";color:#2f4a3c}
+.alc .no li:before{content:"✕ ";color:#9a6b5c}.alc .no{margin-bottom:0}
 .yn-hint{display:block;font-size:13px;color:var(--muted);line-height:1.35;margin-top:2px}
 .seg{display:flex;flex:none;border:1px solid var(--line);border-radius:999px;overflow:hidden}
 .seg button{font:inherit;font-size:14px;color:var(--ink);background:none;border:0;padding:7px 16px;cursor:pointer}
@@ -243,6 +247,11 @@ const INTERV_DET={"Pisos":{q:"¿En qué espacios?",o:ESP_DET,ph:"Detalle opciona
 const TODO_DET=["Toda la unidad","Toda la cocina","Todo el baño"];
 const intervDet=(r,k)=>[((r.idet||{})[k]||[]).join("; "),((r.itxt||{})[k]||"").replace(/[,\[\]]/g,";").trim()].filter(Boolean).join(" · ");
 const intervTxt=(r,sep)=>Object.entries(r.interv||{}).filter(([k,v])=>v==="Sí"&&!(k==="Cortinas y persianas"&&r.paquete==="Llave en mano")).map(([k])=>{const d=intervDet(r,k);return d?k+" ["+d+"]":k}).join(sep||", ");
+const alcanceBox=()=>{const md=["Muebles","Lámparas de techo, mesa y pie","Arte y cuadros","Plantas","Decoración"],lm=["Blancos: sábanas, toallas, almohadas","Cocina equipada: vajilla, ollas, cubiertos","Electrodomésticos y TV","Cortinas","Accesorios de baño"];
+const inc=S.paquete==="Llave en mano"?md.concat(lm):md;const ap=aparteL();
+return `<div class="alc"><b>Tu paquete ${esc(S.paquete)} incluye</b><ul>${inc.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>${ap.length?`<b>Se cotiza aparte</b><ul class="no">${ap.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>`:""}</div>`;};
+const aparteL=()=>{const N={"Iluminación":"Instalación de iluminación (spots, LED, empotrados)","Pisos":"Pisos","Muebles hechos a medida":"Muebles hechos a medida","Cortinas y persianas":"Cortinas y persianas","Cocina":"Remodelación de cocina","Baños":"Remodelación de baños"};const l=intervVisibles().filter(i=>S.interv[i]==="Sí").map(i=>N[i]||i);if(S.muros&&S.muros!=="No tocarlos")l.unshift("Muros: "+S.muros.toLowerCase());return l;};
+const aparteTxt=()=>{const l=intervVisibles().filter(i=>S.interv[i]==="Sí").map(i=>i.toLowerCase());if(S.muros&&S.muros!=="No tocarlos")l.unshift("muros ("+S.muros.toLowerCase()+")");return l.length>1?l.slice(0,-1).join(", ")+" y "+l[l.length-1]:(l[0]||"");};
 const intervVisibles=()=>INTERV.filter(i=>!(i==="Cortinas y persianas"&&S.paquete==="Llave en mano"));
 const OBRA_INT=["Cocina","Baños","Pisos","Muros y plafones","Closets y carpintería fija","Cancelería y herrería","Iluminación empotrada","Instalaciones","Pintura"];
 const OBRA_HINT={"Cocina":"Gabinetes, cubierta, equipamiento fijo","Baños":"Revestimientos, vanitorios, canceles","Pisos":"Cambiar o renovar el piso","Muros y plafones":"Mover o levantar muros, plafones, molduras","Closets y carpintería fija":"Closets, mueble de TV, barras o bibliotecas a medida","Cancelería y herrería":"Ventanas, puertas, barandales","Iluminación empotrada":"Spots, tiras LED, luminarias nuevas","Instalaciones":"Eléctrica, hidráulica, sanitaria, aire acondicionado","Pintura":"Base o decorativa"};
@@ -398,6 +407,7 @@ function view(){
         ${FOTOS[g+":"+v]?`<img class="swatch" src="${FOTOS[g+":"+v]}" alt="">`:`<svg class="swatch" viewBox="0 0 100 100" aria-hidden="true">${MUESTRAS[v]||""}</svg>`}<span>${esc(v)}</span></button>`).join("")}</div></div>`).join("")}`;
   if(k==="intervenciones") return `
     <h2>¿Qué quieres intervenir?</h2>
+    <p class="lead">Esto no entra en el paquete: lo que marques aquí lo cotizamos aparte.</p>
     <div class="q"><span class="q-label">Muros</span>${opts(MUROS,S.muros,"muros")}</div>
     <div class="q"><span class="q-label">Además del mobiliario</span>
       <div class="yn">${intervVisibles().map(i=>{const on=S.interv[i]==="Sí",D=INTERV_DET[i],sel=S.idet[i]||[];return `<div class="yn-item${on?" on":""}"><div class="yn-row"><span>${i}${INTERV_HINT[i]?`<small class="yn-hint">${INTERV_HINT[i]}</small>`:""}</span><div class="seg" role="group" aria-label="${i}">
@@ -405,7 +415,7 @@ function view(){
         <button type="button" data-yn="${i}" data-v="No" aria-pressed="${S.interv[i]==="No"}">No</button></div></div>${on&&D?`<div class="follow"><div class="follow-q">${D.q} <small>· elige al menos una</small></div><div class="chips">${D.o.map(v=>`<button type="button" class="chip" data-idet="${esc(i)}" data-v="${esc(v)}" aria-pressed="${sel.includes(v)}">${esc(v)}</button>`).join("")}</div><input type="text" data-itxt="${esc(i)}" placeholder="${esc(D.ph)}" value="${esc(S.itxt[i]||"")}"></div>`:""}</div>`}).join("")}</div></div>`;
   if(k==="presupuesto") return `
     <h2>Presupuesto y tiempos</h2>
-    <div class="q"><span class="q-label">${ARQ?"Presupuesto de construcción (MXN)":OBRA?"Presupuesto para la obra (MXN)":"Presupuesto para mobiliario y decoración (MXN)"}</span>${opts(ARQ?PRESU_ARQ:OBRA?PRESU_OBRA:PRESU,S.presupuesto,"presupuesto")}</div>
+    <div class="q"><span class="q-label">${ARQ?"Presupuesto de construcción (MXN)":OBRA?"Presupuesto para la obra (MXN)":(S.paquete?"Presupuesto para tu paquete "+esc(S.paquete)+" (MXN)":"Presupuesto para mobiliario y decoración (MXN)")}</span>${(!ARQ&&!OBRA&&S.paquete)?alcanceBox():""}${opts(ARQ?PRESU_ARQ:OBRA?PRESU_OBRA:PRESU,S.presupuesto,"presupuesto")}</div>
     <div class="q"><span class="q-label">¿Para cuándo lo necesitas?</span>${opts(PLAZO,S.plazo,"plazo")}</div>
     <div class="q"><span class="q-label">Algo más que debamos saber <em>· opcional</em></span>
       <textarea id="f-notas" placeholder="Mascotas, niños, piezas que quieres conservar, referencias…">${esc(S.notas)}</textarea></div>`;
