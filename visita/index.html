@@ -315,11 +315,19 @@ const SECTIONS=[
 ];
 
 // Datos que manda el CRM en el link: ?id&c=Código&n=Cliente&t=Teléfono&d=Desarrollo&r=Recámaras&p=Paquete&u=Ubicación&b=Baños&cam=Camas&h=Huéspedes
+// Link corto (el que manda la tarjeta): ?ID.CODIGO.HUESPEDES.CAMAS  · ej. ?51.C1137-ST-LM.3.K
+// Camas: una letra por espacio, en orden (K King, Q Queen, M Matrimonial, I Individual, 2I 2 individuales, S sofá cama).
+const SHORT=(()=>{const m=/^\?(\d+)\.([^.&=]+)\.(\d*)\.?([A-Z0-9_]*)$/.exec(decodeURIComponent(location.search||''));if(!m)return null;
+  const BC={K:'King',Q:'Queen',M:'Matrimonial',I:'Individual','2I':'2 Individual',S:'Sofá cama'};
+  const st=/-ST-/i.test(m[2]),toks=m[4]?m[4].split('_').filter(Boolean):[];
+  const cam=toks.map((t,i)=>`${st&&i===0?'Área de descanso':'Recámara '+(st?i:i+1)}: ${BC[t]||t}`).join(' · ');
+  const r=st?'0':String(toks.length||'');
+  return {id:m[1],c:m[2],h:m[3],cam,r,p:/-LM$/i.test(m[2])?'Llave en mano':(/-M&?D$/i.test(m[2])?'Muebles y deco':'')}})();
 const P=(()=>{try{return new URLSearchParams(location.search)}catch(e){return new URLSearchParams()}})();
-const FROM_CRM=P.has('c');
+const FROM_CRM=!!SHORT||P.has('c');
 const UBI={playa_del_carmen:'Playa del Carmen',tulum:'Tulum',cancun:'Cancún',puerto_morelos:'Puerto Morelos',akumal:'Akumal',bacalar:'Bacalar',merida:'Mérida'};
 const nice=u=>u?(UBI[u]||u.replace(/_/g,' ').replace(/\b\w/g,c=>c.toUpperCase())):u;
-const CRM=FROM_CRM?{id:P.get('id'),c:P.get('c'),n:P.get('n'),t:P.get('t'),d:P.get('d'),r:P.get('r'),p:P.get('p'),u:nice(P.get('u')),b:P.get('b'),cam:P.get('cam'),h:P.get('h')}
+const CRM=SHORT?SHORT:FROM_CRM?{id:P.get('id'),c:P.get('c'),n:P.get('n'),t:P.get('t'),d:P.get('d'),r:P.get('r'),p:P.get('p'),u:nice(P.get('u')),b:P.get('b'),cam:P.get('cam'),h:P.get('h')}
   :{c:'C1120-2R-LM',n:'Mariana Ortiz',t:'+52 984 000 0000',d:'Aldea Zamá · Torre B 304',r:'2',p:'Llave en mano',u:'Tulum',b:'2',cam:'Recámara 1: King · Recámara 2: 2 Individual',h:'4'};
 const HOOK='https://kiru.smarketics.com/web/hook/f34066ba-67c5-418d-afb2-5c7c8840cabe';
 const pkgOf=(p,c)=>/muebles|m&d|md/i.test(p||'')||/-M&?D$/i.test(c||'')?'MD':(/llave|lm/i.test(p||'')||/-LM$/i.test(c||'')?'LM':null);
@@ -483,6 +491,7 @@ function renderOnce(){
   [['Cliente',CRM.n],['Código',CRM.c],['Teléfono',CRM.t],['Inmueble',CRM.d],['Ubicación',CRM.u],['Recámaras',CRM.r==='0'?'Studio':CRM.r],['Baños',CRM.b],['Camas (cuestionario)',CRM.cam],['Huéspedes',CRM.h],['Paquete',CRM.p]]
     .filter(([k,v])=>v).forEach(([k,v])=>dl.append(el('dt',{},k),el('dd',{},v)));
   document.getElementById('crmwhy').textContent=[CRM.n,CRM.d].filter(Boolean).join(' · ');
+  if(!CRM.n&&!CRM.d&&!CRM.t)document.getElementById('crmcard').hidden=true;
   document.getElementById('topsub').textContent=[CRM.c,CRM.n,CRM.d].filter(Boolean).join(' · ');
   const tag=document.getElementById('crmtag');
   if(!FROM_CRM){tag.textContent='Ejemplo';tag.classList.add('demo')}
