@@ -120,6 +120,8 @@ input:focus-visible,textarea:focus-visible,button:focus-visible,summary:focus-vi
 .flag{font-size:.84rem;border-radius:8px;padding:8px 10px;background:var(--warnbg);color:var(--warn)}
 .flag.bad{background:var(--badbg);color:var(--bad)}
 .grp{margin:22px 4px 2px;font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;font-weight:600;color:var(--muted)}
+#secs .card,#secs .grp{scroll-margin-top:96px}
+.req{font-size:.72rem;font-weight:600;color:var(--bar);background:#f3eef2;border-radius:6px;padding:2px 6px;margin-left:6px;vertical-align:middle}
 .lock{margin-top:14px;border:1px dashed var(--chipline);border-radius:14px;padding:18px;text-align:center;color:var(--muted);font-size:.95rem;background:var(--surface)}
 
 .res{padding:14px}
@@ -174,7 +176,7 @@ pre.out{white-space:pre-wrap;word-break:break-word;font-family:var(--mono);font-
       <div class="hint" id="pkgnote"></div>
     </div>
     <div class="it big" id="huespwrap">
-      <div class="q">¿Cuántas personas se van a quedar?</div>
+      <div class="q">¿Cuántas personas se van a quedar? <span class="req">Obligatorio</span></div>
       <div class="hint">Huéspedes que duermen en la propiedad (para blancos, vajilla y camas).</div>
       <div class="cnt" style="grid-template-columns:1fr"><div class="step"><span>Personas</span><div class="ctl">
         <button type="button" aria-label="Restar persona" id="h_m">−</button><output id="h_o">0</output><button type="button" aria-label="Sumar persona" id="h_p">+</button></div></div></div>
@@ -358,7 +360,8 @@ function bedsFromCRM(){
   return out;
 }
 if(!Array.isArray(S.v.camas))S.v.camas=bedsFromCRM();
-if(S.v.huesp===undefined&&CRM.h&&!isNaN(+CRM.h))S.v.huesp=+CRM.h;
+if(!S.meta.hconf)delete S.v.huesp; // las personas se cargan a mano en la visita (obligatorio en Llave en mano)
+const READY=()=>PKG==='MD'||(PKG==='LM'&&S.v.huesp>0);
 if(!S.v.tv_rec&&CRM.r&&!isNaN(+CRM.r))S.v.tv_rec={'Recámaras':+CRM.r};
 function cortFromCRM(){const o=[{n:'Sala',a:'',h:'',f:[]}];(S.v.camas||bedsFromCRM()).forEach(x=>{if(!/descanso/i.test(x.n))o.push({n:x.n,a:'',h:'',f:[]})});return o}
 if(!Array.isArray(S.v.cort))S.v.cort=cortFromCRM();
@@ -493,24 +496,26 @@ function lavFaltan(){const v=S.v,f=[];if(v.lav_agua==='No')f.push('toma de agua'
 function renderStart(){
   const ps=document.getElementById('pkgseg');ps.replaceChildren();
   ['LM','MD'].forEach(k=>{const b=el('button',{type:'button','aria-pressed':String(PKG===k)},PKGNAME[k]);
-    b.addEventListener('click',()=>{const first=!PKG;PKG=k;S.meta.pkg=k;save();renderAll();if(first){const t=document.getElementById(k==='LM'?'huespwrap':'secs');setTimeout(()=>t.scrollIntoView({behavior:'smooth',block:'start'}),60)}});ps.append(b)});
+    b.addEventListener('click',()=>{const was=READY();PKG=k;S.meta.pkg=k;save();renderAll()});ps.append(b)});
   const crmP=pkgOf(CRM.p,CRM.c);
   document.getElementById('pkgfrom').textContent=crmP?('Según el CRM: '+PKGNAME[crmP]+(PKG&&PKG!==crmP?' · ojo, elegiste otro':'')):'';
   document.getElementById('pkgnote').textContent=PKG==='MD'
     ?'Muebles y deco: sin blancos, línea blanca, cocina, pantallas ni cortinas. Solo se revisa lo que afecta a muebles, deco e iluminación.'
     :(PKG==='LM'?'Llave en mano: checklist completo, incluye lo que necesitan los kits de blancos y electrónica.':'');
-  const o=document.getElementById('h_o');o.textContent=S.v.huesp||0;
+  const o=document.getElementById('h_o');o.textContent=S.v.huesp||'—';
   document.getElementById('hfrom').textContent=CRM.h?('Según el CRM: '+CRM.h):'';
   document.getElementById('huespwrap').hidden=PKG!=='LM';
 }
+function goFirst(){const t=document.querySelector('#secs .grp')||document.getElementById('secs');setTimeout(()=>t.scrollIntoView({behavior:'smooth',block:'start'}),60)}
 function renderAll(){
   renderStart();
   const root=document.getElementById('secs');root.replaceChildren();
-  document.getElementById('lock').hidden=!!PKG;
-  document.getElementById('intro').hidden=!PKG;
-  document.getElementById('rescard').hidden=!PKG;
+  const lk=document.getElementById('lock');lk.hidden=READY();
+  lk.textContent=!PKG?'Elegí el paquete arriba para ver el checklist.':'Indicá cuántas personas se van a quedar para ver el checklist.';
+  document.getElementById('intro').hidden=!READY();
+  document.getElementById('rescard').hidden=!READY();
   let lastG=null;
-  if(PKG)SEC().forEach((s,i)=>{
+  if(READY())SEC().forEach((s,i)=>{
     const g=s.g||'prop';if(g!==lastG){root.append(el('div',{class:'grp'},g==='cond'?'El condominio':'La propiedad'));lastG=g}
     const c=el('span',{class:'count'});counters[s.id]=c;
     const d=el('details',{class:'card sec',id:'sec_'+s.id},
@@ -520,8 +525,10 @@ function renderAll(){
   changed();
 }
 function renderOnce(){
-  document.getElementById('h_m').addEventListener('click',()=>{S.v.huesp=Math.max(0,(S.v.huesp||0)-1);document.getElementById('h_o').textContent=S.v.huesp;changed()});
-  document.getElementById('h_p').addEventListener('click',()=>{S.v.huesp=(S.v.huesp||0)+1;document.getElementById('h_o').textContent=S.v.huesp;changed()});
+  const setH=d=>{const was=READY();S.v.huesp=Math.max(0,(S.v.huesp||0)+d);S.meta.hconf=1;
+    if(was!==READY()){save();renderAll()}else{document.getElementById('h_o').textContent=S.v.huesp||'—';changed()}};
+  document.getElementById('h_m').addEventListener('click',()=>setH(-1));
+  document.getElementById('h_p').addEventListener('click',()=>setH(1));
   const dl=document.getElementById('crmdl');dl.replaceChildren();
   [['Cliente',CRM.n],['Código',CRM.c],['Teléfono',CRM.t],['Inmueble',CRM.d],['Ubicación',CRM.u],['Recámaras',CRM.r==='0'?'Studio':CRM.r],['Baños',CRM.b],['Camas (cuestionario)',CRM.cam],['Huéspedes',CRM.h],['Paquete',CRM.p]]
     .filter(([k,v])=>v).forEach(([k,v])=>dl.append(el('dt',{},k),el('dd',{},v)));
@@ -598,9 +605,9 @@ function changed(){
   let tot=0,done=0;
   applyWhen();
   document.querySelectorAll('.it').forEach(b=>b._upd&&b._upd());
-  if(PKG)SEC().forEach(s=>{const its=vis(s),n=its.length,d=its.filter(filled).length;tot+=n;done+=d;
+  if(READY())SEC().forEach(s=>{const its=vis(s),n=its.length,d=its.filter(filled).length;tot+=n;done+=d;
     counters[s.id].textContent=`${d}/${n}`;counters[s.id].classList.toggle('done',d===n)});
-  document.getElementById('pct').textContent=PKG?`${done} de ${tot}`:'';
+  document.getElementById('pct').textContent=READY()?`${done} de ${tot}`:'';
   document.getElementById('barfill').style.width=(tot?done/tot*100:0)+'%';
   document.getElementById('out').textContent=summary();
   if(!save()){const t=document.getElementById('toast');t.textContent='El teléfono no tiene lugar para guardar las fotos: no recargues la página hasta enviar.'}
@@ -623,7 +630,7 @@ function photosPayload(){const out=[];SEC().forEach(s=>vis(s).forEach(it=>{if(it
 document.getElementById('send').addEventListener('click',async()=>{
   const t=document.getElementById('toast');
   if(!FROM_CRM||!CRM.id){t.textContent='Enviar funciona cuando el checklist se abre desde el botón del CRM.';return}
-  if(!PKG){t.textContent='Elegí el paquete arriba.';return}
+  if(!READY()){t.textContent=PKG?'Indicá cuántas personas se van a quedar.':'Elegí el paquete arriba.';return}
   if(!(S.meta.quien||'').trim()){t.textContent='Completá quién visitó antes de enviar.';document.getElementById('m_quien').focus();return}
   const v=S.v;
   const payload={id:CRM.id,codigo:CRM.c,fecha:S.meta.fecha||'',quien:S.meta.quien||'',html:summaryHtml(),paquete:PKG==='LM'?'lm':'md',
@@ -639,7 +646,7 @@ document.getElementById('send').addEventListener('click',async()=>{
 });
 document.getElementById('reset').addEventListener('click',()=>{document.getElementById('confirm').hidden=false});
 document.getElementById('no').addEventListener('click',()=>{document.getElementById('confirm').hidden=true});
-document.getElementById('yes').addEventListener('click',()=>{S={meta:{codigo:CRM.c},v:{}};PKG=null;S.v.camas=bedsFromCRM();S.v.cort=cortFromCRM();if(CRM.h)S.v.huesp=+CRM.h;save();
+document.getElementById('yes').addEventListener('click',()=>{S={meta:{codigo:CRM.c},v:{}};PKG=null;S.v.camas=bedsFromCRM();S.v.cort=cortFromCRM();save();
   document.getElementById('confirm').hidden=true;renderAll()});
 
 renderOnce();renderAll();
