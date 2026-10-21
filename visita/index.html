@@ -317,7 +317,7 @@ const SECTIONS=[
 // Datos que manda el CRM en el link: ?id&c=Código&n=Cliente&t=Teléfono&d=Desarrollo&r=Recámaras&p=Paquete&u=Ubicación&b=Baños&cam=Camas&h=Huéspedes
 // Link corto (el que manda la tarjeta): ?ID.CODIGO.HUESPEDES.CAMAS  · ej. ?51.C1137-ST-LM.3.K
 // Camas: una letra por espacio, en orden (K King, Q Queen, M Matrimonial, I Individual, 2I 2 individuales, S sofá cama).
-const SHORT=(()=>{const m=/^\?(\d+)\.([^.&=]+)\.(\d*)\.?([A-Z0-9_]*)$/.exec(decodeURIComponent(location.search||''));if(!m)return null;
+const SHORT=(()=>{const m=/^\?(\d+)\.([^.=]+)\.(\d*)\.?([A-Z0-9_]*)$/.exec(decodeURIComponent(location.search||''));if(!m)return null;
   const BC={K:'King',Q:'Queen',M:'Matrimonial',I:'Individual','2I':'2 Individual',S:'Sofá cama'};
   const st=/-ST-/i.test(m[2]),toks=m[4]?m[4].split('_').filter(Boolean):[];
   const cam=toks.map((t,i)=>`${st&&i===0?'Área de descanso':'Recámara '+(st?i:i+1)}: ${BC[t]||t}`).join(' · ');
