@@ -7,6 +7,7 @@
 <style>[hidden]{display:none!important}:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}img{max-width:100%}</style>
 <title>Checklist de visita Kiru</title>
 <link rel="icon" href="../cuestionario/favicon.ico">
+<meta name="theme-color" content="#714b67">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600&family=Source+Sans+3:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -14,8 +15,8 @@
 /* Mismo lenguaje que la recepción: barra oscura arriba con el código, tarjetas por bloque,
    respuestas con un toque en botones-píldora (verde = bien, rojo = falta algo). */
 :root{
-  --bg:#f1efec; --surface:#ffffff; --ink:#2b2723; --muted:#776b62; --line:#e6dfd8;
-  --brand:#6b4435; --bar:#2b2723; --chip:#f4efe7; --chipline:#d9cdbb;
+  --bg:#f2f1f4; --surface:#ffffff; --ink:#262329; --muted:#6f6875; --line:#e3dfe6;
+  --brand:#714b67; --bar:#714b67; --chip:#f3eef2; --chipline:#d8c9d4;
   --ok:#2e7d43; --okbg:#e3f3e6; --okline:#8fc79b;
   --bad:#b03a2e; --badbg:#fdecea; --badline:#e3a39b;
   --warn:#8a5d0f; --warnbg:#fbf1dc;
@@ -24,13 +25,13 @@
   --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
-  --bg:#1a1715; --surface:#25201d; --ink:#f0e9e4; --muted:#b3a59c; --line:#3a312c;
-  --brand:#d9a796; --bar:#120f0e; --chip:#2f2724; --chipline:#4a3f39;
+  --bg:#18161a; --surface:#232026; --ink:#f0e9e4; --muted:#b3a59c; --line:#3a312c;
+  --brand:#c9a3bf; --bar:#3b2836; --chip:#2e2630; --chipline:#4a3d47;
   --ok:#9fd09a; --okbg:#1f3220; --okline:#3f6d42; --bad:#f0a397; --badbg:#3a201c; --badline:#7a3a31;
   --warn:#e8bf73; --warnbg:#3a2f1a; color-scheme:dark}}
 :root[data-theme="dark"]{
-  --bg:#1a1715; --surface:#25201d; --ink:#f0e9e4; --muted:#b3a59c; --line:#3a312c;
-  --brand:#d9a796; --bar:#120f0e; --chip:#2f2724; --chipline:#4a3f39;
+  --bg:#18161a; --surface:#232026; --ink:#f0e9e4; --muted:#b3a59c; --line:#3a312c;
+  --brand:#c9a3bf; --bar:#3b2836; --chip:#2e2630; --chipline:#4a3d47;
   --ok:#9fd09a; --okbg:#1f3220; --okline:#3f6d42; --bad:#f0a397; --badbg:#3a201c; --badline:#7a3a31;
   --warn:#e8bf73; --warnbg:#3a2f1a; color-scheme:dark}
 *{box-sizing:border-box}
@@ -45,7 +46,7 @@ header.top{position:sticky;top:0;z-index:5;background:var(--bar);color:#fff;marg
 .sub{font-size:.8rem;opacity:.8;margin-top:2px;overflow-wrap:anywhere}
 .pct{font-family:var(--mono);font-size:.82rem;opacity:.85;white-space:nowrap}
 .bar{height:4px;background:rgba(255,255,255,.18);border-radius:4px;margin-top:8px;overflow:hidden}
-.bar i{display:block;height:100%;width:0;background:#e9c7b8;transition:width .25s}
+.bar i{display:block;height:100%;width:0;background:#f1d9ea;transition:width .25s}
 
 /* Tarjetas */
 .card{background:var(--surface);border:1px solid var(--line);border-radius:14px;margin-top:14px;overflow:hidden}
