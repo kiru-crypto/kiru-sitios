@@ -340,7 +340,7 @@ let S={meta:{},v:{}};
 try{const r=localStorage.getItem(KEY);if(r)S=JSON.parse(r)}catch(e){}
 S.meta.codigo=CRM.c||S.meta.codigo;
 // El paquete se elige siempre a mano al empezar (el del CRM solo se muestra como referencia).
-let PKG=S.meta.pkg||null;
+let PKG=null; // siempre se elige al abrir: el cuestionario arranca cerrado
 const PKGNAME={LM:'Llave en mano',MD:'Muebles y deco'};
 const SEC=()=>SECTIONS.filter(s=>!s.lm||PKG==='LM').map(s=>({...s,items:s.items.filter(i=>!i.lm||PKG==='LM')}));
 
@@ -464,7 +464,7 @@ function lavFaltan(){const v=S.v,f=[];if(v.lav_agua==='No')f.push('toma de agua'
 function renderStart(){
   const ps=document.getElementById('pkgseg');ps.replaceChildren();
   ['LM','MD'].forEach(k=>{const b=el('button',{type:'button','aria-pressed':String(PKG===k)},PKGNAME[k]);
-    b.addEventListener('click',()=>{PKG=k;S.meta.pkg=k;save();renderAll()});ps.append(b)});
+    b.addEventListener('click',()=>{const first=!PKG;PKG=k;S.meta.pkg=k;save();renderAll();if(first){const t=document.getElementById(k==='LM'?'huespwrap':'secs');setTimeout(()=>t.scrollIntoView({behavior:'smooth',block:'start'}),60)}});ps.append(b)});
   const crmP=pkgOf(CRM.p,CRM.c);
   document.getElementById('pkgfrom').textContent=crmP?('Según el CRM: '+PKGNAME[crmP]+(PKG&&PKG!==crmP?' · ojo, elegiste otro':'')):'';
   document.getElementById('pkgnote').textContent=PKG==='MD'
