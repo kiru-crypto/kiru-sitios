@@ -150,6 +150,11 @@ pre.out{white-space:pre-wrap;word-break:break-word;font-family:var(--mono);font-
     <div class="bar"><i id="barfill"></i></div>
   </header>
 
+  <details class="card sec" id="crmcard" open>
+    <summary class="cardh"><h2>Datos del cliente<span class="why" id="crmwhy"></span></h2><span class="tag" id="crmtag">Desde el CRM</span><span class="chev" aria-hidden="true"></span></summary>
+    <dl class="crmdl" id="crmdl"></dl>
+  </details>
+
   <!-- 1 · Antes de empezar -->
   <section class="card" aria-labelledby="starth">
     <div class="cardh"><span class="num">1</span><h2 id="starth">Antes de empezar<span class="why">Paquete y personas: define qué se revisa</span></h2></div>
@@ -173,10 +178,6 @@ pre.out{white-space:pre-wrap;word-break:break-word;font-family:var(--mono);font-
     </div>
   </section>
 
-  <details class="card sec" id="crmcard" open>
-    <summary class="cardh"><h2>Datos del cliente<span class="why" id="crmwhy"></span></h2><span class="tag" id="crmtag">Desde el CRM</span><span class="chev" aria-hidden="true"></span></summary>
-    <dl class="crmdl" id="crmdl"></dl>
-  </details>
 
   <div class="lock" id="lock">Elegí el paquete arriba para ver el checklist.</div>
   <p class="intro" id="intro" hidden>Tocá la respuesta. Las medidas van en centímetros. Se guarda en este teléfono mientras completás.</p>
@@ -326,7 +327,7 @@ const SHORT=(()=>{const m=/^\?(\d+)\.([^.=]+)\.(\d*)\.?([A-Z0-9_]*)$/.exec(decod
 const P=(()=>{try{return new URLSearchParams(location.search)}catch(e){return new URLSearchParams()}})();
 const FROM_CRM=!!SHORT||P.has('c');
 const UBI={playa_del_carmen:'Playa del Carmen',tulum:'Tulum',cancun:'Cancún',puerto_morelos:'Puerto Morelos',akumal:'Akumal',bacalar:'Bacalar',merida:'Mérida'};
-const nice=u=>u?(UBI[u]||u.replace(/_/g,' ').replace(/\b\w/g,c=>c.toUpperCase())):u;
+const nice=u=>u?(UBI[u]||(u.includes('_')?u.replace(/_/g,' ').replace(/\b\w/g,c=>c.toUpperCase()):u)):u;
 const CRM=SHORT?SHORT:FROM_CRM?{id:P.get('id'),c:P.get('c'),n:P.get('n'),t:P.get('t'),d:P.get('d'),r:P.get('r'),p:P.get('p'),u:nice(P.get('u')),b:P.get('b'),cam:P.get('cam'),h:P.get('h')}
   :{c:'C1120-2R-LM',n:'Mariana Ortiz',t:'+52 984 000 0000',d:'Aldea Zamá · Torre B 304',r:'2',p:'Llave en mano',u:'Tulum',b:'2',cam:'Recámara 1: King · Recámara 2: 2 Individual',h:'4'};
 const HOOK='https://kiru.smarketics.com/web/hook/f34066ba-67c5-418d-afb2-5c7c8840cabe';
