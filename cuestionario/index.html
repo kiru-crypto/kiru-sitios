@@ -249,7 +249,7 @@ const intervDet=(r,k)=>[((r.idet||{})[k]||[]).join("; "),((r.itxt||{})[k]||"").r
 const intervTxt=(r,sep)=>Object.entries(r.interv||{}).filter(([k,v])=>v==="Sí"&&!(k==="Cortinas y persianas"&&r.paquete==="Llave en mano")).map(([k])=>{const d=intervDet(r,k);return d?k+" ["+d+"]":k}).join(sep||", ");
 const alcanceBox=()=>{const md=["Muebles","Lámparas de techo, mesa y pie","Arte y cuadros","Plantas","Decoración"],lm=["Blancos: sábanas, toallas, almohadas","Cocina equipada: vajilla, ollas, cubiertos","Electrodomésticos y TV","Cortinas","Accesorios de baño"];
 const inc=S.paquete==="Llave en mano"?md.concat(lm):md;const ap=aparteL();
-return `<div class="alc"><b>Tu paquete ${esc(S.paquete)} incluye</b><ul>${inc.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>${ap.length?`<b>Se cotiza aparte</b><ul class="no">${ap.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>`:""}</div>`;};
+return `<div class="alc"><b>Tu paquete ${esc(S.paquete)} incluye</b> ${S.paquete==="Llave en mano"?"muebles, iluminación, arte, plantas y decoración, más blancos, cocina equipada, electrodomésticos y TV, cortinas y accesorios de baño.":"muebles, iluminación, arte, plantas y decoración."}</div>`;};
 const aparteL=()=>{const N={"Iluminación":"Instalación de iluminación (spots, LED, empotrados)","Pisos":"Pisos","Muebles hechos a medida":"Muebles hechos a medida","Cortinas y persianas":"Cortinas y persianas","Cocina":"Remodelación de cocina","Baños":"Remodelación de baños"};const l=intervVisibles().filter(i=>S.interv[i]==="Sí").map(i=>N[i]||i);if(S.muros&&S.muros!=="No tocarlos")l.unshift("Muros: "+S.muros.toLowerCase());return l;};
 const aparteTxt=()=>{const l=intervVisibles().filter(i=>S.interv[i]==="Sí").map(i=>i.toLowerCase());if(S.muros&&S.muros!=="No tocarlos")l.unshift("muros ("+S.muros.toLowerCase()+")");return l.length>1?l.slice(0,-1).join(", ")+" y "+l[l.length-1]:(l[0]||"");};
 const intervVisibles=()=>INTERV.filter(i=>!(i==="Cortinas y persianas"&&S.paquete==="Llave en mano"));
@@ -269,7 +269,7 @@ const amNo=()=>ARQ?"No, por ahora solo el proyecto":AMUEBLAR_NO;
 const PRESU=["Hasta $250 mil","$250 – $350 mil","$350 – $450 mil","$450 – $650 mil","Más de $650 mil","Prefiero conversarlo"];
 const PLAZO=["Lo antes posible","1 a 3 meses","3 a 6 meses","Sin apuro"];
 const M2_OPC=["Hasta 50 m²","50 – 80 m²","80 – 120 m²","120 – 180 m²","180 – 250 m²","Más de 250 m²"],BANOS_OPC=["1","1.5","2","2.5","3","3.5","4+"],EXT_OPC=["Sin exterior","Balcón","Terraza","Roof / jardín"];
-const PISOS=["Planta baja","1","2","3","4 o más"]; const esLM=()=>S.paquete==="Llave en mano"&&!ARQ&&!OBRA; function lmHTML(){if(!esLM())return "";return `<div class="q"><span class="q-label">¿En qué piso está la unidad?</span>${chips_one(PISOS,S.piso,"piso")}</div>${esST()?"":`<div class="q"><span class="q-label">¿Quieres TV en las recámaras?</span>${chips_one(["Sí","No"],S.tvrec,"tvrec")}</div>`}`} function propHTML(){return `<div class="q"><span class="q-label">Baños</span>${chips_one(BANOS_OPC,S.pbanos,"pbanos")}</div><div class="q"><span class="q-label">¿Tiene exterior?</span>${chips_one(EXT_OPC,S.pext,"pext")}</div>`}
+const PISOS=["Planta baja","1","2","3","4 o más"]; const esLM=()=>S.paquete==="Llave en mano"&&!ARQ&&!OBRA; function lmHTML(){if(!esLM())return "";return `<div class="q"><span class="q-label">¿En qué piso está la unidad?</span>${chips_one(PISOS,S.piso,"piso")}</div>${esST()?"":`<div class="q"><span class="q-label">¿Quieres TV en las recámaras?</span>${chips_one(["Sí","No"],S.tvrec,"tvrec")}</div>`}`} const OBRA_OPC=["Pisos","Iluminación","Muebles hechos a medida","Cocina","Baños"]; function extrasHTML(){return `${S.paquete==="Muebles y deco"?`<div class="q"><span class="q-label">¿Sumamos cortinas y persianas?</span>${chips_one(["Sí","No"],S.cortmd,"cortmd")}</div>`:""}<div class="q"><span class="q-label">¿También quieres cambiar algo de obra? <em>· pisos, iluminación, a medida, cocina o baños</em></span>${chips_one(["Sí","No"],S.obraq,"obraq")}${S.obraq==="Sí"?`<div class="follow"><div class="follow-q">¿Qué te gustaría cambiar? <small>· se cotiza aparte</small></div>${chips(OBRA_OPC,S.obrasel,"obrasel")}<input type="text" id="f-obratxt" placeholder="Detalle opcional (ej.: piso de la sala y closet de la recámara)" value="${esc(S.obratxt)}"></div>`:""}</div>`} function propHTML(){return `<div class="q"><span class="q-label">Baños</span>${chips_one(BANOS_OPC,S.pbanos,"pbanos")}</div><div class="q"><span class="q-label">¿Tiene exterior?</span>${chips_one(EXT_OPC,S.pext,"pext")}</div>`}
 const chips_one=(list,sel,key)=>`<div class="chips">${list.map(v=>`<button type="button" class="chip" data-one="${key}" data-v="${esc(v)}" aria-pressed="${sel===v}">${esc(v)}</button>`).join("")}</div>`;
 const CAMAS=["King","Queen","Matrimonial","2 individuales","Litera","Sofá cama"];
 const esST=()=>/-ST(-|$)/i.test(PRE.id||"");
@@ -278,7 +278,7 @@ const nRec=()=>{if(esST())return 1;if(S.recs_i===undefined&&codeRec())S.recs_i=c
 const recLabels=()=>{if(esST())return ["Área de descanso"];const n=nRec();return Array.from({length:n},(_,i)=>n===1?"Recámara":"Recámara "+(i+1))};
 function camasHTML(){const askN=!esST();nRec();return `${askN?`<div class="q"><span class="q-label">¿Cuántas recámaras vamos a amueblar?</span>${opts(["1","2","3","4","5"],S.recs_i,"recs_i")}</div>`:""}${recLabels().length?`<div class="q"><span class="q-label">¿Qué cama va en cada ${esST()?"espacio":"recámara"}?</span>${recLabels().map(r=>`<div class="sub-q"><span class="q-sub">${esc(r)}</span><div class="chips">${CAMAS.map(v=>`<button type="button" class="chip" data-cama="${esc(r)}" data-v="${esc(v)}" aria-pressed="${(S.camas||{})[r]===v}">${esc(v)}</button>`).join("")}</div></div>`).join("")}</div>`:""}`}
 
-const S={mat:{},sensacion:"",terreno:"",tubicacion:"",tm2:"",construir:"",cm2:"",recs:"",banos:"",extras:[],obra:[],m2:"",planos:"",vive:"",permisos:"",paquete:"",nombre:"",contacto:"",ubicacion:"",tipo:"",uso:"",espacios:[],estilos:[],colores:[],donde:[],term:{},muros:"",interv:Object.fromEntries(INTERV.map(i=>[i,"No"])),idet:{},itxt:{},presupuesto:"",plazo:"",notas:"",piso:"",tvrec:""};
+const S={mat:{},sensacion:"",terreno:"",tubicacion:"",tm2:"",construir:"",cm2:"",recs:"",banos:"",extras:[],obra:[],m2:"",planos:"",vive:"",permisos:"",paquete:"",nombre:"",contacto:"",ubicacion:"",tipo:"",uso:"",espacios:[],estilos:[],colores:[],donde:[],term:{},muros:"",interv:Object.fromEntries(INTERV.map(i=>[i,"No"])),idet:{},itxt:{},presupuesto:"",plazo:"",notas:"",piso:"",tvrec:"",obraq:"No",obrasel:[],obratxt:"",cortmd:"No"};
 const PRE=(()=>{let q;try{q=new URLSearchParams(location.search)}catch(_){q=new URLSearchParams("")}
   return {id:(q.get("c")||"").slice(0,80),nombre:(q.get("n")||"").slice(0,60),paquete:({LM:"Llave en mano",MD:"Muebles y deco",ARQ:"Arquitectura / diseño"})[(q.get("p")||"").toUpperCase()]||"",sp:q.get("sp")==="1"}})();/*PRE_DEMO*/
 if(PRE.nombre)S.nombre=PRE.nombre;
@@ -288,11 +288,11 @@ let OBRA=/-(ARQ|REM)\b/i.test(PRE.id)||PRE.paquete==="Arquitectura / diseño";
 let ARQ=/-ARQ\b/i.test(PRE.id)||(PRE.paquete==="Arquitectura / diseño"&&!/-REM\b/i.test(PRE.id));
 if(OBRA&&PRE.paquete==="Arquitectura / diseño")S.paquete="";
 if(!S.paquete&&!OBRA){if(/-LM\b/i.test(PRE.id))S.paquete="Llave en mano";else if(/M&D/i.test(PRE.id))S.paquete="Muebles y deco";}
-const LM0=S.paquete==="Llave en mano"; const ST=()=>ARQ
+const matsHTML=()=>Object.entries(TERM).map(([g,l])=>`<div class="q"><span class="q-sub">${g}</span><div class="mats">${l.map(v=>`<button type="button" class="mat" data-multi="term:${g}" data-v="${esc(v)}" aria-pressed="${(S.term[g]||[]).includes(v)}">${FOTOS[g+":"+v]?`<img class="swatch" src="${FOTOS[g+":"+v]}" alt="">`:`<svg class="swatch" viewBox="0 0 100 100" aria-hidden="true">${MUESTRAS[v]||""}</svg>`}<span>${esc(v)}</span></button>`).join("")}</div></div>`).join(""); const ST=()=>ARQ
   ?["intro","proyecto","terreno","programa","estilo","colores","materiales","presupuesto","amueblar","resumen","listo"]
   :OBRA
   ?["intro","proyecto","obra","inmueble","estilo","colores","terminaciones","presupuesto","amueblar","resumen","listo"]
-  :["intro","proyecto","paquete","estilo","colores","terminaciones","intervenciones","presupuesto","resumen","listo"].filter(k=>!(k==="paquete"&&PRE.paquete));
+  :["intro","paquete","proyecto","estilo","colores","presupuesto","resumen","listo"].filter(k=>!(k==="paquete"&&PRE.paquete));
 const primerNombre=()=>(S.nombre||"").trim().split(/\s+/)[0]||"";
 let step=0, err="", saving=false, ownerView=false, responses=[];
 let db=null, user=null, isOwner=false, myId=null;
@@ -308,7 +308,7 @@ function view(){
   if(ownerView) return ownerHTML();
   if(k==="intro") return `
     <h1>${PRE.nombre?`Hola ${esc(primerNombre())}, cuéntanos cómo imaginas tu espacio`:"Cuéntanos cómo imaginas tu espacio"}</h1>
-    <p class="lead">Son ${["","uno","dos","tres","cuatro","cinco","seis","siete","ocho","nueve"][ST().length-3]} pasos cortos. Toca lo que te guste, no hay respuestas incorrectas. ${ARQ?"Con esto preparamos una primera propuesta para tu proyecto.":OBRA?"Con esto preparamos una primera propuesta para tu obra.":"Con esto armamos una primera propuesta de mobiliario y decoración a tu medida."}</p>
+    <p class="lead">Son ${["","uno","dos","tres","cuatro","cinco","seis","siete","ocho","nueve"][ST().length-2]} pasos cortos. Toca lo que te guste, no hay respuestas incorrectas. ${ARQ?"Con esto preparamos una primera propuesta para tu proyecto.":OBRA?"Con esto preparamos una primera propuesta para tu obra.":"Con esto armamos una primera propuesta de mobiliario y decoración a tu medida."}</p>
     <ul class="intro-list">${ARQ?`
       <li><b>3 min</b> Tu terreno y qué quieres construir</li>
       <li><b>3 min</b> Estilo, colores y terminaciones</li>
@@ -316,13 +316,13 @@ function view(){
       <li><b>3 min</b> Tu proyecto, qué quieres cambiar y el estado del inmueble</li>
       <li><b>3 min</b> Estilo, colores y terminaciones</li>
       <li><b>1 min</b> Presupuesto, tiempos y si también amueblamos</li>`:`
-      <li><b>2 min</b> Tu proyecto, los espacios y qué incluye</li>
-      <li><b>3 min</b> Estilo, colores y terminaciones</li>
-      <li><b>2 min</b> Qué quieres intervenir, presupuesto y tiempos</li>`}
+      <li><b>1 min</b> Tu unidad: recámaras, camas y piso</li>
+      <li><b>2 min</b> Estilo, colores y materiales</li>
+      <li><b>1 min</b> Presupuesto y tiempos</li>`}
     </ul>
     `;
   if(k==="proyecto") return `
-    <h2>Tu proyecto</h2>
+    <h2>${(!ARQ&&!OBRA)?"Tu unidad":"Tu proyecto"}</h2>
     ${PRE.id?"":`<div class="q fields">
       <input type="text" id="f-nombre" placeholder="Tu nombre" value="${esc(S.nombre)}" autocomplete="name">
       <input type="text" id="f-contacto" placeholder="WhatsApp o email" value="${esc(S.contacto)}">
@@ -330,7 +330,7 @@ function view(){
     </div>
     <div class="q"><span class="q-label">Tipo de propiedad</span>${opts(TIPOS,S.tipo,"tipo")}</div>`}
     <div class="q"><span class="q-label">¿Para qué la vas a usar?</span>${opts(USOS,S.uso,"uso")}</div>
-    ${ARQ?"":`<div class="q"><span class="q-label">${OBRA?"Espacios a intervenir":"Espacios a diseñar"} <em>· elige todos los que apliquen</em></span>${espaciosHTML()}</div>`}${(!ARQ&&!OBRA)?camasHTML():""}${(!ARQ&&!OBRA&&PRE.sp)?propHTML():""}${LM0?lmHTML():""}`;
+    ${(ARQ||esLM())?"":`<div class="q"><span class="q-label">${OBRA?"Espacios a intervenir":"Espacios a diseñar"} <em>· elige todos los que apliquen</em></span>${espaciosHTML()}</div>`}${(!ARQ&&!OBRA)?camasHTML():""}${(!ARQ&&!OBRA&&PRE.sp)?propHTML():""}${lmHTML()}`;
   if(k==="paquete") return `
     <h2>¿Qué quieres que incluya?</h2>
     <p class="lead">Elige el paquete. Lo que no esté incluido se puede sumar después.</p>
@@ -393,12 +393,12 @@ function view(){
         <div class="style-txt"><b>${s.n}</b><small>${s.d}</small></div>
       </button>`).join("")}</div>`;
   if(k==="colores") return `
-    <h2>Tus colores favoritos</h2>
+    <h2>${ARQ?"Tus colores favoritos":"Colores y materiales"}</h2>
     <p class="lead">${ARQ?"La paleta general de tu casa. Familias de color, no tonos exactos.":"Familias de color, no tonos exactos. Elige los que te gusten."}</p>
     <div class="q colors">${COLORES.map(([n,c])=>`
       <button type="button" class="color" data-multi="colores" data-v="${n}" aria-pressed="${S.colores.includes(n)}"><span class="dot" style="background:${c}"></span>${n}</button>`).join("")}</div>
     ${ARQ?"":`<div class="q"><span class="q-label">¿Dónde quieres esos colores? <em>· puedes elegir varias</em></span>
-      <div class="options">${DONDE.map(v=>`<button type="button" class="opt multi" data-multi="donde" data-v="${esc(v)}" aria-pressed="${S.donde.includes(v)}">${esc(v)}</button>`).join("")}</div></div>`}`;
+      <div class="options">${DONDE.map(v=>`<button type="button" class="opt multi" data-multi="donde" data-v="${esc(v)}" aria-pressed="${S.donde.includes(v)}">${esc(v)}</button>`).join("")}</div></div>`}${(ARQ||OBRA)?"":`<div class="q"><span class="q-label">Materiales que te gustan <em>· opcional</em></span></div>${matsHTML()}`}`;
   if(k==="terminaciones") return `
     <h2>Terminaciones preferidas</h2>
     <p class="lead">Elige al menos una opción en cada grupo.</p>
@@ -415,8 +415,8 @@ function view(){
         <button type="button" data-yn="${i}" data-v="No" aria-pressed="${S.interv[i]==="No"}">No</button></div></div>${on&&D?`<div class="follow"><div class="follow-q">${D.q} <small>· elige al menos una</small></div><div class="chips">${D.o.map(v=>`<button type="button" class="chip" data-idet="${esc(i)}" data-v="${esc(v)}" aria-pressed="${sel.includes(v)}">${esc(v)}</button>`).join("")}</div><input type="text" data-itxt="${esc(i)}" placeholder="${esc(D.ph)}" value="${esc(S.itxt[i]||"")}"></div>`:""}</div>`}).join("")}</div></div>`;
   if(k==="presupuesto") return `
     <h2>Presupuesto y tiempos</h2>
-    ${LM0?"":lmHTML()}<div class="q"><span class="q-label">${ARQ?"Presupuesto de construcción (MXN)":OBRA?"Presupuesto para la obra (MXN)":(S.paquete?"Presupuesto para tu paquete "+esc(S.paquete)+" (MXN)":"Presupuesto para mobiliario y decoración (MXN)")}</span>${(!ARQ&&!OBRA&&S.paquete)?alcanceBox():""}${opts(ARQ?PRESU_ARQ:OBRA?PRESU_OBRA:PRESU,S.presupuesto,"presupuesto")}</div>
-    <div class="q"><span class="q-label">¿Para cuándo lo necesitas?</span>${opts(PLAZO,S.plazo,"plazo")}</div>
+    <div class="q"><span class="q-label">${ARQ?"Presupuesto de construcción (MXN)":OBRA?"Presupuesto para la obra (MXN)":(S.paquete?"Presupuesto para tu paquete "+esc(S.paquete)+" (MXN)":"Presupuesto para mobiliario y decoración (MXN)")}</span>${(!ARQ&&!OBRA&&S.paquete)?alcanceBox():""}${opts(ARQ?PRESU_ARQ:OBRA?PRESU_OBRA:PRESU,S.presupuesto,"presupuesto")}</div>
+    <div class="q"><span class="q-label">¿Para cuándo lo necesitas?</span>${opts(PLAZO,S.plazo,"plazo")}</div>${(!ARQ&&!OBRA)?extrasHTML():""}
     <div class="q"><span class="q-label">Algo más que debamos saber <em>· opcional</em></span>
       <textarea id="f-notas" placeholder="Mascotas, niños, piezas que quieres conservar, referencias…">${esc(S.notas)}</textarea></div>`;
   if(k==="resumen") return `
@@ -437,7 +437,7 @@ function espaciosHTML(){
 function summaryHTML(r){
   const term=Object.entries(r.term||{}).filter(([,v])=>v.length).map(([g,v])=>`${g}: ${v.join(", ")}`).join(" · ");
   const si=intervTxt(r," · ");
-  const rows=[["Cliente",[r.nombre,r.contacto].filter(Boolean).join(" · ")],["Proyecto",[r.tipo,r.uso,r.ubicacion].filter(Boolean).join(" · ")],...(ARQ?[["Terreno",[r.terreno,r.tubicacion,r.tm2].filter(Boolean).join(" · ")],["Construir",[r.construir,r.cm2,r.recs&&(r.recs+" rec."),r.banos&&(r.banos+" baños"),(r.extras||[]).join(", ")].filter(Boolean).join(" · ")]]:[]),...(r.obra&&r.obra.length?[["Proyecto de obra",r.obra.join(", ")],["Inmueble",[r.m2,r.planos&&("Planos: "+r.planos),r.vive&&("Vive ahí durante la obra: "+r.vive),r.permisos&&("Permisos: "+r.permisos)].filter(Boolean).join(" · ")]]:[]),[OBRA?"Amueblar":"Paquete",r.paquete],["Espacios",(r.espacios||[]).join(", ")],["Estilo",(r.estilos||[]).join(" + ")],["Colores",[(r.colores||[]).join(", "),[].concat(r.donde||[]).join(", ").toLowerCase()].filter(Boolean).join(" — ")],...(ARQ?[["Materiales",Object.entries(r.mat||{}).filter(([,v])=>v.length).map(([g,v])=>g+": "+v.join(", ")).join(" · ")],["Carácter",r.sensacion]]:[["Terminaciones",term]]),...(OBRA?[]:[["Muros",r.muros],["Intervenir",si]]),...(r.piso?[["Piso de la unidad",r.piso]]:[]),...(r.tvrec?[["TV en recámaras",r.tvrec]]:[]),["Presupuesto",r.presupuesto],["Plazo",r.plazo],["Notas",r.notas]];
+  const rows=[["Cliente",[r.nombre,r.contacto].filter(Boolean).join(" · ")],["Proyecto",[r.tipo,r.uso,r.ubicacion].filter(Boolean).join(" · ")],...(ARQ?[["Terreno",[r.terreno,r.tubicacion,r.tm2].filter(Boolean).join(" · ")],["Construir",[r.construir,r.cm2,r.recs&&(r.recs+" rec."),r.banos&&(r.banos+" baños"),(r.extras||[]).join(", ")].filter(Boolean).join(" · ")]]:[]),...(r.obra&&r.obra.length?[["Proyecto de obra",r.obra.join(", ")],["Inmueble",[r.m2,r.planos&&("Planos: "+r.planos),r.vive&&("Vive ahí durante la obra: "+r.vive),r.permisos&&("Permisos: "+r.permisos)].filter(Boolean).join(" · ")]]:[]),[OBRA?"Amueblar":"Paquete",r.paquete],["Espacios",(r.espacios&&r.espacios.length)?r.espacios.join(", "):(r.paquete==="Llave en mano"?"Toda la unidad":"")],["Estilo",(r.estilos||[]).join(" + ")],["Colores",[(r.colores||[]).join(", "),[].concat(r.donde||[]).join(", ").toLowerCase()].filter(Boolean).join(" — ")],...(ARQ?[["Materiales",Object.entries(r.mat||{}).filter(([,v])=>v.length).map(([g,v])=>g+": "+v.join(", ")).join(" · ")],["Carácter",r.sensacion]]:[["Materiales",term]]),...(OBRA?[]:[["Obra aparte",r.obraq==="Sí"?((r.obrasel||[]).join(", ")+(r.obratxt?" · "+r.obratxt:"")):(r.obraq||si||"No")],...(r.paquete==="Muebles y deco"?[["Cortinas y persianas",r.cortmd||""]]:[])]),...(r.piso?[["Piso de la unidad",r.piso]]:[]),...(r.tvrec?[["TV en recámaras",r.tvrec]]:[]),["Presupuesto",r.presupuesto],["Plazo",r.plazo],["Notas",r.notas]];
   return `<dl class="summary">${rows.map(([a,b])=>`<div><dt>${a}</dt><dd>${b?esc(b):"<span style='color:var(--muted)'>—</span>"}</dd></div>`).join("")}</dl>`;
 }
 function ownerHTML(){
@@ -458,7 +458,7 @@ function render(){
   $("#next").disabled=saving;
   $("#bar").hidden=k==="listo";
   const ob=$("#ownerBtn"); if(ob) ob.onclick=openOwner;
-  ["nombre","contacto","ubicacion","notas","m2","tubicacion","tm2","cm2"].forEach(f=>{const el=$("#f-"+f);if(el)el.oninput=e=>S[f]=e.target.value});document.querySelectorAll("[data-itxt]").forEach(el=>el.oninput=e=>S.itxt[el.dataset.itxt]=e.target.value);
+  ["nombre","contacto","ubicacion","notas","m2","tubicacion","tm2","cm2","obratxt"].forEach(f=>{const el=$("#f-"+f);if(el)el.oninput=e=>S[f]=e.target.value});document.querySelectorAll("[data-itxt]").forEach(el=>el.oninput=e=>S.itxt[el.dataset.itxt]=e.target.value);
   window.scrollTo(0,0);
 }
 
@@ -479,7 +479,7 @@ document.addEventListener("click",e=>{
 });
 function refresh(){ // update pressed states without losing scroll
   const y=window.scrollY; const k=ST()[step]; $("#screen").innerHTML=view();
-  ["nombre","contacto","ubicacion","notas","m2","tubicacion","tm2","cm2"].forEach(f=>{const el=$("#f-"+f);if(el)el.oninput=e=>S[f]=e.target.value});document.querySelectorAll("[data-itxt]").forEach(el=>el.oninput=e=>S.itxt[el.dataset.itxt]=e.target.value);
+  ["nombre","contacto","ubicacion","notas","m2","tubicacion","tm2","cm2","obratxt"].forEach(f=>{const el=$("#f-"+f);if(el)el.oninput=e=>S[f]=e.target.value});document.querySelectorAll("[data-itxt]").forEach(el=>el.oninput=e=>S.itxt[el.dataset.itxt]=e.target.value);
   window.scrollTo(0,y);
 }
 
@@ -496,7 +496,7 @@ function faltante(k){
   if(k==="proyecto"){
     if(!PRE.id){if(!v(S.nombre))return "Escribe tu nombre para continuar.";if(!v(S.contacto))return "Escribe tu WhatsApp o email.";if(!v(S.ubicacion))return "Escribe la ubicación del proyecto.";if(!S.tipo)return "Elige el tipo de propiedad.";}
     if(!S.uso)return "Elige para qué la vas a usar.";
-    if(!ARQ&&!S.espacios.length)return OBRA?"Elige los espacios a intervenir.":"Elige los espacios a diseñar.";
+    if(!ARQ&&!esLM()&&!S.espacios.length)return OBRA?"Elige los espacios a intervenir.":"Elige los espacios a diseñar.";
     if(!ARQ&&!OBRA&&PRE.sp){if(!S.pbanos)return "Elige cuántos baños tiene.";if(!S.pext)return "Elige si tiene exterior.";}
     if(!ARQ&&!OBRA){if(!recLabels().length)return "Elige cuántas recámaras tiene.";const r=recLabels().find(r=>!(S.camas||{})[r]);if(r)return "Elige la cama de "+r+".";}}
   if(k==="paquete"&&!S.paquete)return "Elige un paquete para continuar.";
@@ -504,7 +504,7 @@ function faltante(k){
   if(k==="colores"){if(!S.colores.length)return "Elige al menos un color.";if(!ARQ&&!S.donde.length)return "Elige dónde quieres esos colores.";}
   if(k==="terminaciones"){const g=Object.keys(TERM).find(g=>!(S.term[g]||[]).length);if(g)return "Elige al menos una opción en "+g+".";}
   if(k==="intervenciones"){if(!S.muros)return "Elige qué hacemos con los muros.";const i=intervVisibles().find(i=>S.interv[i]==="Sí"&&INTERV_DET[i]&&!(S.idet[i]||[]).length);if(i)return "En «"+i+"» elige al menos una opción ("+INTERV_DET[i].q.toLowerCase()+").";}
-  const lmErr=()=>esLM()?(!S.piso?"Elige en qué piso está la unidad.":(!esST()&&!S.tvrec?"Responde si quieres TV en las recámaras.":"")):""; if(k==="proyecto"&&LM0&&lmErr())return lmErr(); if(k==="presupuesto"&&!LM0&&lmErr())return lmErr(); if(k==="presupuesto"){if(!S.presupuesto)return "Elige un rango de presupuesto.";if(!S.plazo)return "Elige para cuándo lo necesitas.";}
+  const lmErr=()=>esLM()?(!S.piso?"Elige en qué piso está la unidad.":(!esST()&&!S.tvrec?"Responde si quieres TV en las recámaras.":"")):""; if(k==="proyecto"&&lmErr())return lmErr(); if(k==="presupuesto"){if(!S.presupuesto)return "Elige un rango de presupuesto.";if(!ARQ&&!OBRA&&S.obraq==="Sí"&&!S.obrasel.length)return "Elige qué te gustaría cambiar de obra.";if(!S.plazo)return "Elige para cuándo lo necesitas.";}
   if(k==="materiales"){const g=Object.keys(MAT_ARQ).find(g=>!(S.mat[g]||[]).length);if(g)return "Elige al menos una opción en "+g+".";if(!S.sensacion)return "Elige cómo quieres que se sienta la casa.";}
   if(k==="obra"&&!S.obra.length)return "Marca al menos una cosa que quieras cambiar.";
   if(k==="inmueble"){if(!v(S.m2))return "Escribe los metros cuadrados aproximados.";if(!S.planos)return "Responde si tienes planos.";if(!S.vive)return "Responde si vas a vivir ahí durante la obra.";if(!S.permisos)return "Responde lo de los permisos (si no sabes, elige «No sé»).";}
@@ -519,15 +519,16 @@ function alertInline(msg){
 }
 
 const SCRIPT_URL="https://script.google.com/macros/s/AKfycbyPxz7iZikEmNlYQPzhr8ySz61Gay_cBFzjcXxhsDrdRfCl_8NN-Y5iY6d0kzbBJET88A/exec";
-async function submit(){
+function volcarExtras(){if(ARQ||OBRA)return;Object.keys(S.interv).forEach(k=>S.interv[k]="No");S.idet={};S.itxt={};if(S.obraq==="Sí")S.obrasel.forEach(x=>{S.interv[x]="Sí"});if(S.paquete==="Muebles y deco"&&S.cortmd==="Sí")S.interv["Cortinas y persianas"]="Sí";if(!S.muros)S.muros="No tocarlos";}
+async function submit(){volcarExtras();
   err="";saving=true;render();
   const j=a=>[].concat(a||[]).join(", ");
   const fila={
     "ID cliente":PRE.id,"Nombre":S.nombre,"Contacto":S.contacto,"Paquete":S.paquete,"Ubicación":S.ubicacion,"Tipo de propiedad":S.tipo,"Uso":S.uso,
-    "Espacios":j(S.espacios),"Estilos":j(S.estilos),"Colores":j(S.colores),"Dónde van los colores":j(S.donde),
+    "Espacios":(esLM()&&!S.espacios.length)?"Todos los espacios":j(S.espacios),"Estilos":j(S.estilos),"Colores":j(S.colores),"Dónde van los colores":j(S.donde),
     "Fachada":j(S.mat["Fachada"]),"Pisos":j(S.mat["Pisos"]),"Cancelería":j(S.mat["Ventanas y cancelería"]),"Carácter":S.sensacion,"Madera":j(S.term["Madera"]),"Piedra":j(S.term["Piedra"]),"Metales":j(S.term["Metales"]),"Textiles":j(S.term["Textiles"]),
     "Muros":S.muros,"Intervenir además":intervTxt(S),
-    "Presupuesto":S.presupuesto,"Plazo":S.plazo,"Baños":PRE.sp?(S.pbanos||""):"","Exterior":PRE.sp?(S.pext||""):"","Metros cuadrados":PRE.sp?"":S.m2,"Recámaras":(!ARQ&&!OBRA&&!esST())?(S.recs_i||""):"","Camas":(!ARQ&&!OBRA)?recLabels().map(r=>r+": "+((S.camas||{})[r]||"")).join(" · "):"","Notas":S.notas,"Piso":esLM()?S.piso:"","TV en recámaras":(esLM()&&!esST())?S.tvrec:"",
+    "Presupuesto":S.presupuesto,"Plazo":S.plazo,"Baños":PRE.sp?(S.pbanos||""):"","Exterior":PRE.sp?(S.pext||""):"","Metros cuadrados":PRE.sp?"":S.m2,"Recámaras":(!ARQ&&!OBRA&&!esST())?(S.recs_i||""):"","Camas":(!ARQ&&!OBRA)?recLabels().map(r=>r+": "+((S.camas||{})[r]||"")).join(" · "):"","Notas":[S.notas,(S.obraq==="Sí"&&S.obratxt)?"Obra: "+S.obratxt:""].filter(Boolean).join(" · "),"Piso":esLM()?S.piso:"","TV en recámaras":(esLM()&&!esST())?S.tvrec:"",
     "Tipo de proyecto":ARQ?"Arquitectura (desde cero)":OBRA?"Remodelación":"Interiores","Terreno":[S.terreno,S.tubicacion,S.tm2].filter(Boolean).join(" · "),"Construir":[S.construir,S.cm2,S.recs&&(S.recs+" rec."),S.banos&&(S.banos+" baños"),j(S.extras)].filter(Boolean).join(" · "),"Obra":j(S.obra),"Planos":S.planos,"Vive durante la obra":S.vive,"Permisos":S.permisos
   };
   try{
