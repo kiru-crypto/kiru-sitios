@@ -285,8 +285,8 @@ const SECTIONS=[
   {id:'luz_pie',q:'¿Contacto para lámpara de pie en sala?',type:'seg',o:SN},
   {id:'luz_ap',q:'Apagadores en buen estado',type:'seg',o:SN},
  ]},
- {id:'cor',lm:1,t:'Cortinas',why:'Por ambiente: foto y medidas',items:[
-  {id:'cort',q:'Cortinas por ambiente',type:'curt'},
+ {id:'cor',lm:1,t:'Ventanas · cortinas y persianas',why:'Ancho y alto reales de cada ventana (V1, V2…) y foto',items:[
+  {id:'cort',q:'Medidas de cada ventana',type:'curt'},
   {id:'cor_techo',q:'Techo para el riel',type:'seg',o:['Concreto','Plafón','Ya hay riel'],hint:'Si cambia según el ambiente, anotalo en el nombre del ambiente.'},
  ]},
  {id:'ban',lm:1,t:'Baños',why:'Accesorios que ya existen',items:[
@@ -335,7 +335,7 @@ const P=(()=>{try{return new URLSearchParams(location.search)}catch(e){return ne
 const FROM_CRM=!!SHORT||P.has('c');
 const UBI={playa_del_carmen:'Playa del Carmen',tulum:'Tulum',cancun:'Cancún',puerto_morelos:'Puerto Morelos',akumal:'Akumal',bacalar:'Bacalar',merida:'Mérida'};
 const nice=u=>u?(UBI[u]||(u.includes('_')?u.replace(/_/g,' ').replace(/\b\w/g,c=>c.toUpperCase()):u)):u;
-const CRM=SHORT?SHORT:FROM_CRM?{id:P.get('id'),c:P.get('c'),n:P.get('n'),t:P.get('t'),d:P.get('d'),r:P.get('r'),p:P.get('p'),u:nice(P.get('u')),b:P.get('b'),cam:P.get('cam'),h:P.get('h')}
+const CRM=SHORT?SHORT:FROM_CRM?{id:P.get('id'),c:P.get('c'),n:P.get('n'),t:P.get('t'),d:P.get('d'),r:P.get('r'),p:P.get('p'),u:nice(P.get('u')),b:P.get('b'),cam:P.get('cam'),h:P.get('h'),vent:P.get('vent'),vimg:P.get('vimg')}
   :{c:'C1120-2R-LM',n:'Mariana Ortiz',t:'+52 984 000 0000',d:'Aldea Zamá · Torre B 304',r:'2',p:'Llave en mano',u:'Tulum',b:'2',cam:'Recámara 1: King · Recámara 2: 2 Individual',h:'4'};
 const HOOK='https://kiru.smarketics.com/web/hook/f34066ba-67c5-418d-afb2-5c7c8840cabe';
 const pkgOf=(p,c)=>/muebles|m&d|md/i.test(p||'')||/-M&?D$/i.test(c||'')?'MD':(/llave|lm/i.test(p||'')||/-LM$/i.test(c||'')?'LM':null);
@@ -346,7 +346,7 @@ S.meta.codigo=CRM.c||S.meta.codigo;
 // El paquete se elige siempre a mano al empezar (el del CRM solo se muestra como referencia).
 let PKG=null; // siempre se elige al abrir: el cuestionario arranca cerrado
 const PKGNAME={LM:'Llave en mano',MD:'Muebles y deco'};
-const SEC=()=>SECTIONS.filter(s=>!s.lm||PKG==='LM').map(s=>({...s,items:s.items.filter(i=>!i.lm||PKG==='LM')}));
+const SEC=()=>SECTIONS.filter(s=>!s.lm||PKG==='LM'||(s.id==='cor'&&!!CRM.vent)).map(s=>({...s,items:s.items.filter(i=>!i.lm||PKG==='LM')}));
 
 // Camas: arranca con lo que dice el CRM ("Recámara 1: King · Área de descanso: King").
 function bedsFromCRM(){
@@ -365,8 +365,9 @@ if(!Array.isArray(S.v.camas))S.v.camas=bedsFromCRM();
 if(!S.meta.hconf)delete S.v.huesp; // las personas se cargan a mano en la visita (obligatorio en Llave en mano)
 const READY=()=>PKG==='MD'||(PKG==='LM'&&S.v.huesp>0);
 if(!S.v.tv_rec&&CRM.r&&!isNaN(+CRM.r))S.v.tv_rec={'Recámaras':+CRM.r};
-function cortFromCRM(){const o=[{n:'Sala',a:'',h:'',f:[]}];(S.v.camas||bedsFromCRM()).forEach(x=>{if(!/descanso/i.test(x.n))o.push({n:x.n,a:'',h:'',f:[]})});return o}
-if(!Array.isArray(S.v.cort))S.v.cort=cortFromCRM();
+function ventFromCRM(){return (CRM.vent||'').split('|').map(t=>t.split('·').map(x=>x.trim())).filter(x=>/^V\d+$/i.test(x[0]||'')).map(x=>({v:x[0].toUpperCase(),n:x[1]||'',tipo:x[2]||'',pl:x[3]||'',a:'',h:'',f:[]}))}
+function cortFromCRM(){const vv=ventFromCRM();if(vv.length)return vv;const o=[{n:'Sala',a:'',h:'',f:[]}];(S.v.camas||bedsFromCRM()).forEach(x=>{if(!/descanso/i.test(x.n))o.push({n:x.n,a:'',h:'',f:[]})});return o}
+if(!Array.isArray(S.v.cort)||(CRM.vent&&!S.v.cort.some(x=>x.v)))S.v.cort=cortFromCRM();
 const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S));return true}catch(e){return false}};
 
 const has=(k,val)=>{const x=S.v[k];return Array.isArray(x)?x.includes(val):x===val};
@@ -454,12 +455,14 @@ function renderItem(it){
     add.addEventListener('click',()=>{const n=S.v.camas.filter(x=>/^Recámara/.test(x.n)).length;S.v.camas.push({n:'Recámara '+(n+1),b:null});draw();changed()});
     box.append(list,add);
   }else if(it.type==='curt'){
-    box.append(el('div',{class:'hint'},'Una fila por ambiente con ventana: medida de techo a piso y foto. Agregá o quitá ambientes según lo que veas.'));
+    const VN=S.v.cort.some(x=>x.v);
+    box.append(el('div',{class:'hint'},VN?'Cada ventana tiene su número (V1, V2…) como en el plano de ventanas. Medí ancho y alto reales de cada una en centímetros y sacale una foto.':'Una fila por ambiente con ventana: medida de techo a piso y foto. Agregá o quitá ambientes según lo que veas.'));
+    if(CRM.vimg)box.append(el('a',{href:CRM.vimg,target:'_blank',rel:'noopener'},el('img',{src:CRM.vimg,alt:'Plano de ventanas',style:'width:100%;border:1px solid #e3dbd0;border-radius:10px;margin:6px 0 10px'})));
     const list=el('div',{class:'beds'});
     const draw=()=>{list.replaceChildren();
       S.v.cort.forEach((x,i)=>{x.f=x.f||[];
-        const name=el('input',{type:'text',value:x.n,placeholder:'Ambiente','aria-label':'Ambiente'});
-        name.addEventListener('input',()=>{x.n=name.value;changed()});
+        const name=x.v?el('div',{style:'flex:1;font-weight:700'},`${x.v} · ${x.n}${x.tipo?' · '+x.tipo:''}`,x.pl?el('span',{style:'font-weight:400;color:#8a7f74;font-size:.85em'},` · plano: ${x.pl} m de ancho`):''):el('input',{type:'text',value:x.n,placeholder:'Ambiente','aria-label':'Ambiente'});
+        if(!x.v)name.addEventListener('input',()=>{x.n=name.value;changed()});
         const del=el('button',{type:'button','aria-label':'Quitar '+x.n,title:'Quitar'},'×');
         del.addEventListener('click',()=>{S.v.cort.splice(i,1);draw();changed()});
         const g=el('div',{class:'meas'});
@@ -476,8 +479,8 @@ function renderItem(it){
         list.append(el('div',{class:'bed'},el('div',{class:'bedh'},name,del),g,ph))});
     };
     draw();
-    const add=el('button',{type:'button',class:'add'},'+ Agregar ambiente');
-    add.addEventListener('click',()=>{S.v.cort.push({n:'',a:'',h:'',f:[]});draw();changed();const ins=list.querySelectorAll('.bedh input');ins[ins.length-1].focus()});
+    const add=el('button',{type:'button',class:'add'},VN?'+ Agregar una ventana que no está en el plano':'+ Agregar ambiente');
+    add.addEventListener('click',()=>{if(VN){const amb=prompt('¿En qué ambiente está la ventana?');if(!amb)return;const tv=confirm('¿Es ventanal (vidrio a piso o puerta-ventana)? Aceptar = ventanal · Cancelar = ventana con antepecho')?'ventanal':'ventana';S.v.cort.push({v:'V'+(S.v.cort.filter(x=>x.v).length+1),n:amb,tipo:tv,pl:'',a:'',h:'',f:[]});draw();changed();return}S.v.cort.push({n:'',a:'',h:'',f:[]});draw();changed();const ins=list.querySelectorAll('.bedh input');ins[ins.length-1].focus()});
     box.append(list,add);
   }else if(it.type==='photo'){
     const wrap=el('div',{class:'photos'});
@@ -604,7 +607,7 @@ function summary(){
       else if(it.type==='count')t=Object.entries(val).filter(([k,n])=>n>0).map(([k,n])=>`${k}: ${n}`).join(' · ');
       else if(it.type==='beds')t=camasTxt();
       else if(it.type==='photo')t=`${val.length} foto(s)`;
-      else if(it.type==='curt')t=val.map(x=>`${x.n||'Ambiente'} ${x.a||'?'}×${x.h||'?'} cm${x.f&&x.f.length?' ('+x.f.length+' foto)':''}`).join(' · ');
+      else if(it.type==='curt')t=val.map(x=>`${x.v?x.v+' ':''}${x.n||'Ambiente'} ${x.a||'?'}×${x.h||'?'} cm${x.f&&x.f.length?' ('+x.f.length+' foto)':''}`).join(' · ');
       else t=String(val).trim();
       rows.push(`- ${it.q}: ${t}`)});
     if(rows.length){L.push('');L.push(s.t.toUpperCase());L.push(...rows)}
@@ -637,7 +640,7 @@ function summaryHtml(){
     if(!l.trim())return;
     h+=(l===l.toUpperCase()&&/[A-ZÁÉÍÓÚÑ]/.test(l))?'<h4>'+esc(l)+'</h4>':'<p>'+esc(l)+'</p>'});
   if(inList)h+='</ul>';return h}
-function photosPayload(){const out=[];SEC().forEach(s=>vis(s).forEach(it=>{if(it.type==='photo'&&Array.isArray(S.v[it.id]))S.v[it.id].forEach((d,i)=>out.push({nombre:`${s.t} - ${it.q} ${i+1}.jpg`,data:d.split(',')[1]}));if(it.type==='curt')(S.v.cort||[]).forEach(x=>(x.f||[]).forEach((d,i)=>out.push({nombre:`Cortinas - ${x.n||'Ambiente'} ${x.a||'?'}x${x.h||'?'} ${i+1}.jpg`,data:d.split(',')[1]})))}));return out}
+function photosPayload(){const out=[];SEC().forEach(s=>vis(s).forEach(it=>{if(it.type==='photo'&&Array.isArray(S.v[it.id]))S.v[it.id].forEach((d,i)=>out.push({nombre:`${s.t} - ${it.q} ${i+1}.jpg`,data:d.split(',')[1]}));if(it.type==='curt')(S.v.cort||[]).forEach(x=>(x.f||[]).forEach((d,i)=>out.push({nombre:`Cortinas - ${x.v?x.v+' ':''}${x.n||'Ambiente'} ${x.a||'?'}x${x.h||'?'} ${i+1}.jpg`,data:d.split(',')[1]})))}));return out}
 document.getElementById('send').addEventListener('click',async()=>{
   const t=document.getElementById('toast');
   if(!FROM_CRM||!CRM.id){t.textContent='Enviar funciona cuando el checklist se abre desde el botón del CRM.';return}
@@ -649,7 +652,7 @@ document.getElementById('send').addEventListener('click',async()=>{
     refri:{'Dúplex':'duplex','Simple':'simple'}[v.ref_eq]||'',
     refri_puerta:v.ref_eq==='Simple'?({'Bisagra izquierda':'izquierda','Bisagra derecha':'derecha'}[v.ref_bis]||''):'',
     lavado:{'Centro de lavado':'centro','Lavasecadora':'lavasecadora','No lleva':'no'}[lavadoResult()]||'',
-    camas:camasTxt(),piso:pisoN(),acarreo:PKG==='LM'?(acarreoTxt()||''):'',fotos:photosPayload()};
+    camas:camasTxt(),piso:pisoN(),acarreo:PKG==='LM'?(acarreoTxt()||''):'',ventanas:(S.v.cort||[]).filter(x=>x.v&&x.a).map(x=>({v:x.v,n:x.n,tipo:x.tipo,a:x.a,h:x.h})),fotos:photosPayload()};
   t.textContent='Enviando…';
   try{await fetch(HOOK,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain'},body:JSON.stringify(payload)});
     S.meta.enviado=new Date().toISOString();save();t.textContent='Enviado. Ya está en la tarjeta del cliente, pestaña Visita.'}
