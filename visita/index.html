@@ -456,7 +456,7 @@ function renderItem(it){
     box.append(list,add);
   }else if(it.type==='curt'){
     const VN=S.v.cort.some(x=>x.v);
-    box.append(el('div',{class:'hint'},VN?'Cada ventana tiene su número (V1, V2…) como en el plano de ventanas. Medí ancho y alto reales de cada una en centímetros y sacale una foto. Con iPhone: abrí la app «Medidas», medí ancho y alto, tocá el botón blanco para guardar la foto con las medidas y subila en «📏 Foto con medida».':'Una fila por ambiente con ventana: medida de techo a piso y foto. Agregá o quitá ambientes según lo que veas.'));
+    box.append(el('div',{class:'hint'},VN?'Cada ventana tiene su número (V1, V2…) como en el plano de ventanas. Cargá ancho y alto reales en centímetros. Para la foto: medí con la app «Medidas» del iPhone (ancho y alto) y tocá el botón blanco para guardar la foto. Después tocá «📏 Subir foto con medidas» y elegila de Fotos.':'Una fila por ambiente con ventana: medida de techo a piso y foto. Agregá o quitá ambientes según lo que veas.'));
     if(CRM.vimg)box.append(el('a',{href:CRM.vimg,target:'_blank',rel:'noopener'},el('img',{src:CRM.vimg,alt:'Plano de ventanas',style:'width:100%;border:1px solid #e3dbd0;border-radius:10px;margin:6px 0 10px'})));
     const list=el('div',{class:'beds'});
     const draw=()=>{list.replaceChildren();
@@ -483,9 +483,9 @@ function renderItem(it){
             pm.append(el('div',{class:'ph'},el('img',{src:d,alt:'Medida '+(x.v||x.n)+' '+(j+1)}),xb))});
           const inp=el('input',{type:'file',accept:'image/*',multiple:''});
           inp.addEventListener('change',async()=>{for(const f of [...inp.files]){try{x.fm.push(await shrink(f))}catch(e){}}dm();changed()});
-          pm.append(el('label',{class:'cam'},'📏 ',x.fm.length?'Otra foto con medida':'Foto con medida (app Medidas)',inp))};
+          pm.append(el('label',{class:'cam'},'📏 ',x.fm.length?'Otra foto con medidas':'Subir foto con medidas',inp))};
         dm();
-        list.append(el('div',{class:'bed'},el('div',{class:'bedh'},name,del),g,ph,pm))});
+        list.append(el('div',{class:'bed'},el('div',{class:'bedh'},name,del),g,x.v?pm:ph,x.v&&x.f.length?ph:null))});
     };
     draw();
     const add=el('button',{type:'button',class:'add'},VN?'+ Agregar una ventana que no está en el plano':'+ Agregar ambiente');
