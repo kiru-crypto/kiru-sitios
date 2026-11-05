@@ -36,7 +36,7 @@ header{display:flex;justify-content:space-between;align-items:center;padding:18p
 header a.cta-s{font-size:14px;color:var(--accent);text-decoration:none;border-bottom:1px solid currentColor}
 
 .hero{position:relative;max-width:1080px;margin:0 auto}
-.hero img{width:100%;aspect-ratio:16/10;object-fit:cover}
+.hero img{display:block;width:100%;height:auto;aspect-ratio:16/10;object-fit:cover}
 @media (min-width:760px){.hero img{aspect-ratio:21/9;border-radius:6px}.hero{padding:0 20px}}
 .intro{padding:32px 0 8px}
 h1,h2{font-family:var(--display);font-weight:400;text-wrap:balance;margin:0}
@@ -53,6 +53,14 @@ h2{font-size:clamp(24px,6vw,32px);line-height:1.15}
 .points b{display:block;font-weight:600}
 .points span{color:var(--muted);font-size:15px}
 .points i{font-style:normal;font-family:var(--display);font-size:20px;color:var(--accent)}
+.gal{margin-top:40px}
+.gal h2{margin-bottom:6px}
+.gal p{color:var(--muted);margin:0 0 18px}
+.gal-row{display:grid;grid-auto-flow:column;grid-auto-columns:72%;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:8px;-webkit-overflow-scrolling:touch}
+.gal-row figure{margin:0;scroll-snap-align:start}
+.gal-row img{width:100%;height:auto;aspect-ratio:4/5;object-fit:cover;border-radius:6px;display:block;background:var(--line)}
+.gal-row figcaption{font-size:13px;color:var(--muted);margin-top:6px}
+@media (min-width:760px){.gal-row{grid-auto-flow:row;grid-template-columns:repeat(3,1fr);overflow:visible}}
 
 /* Formulario: una pregunta por pantalla, avanza solo al tocar */
 #form-wrap{background:var(--surface);border-top:1px solid var(--line);border-bottom:1px solid var(--line);margin-top:44px;padding:36px 0 40px;scroll-margin-top:0}
@@ -88,7 +96,7 @@ footer img{height:22px;width:auto;margin:0 auto 10px;opacity:.75}
   <a class="cta-s" href="#form-wrap">Cotiza tu proyecto</a>
 </header>
 
-<div class="hero"><img src="hero.jpg" alt="Sala tropical contemporánea con vista a la selva" width="720" height="450" fetchpriority="high"></div>
+<div class="hero"><img src="hero.jpg" alt="Sala de una villa diseñada por KIRU, abierta al jardín y la alberca" width="1800" height="1369" fetchpriority="high"></div>
 
 <main class="wrap">
   <section class="intro">
@@ -100,6 +108,18 @@ footer img{height:22px;width:auto;margin:0 auto 10px;opacity:.75}
       <li><i>2</i><div><b>Entrega desde 3 semanas</b><span>Contadas desde que apruebas tu propuesta, según el paquete que elijas.</span></div></li>
       <li><i>3</i><div><b>Sin complicaciones</b><span>Nos encargamos de proveedores, compras, armado y entrega. Tú no coordinas nada.</span></div></li>
     </ul>
+  </section>
+  <section class="gal">
+    <h2>Proyectos recientes</h2>
+    <p>Así quedan las propiedades que entregamos.</p>
+    <div class="gal-row">
+      <figure><img src="g/g1.jpg" alt="Villa en la Riviera Maya" width="720" height="900" loading="lazy"><figcaption>Villa en la Riviera Maya</figcaption></figure>
+      <figure><img src="g/g2.jpg" alt="Cocina equipada" width="720" height="900" loading="lazy"><figcaption>Cocina equipada</figcaption></figure>
+      <figure><img src="g/g3.jpg" alt="Comedor e iluminación" width="720" height="900" loading="lazy"><figcaption>Comedor e iluminación</figcaption></figure>
+      <figure><img src="g/g4.jpg" alt="Recámara con terraza" width="720" height="900" loading="lazy"><figcaption>Recámara con terraza</figcaption></figure>
+      <figure><img src="g/g5.jpg" alt="Sala · Palm Villas" width="720" height="900" loading="lazy"><figcaption>Sala · Palm Villas</figcaption></figure>
+      <figure><img src="g/g6.jpg" alt="Comedor · Palm Villas" width="720" height="900" loading="lazy"><figcaption>Comedor · Palm Villas</figcaption></figure>
+    </div>
   </section>
 </main>
 
