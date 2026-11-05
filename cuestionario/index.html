@@ -280,9 +280,10 @@ function camasHTML(){const askN=!esST();nRec();return `${askN?`<div class="q"><s
 
 const S={mat:{},sensacion:"",terreno:"",tubicacion:"",tm2:"",construir:"",cm2:"",recs:"",banos:"",extras:[],obra:[],m2:"",planos:"",vive:"",permisos:"",paquete:"",nombre:"",contacto:"",ubicacion:"",tipo:"",uso:"",espacios:[],estilos:[],colores:[],donde:[],term:{},muros:"",interv:Object.fromEntries(INTERV.map(i=>[i,"No"])),idet:{},itxt:{},presupuesto:"",plazo:"",notas:"",piso:"",tvrec:"",obraq:"No",obrasel:[],obratxt:"",cortmd:"No",ventpref:""};
 const PRE=(()=>{let q;try{q=new URLSearchParams(location.search)}catch(_){q=new URLSearchParams("")}
-  return {id:(q.get("c")||"").slice(0,80),nombre:(q.get("n")||"").slice(0,60),paquete:({LM:"Llave en mano",MD:"Muebles y deco",ARQ:"Arquitectura / diseño"})[(q.get("p")||"").toUpperCase()]||"",sp:q.get("sp")==="1"}})();/*PRE_DEMO*/
+  return {id:(q.get("c")||"").slice(0,80),nombre:(q.get("n")||"").slice(0,60),paquete:({LM:"Llave en mano",MD:"Muebles y deco",ARQ:"Arquitectura / diseño"})[(q.get("p")||"").toUpperCase()]||"",sp:q.get("sp")==="1",uso:(USOS.includes(q.get("u")||"")?q.get("u"):"")}})();/*PRE_DEMO*/
 if(PRE.nombre)S.nombre=PRE.nombre;
 if(PRE.paquete)S.paquete=PRE.paquete;
+if(PRE.uso)S.uso=PRE.uso;
 // el código del cliente define el tipo de proyecto: C1120-REM / C1121-ARQ → obra; C1118-ST-M&D / C1116-3R-LM → interiores
 let OBRA=/-(ARQ|REM)\b/i.test(PRE.id)||PRE.paquete==="Arquitectura / diseño";
 let ARQ=/-ARQ\b/i.test(PRE.id)||(PRE.paquete==="Arquitectura / diseño"&&!/-REM\b/i.test(PRE.id));
@@ -329,7 +330,7 @@ function view(){
       <input type="text" id="f-ubicacion" placeholder="Ubicación del proyecto (ej. Tulum, Aldea Zamá)" value="${esc(S.ubicacion)}">
     </div>
     <div class="q"><span class="q-label">Tipo de propiedad</span>${opts(TIPOS,S.tipo,"tipo")}</div>`}
-    <div class="q"><span class="q-label">¿Para qué la vas a usar?</span>${opts(USOS,S.uso,"uso")}</div>
+    ${PRE.uso?"":`<div class="q"><span class="q-label">¿Para qué la vas a usar?</span>${opts(USOS,S.uso,"uso")}</div>`}
     ${(ARQ||esLM())?"":`<div class="q"><span class="q-label">${OBRA?"Espacios a intervenir":"Espacios a diseñar"} <em>· elige todos los que apliquen</em></span>${espaciosHTML()}</div>`}${(!ARQ&&!OBRA)?camasHTML():""}${(!ARQ&&!OBRA&&PRE.sp)?propHTML():""}${lmHTML()}`;
   if(k==="paquete") return `
     <h2>¿Qué quieres que incluya?</h2>

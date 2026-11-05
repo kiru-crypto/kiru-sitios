@@ -325,7 +325,7 @@ $("#guardar").onclick=async()=>{
     numero,cliente,telefono:ex?"":val("telefono"),email:ex?"":val("email"),desarrollo:val("desarrollo"),
     recamaras:S.recamaras,servicio:SERV_COD[S.servicio]||"",paquete:esArq()?"":(PAQ_COD[S.paquete]||""),
     entrega:"",inversion:"",broker:ex?"":val("broker"),contactoBroker:ex?"":val("cbroker"),
-    notas:val("notas"),detalle:detalle()
+    notas:val("notas"),detalle:detalle(),uso:S.uso||""
   };
   const body=JSON.stringify({tipo:"interno",fila,archivos});
   let r=null;
@@ -343,6 +343,16 @@ $("#guardar").onclick=async()=>{
 $("#copiar").onclick=async()=>{const i=$("#link");try{await navigator.clipboard.writeText(i.value)}catch(_){i.select();try{document.execCommand("copy")}catch(__){}}$("#copiado").hidden=false};
 $("#otro").onclick=()=>{reset();$("#form").reset();paintChips();paintRooms();paintFiles();$("#form").hidden=false;$("#bar").hidden=false;$("#done").hidden=true;$("#copiado").hidden=true;window.scrollTo(0,0)};
 
+// Precarga desde el aviso de un lead de la landing (?n=&t=&e=&d=&r=&p=&tp=&u=&nota=)
+(()=>{let q;try{q=new URLSearchParams(location.search)}catch(_){return}
+  const set=(id,v)=>{if(v&&$("#"+id))$("#"+id).value=v.slice(0,300)};
+  set("cliente",q.get("n"));set("telefono",q.get("t"));set("email",q.get("e"));set("desarrollo",q.get("d"));set("notas",q.get("nota"));
+  const r=parseInt(q.get("r"),10);if(r>=0&&r<=10)S.recamaras=r;
+  const p=(q.get("p")||"").toUpperCase();
+  if(p==="REM")S.servicio="Remodelación";else if({LM:1,MD:1}[p])S.paquete=p==="LM"?"Llave en mano":"Muebles y deco";
+  if(OPC.tipo.includes(q.get("tp")))S.tipo=q.get("tp");
+  if(["Uso propio","Renta","Ambos: uso propio y renta"].includes(q.get("u")))S.uso=q.get("u");
+})();
 paintChips();paintRooms();
 </script>
 </body>
