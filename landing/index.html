@@ -93,12 +93,12 @@ footer img{height:22px;width:auto;margin:0 auto 10px;opacity:.75}
 <main class="wrap">
   <section class="intro">
     <h1>Tu propiedad en la Riviera Maya, lista para vivir o rentar</h1>
-    <p class="lead">Diseñamos, compramos e instalamos todo: muebles, decoración, blancos y electrodomésticos. Tú recibes las llaves.</p>
-    <a class="btn" href="#form-wrap" id="go">Quiero mi propuesta</a>
+    <p class="lead">Nosotros diseñamos, compramos e instalamos todo: muebles, decoración, blancos y electrodomésticos. Tú solo recibes las llaves.</p>
+    <a class="btn" href="#form-wrap" id="go">Quiero cotizar</a>
     <ul class="points">
-      <li><i>1</i><div><b>Diseño a tu medida</b><span>Una propuesta pensada para tu unidad y tu forma de usarla.</span></div></li>
+      <li><i>1</i><div><b>Diseño a tu medida</b><span>Una propuesta hecha para tu depa o tu casa, según cómo la vas a usar.</span></div></li>
       <li><i>2</i><div><b>Entrega en 3 semanas</b><span>Con todo instalado y listo para usar o rentar.</span></div></li>
-      <li><i>3</i><div><b>Un solo responsable</b><span>Nos encargamos de proveedores, compras, armado y entrega.</span></div></li>
+      <li><i>3</i><div><b>Sin complicaciones</b><span>Nos encargamos de proveedores, compras, armado y entrega. Tú no coordinas nada.</span></div></li>
     </ul>
   </section>
 </main>
@@ -124,18 +124,18 @@ const PASOS=[
     {v:"LM",t:"Llave en mano",d:"Muebles, deco, blancos, electrodomésticos y cocina. Lista para usar."},
     {v:"MD",t:"Muebles y decoración",d:"Mobiliario, deco, arte, plantas e iluminación."},
     {v:"REM",t:"Remodelación u obra",d:"Pisos, cocina, baños, muebles a medida."},
-    {v:"",t:"Aún no lo sé",d:"Te ayudamos a elegir."}]},
+    {v:"",t:"Todavía no sé",d:"Te ayudamos a elegir."}]},
   {k:"tipo",h:"¿Qué tipo de propiedad es?",o:[
     {v:"Apartamento",t:"Departamento"},{v:"Casa",t:"Casa"},{v:"Villa",t:"Villa"},{v:"Hotel / boutique",t:"Hotel o proyecto boutique"}]},
   {k:"recamaras",h:"¿Cuántas recámaras tiene?",two:true,o:[
     {v:"0",t:"Studio"},{v:"1",t:"1"},{v:"2",t:"2"},{v:"3",t:"3"},{v:"4",t:"4"},{v:"5",t:"5 o más"}]},
   {k:"uso",h:"¿Para qué la vas a usar?",o:[
-    {v:"Uso propio",t:"Para vivir"},{v:"Renta",t:"Para rentar"},{v:"Ambos: uso propio y renta",t:"Las dos cosas"}]},
+    {v:"Uso propio",t:"Para vivir"},{v:"Renta",t:"Para rentar"},{v:"Ambos: uso propio y renta",t:"Para vivir y rentar"}]},
   {k:"zona",h:"¿Dónde está?",o:[
     {v:"Playa del Carmen",t:"Playa del Carmen"},{v:"Tulum",t:"Tulum"},{v:"Puerto Morelos",t:"Puerto Morelos"},{v:"Cancún",t:"Cancún"},{v:"Otra",t:"Otra zona"}]},
-  {k:"etapa",h:"¿En qué etapa está?",o:[
-    {v:"En construcción / preventa",t:"En construcción o preventa"},{v:"Entregada, vacía",t:"Ya entregada, vacía"},{v:"Amueblada, renovar",t:"Ya amueblada, quiero renovarla"}]},
-  {k:"contacto",h:"¿A dónde te mandamos la propuesta?"}
+  {k:"etapa",h:"¿En qué etapa va?",o:[
+    {v:"En construcción / preventa",t:"En construcción o preventa"},{v:"Entregada, vacía",t:"Ya me la entregaron, está vacía"},{v:"Amueblada, renovar",t:"Ya está amueblada, quiero renovarla"}]},
+  {k:"contacto",h:"¿Cómo te contactamos?"}
 ];
 const S={nombre:"",whatsapp:"",email:""};
 let step=-1, err="", saving=false;
@@ -150,8 +150,8 @@ const pasos=()=>PASOS;
 
 function view(){
   const L=pasos(), n=L.length;
-  if(step<0) return `<h2>Cuéntanos de tu propiedad</h2><p class="lead">Son ${n} preguntas rápidas, menos de un minuto. Con esto te contactamos con una primera idea de alcance y precio.</p><div class="nav"><button class="btn" data-go="next">Empezar</button></div>`;
-  if(step>=n) return `<div class="done"><div class="check">✓</div><h2>¡Gracias${S.nombre?", "+esc(S.nombre.trim().split(/\s+/)[0]):""}!</h2><p class="lead">Recibimos tus datos. Te escribimos por WhatsApp en menos de 24 horas hábiles para contarte cómo seguimos.</p></div>`;
+  if(step<0) return `<h2>Platícanos de tu propiedad</h2><p class="lead">Son ${n} preguntas rápidas, te toma menos de un minuto. Con esto te contactamos con una primera idea de alcance y precio.</p><div class="nav"><button class="btn" data-go="next">Empezar</button></div>`;
+  if(step>=n) return `<div class="done"><div class="check">✓</div><h2>¡Gracias${S.nombre?", "+esc(S.nombre.trim().split(/\s+/)[0]):""}!</h2><p class="lead">Ya recibimos tus datos. Te escribimos por WhatsApp en menos de 24 horas hábiles para platicar de tu proyecto.</p></div>`;
   const p=L[step];
   const head=`<div class="fhead"><span class="count">${step+1} / ${n}</span></div><div class="progress"><i style="width:${(step/n)*100}%"></i></div>`;
   if(p.k==="contacto") return head+`<h2>${p.h}</h2>
@@ -162,7 +162,7 @@ function view(){
     </div>
     ${err?`<p class="err">${esc(err)}</p>`:""}
     <div class="nav"><button class="btn ghost" data-go="back">← Atrás</button><button class="btn" data-go="send" ${saving?"disabled":""}>${saving?"Enviando…":"Enviar"}</button></div>
-    <p class="fine">Usamos tus datos solo para contactarte sobre tu proyecto.</p>`;
+    <p class="fine">Solo usamos tus datos para contactarte sobre tu proyecto.</p>`;
   return head+`<h2>${p.h}</h2>
     <div class="options${p.two?" two":""}">${p.o.map(o=>`<button type="button" class="opt" data-k="${p.k}" data-v="${esc(o.v)}" data-t="${esc(o.t)}" aria-pressed="${S[p.k]===o.v&&S[p.k+"_t"]===o.t}"><span>${esc(o.t)}${o.d?`<small>${esc(o.d)}</small>`:""}</span></button>`).join("")}</div>
     ${step>0?`<div class="nav"><button class="btn ghost" data-go="back">← Atrás</button></div>`:""}`;
@@ -184,7 +184,7 @@ $("#go").addEventListener("click",()=>{if(step<0){step=0;render();}});
 async function enviar(){
   const wa=S.whatsapp.replace(/[^\d+]/g,"");
   if(!S.nombre.trim()){err="Escribe tu nombre.";render();$("#f-nombre").focus();return}
-  if(wa.replace(/\D/g,"").length<10){err="Escribe tu WhatsApp con lada (10 dígitos o más).";render();$("#f-wa").focus();return}
+  if(wa.replace(/\D/g,"").length<10){err="Escribe tu WhatsApp a 10 dígitos (con lada).";render();$("#f-wa").focus();return}
   if(S.email&&!/^\S+@\S+\.\S+$/.test(S.email)){err="Revisa el email (o déjalo vacío).";render();$("#f-email").focus();return}
   err="";saving=true;render();
   const fila={
