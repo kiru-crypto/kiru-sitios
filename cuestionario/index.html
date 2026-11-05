@@ -119,6 +119,9 @@ input:focus-visible,textarea:focus-visible,button:focus-visible{outline:2px soli
 .resp{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px;margin-top:12px}
 .resp h3{font-family:var(--display);font-weight:400;font-size:21px;margin:0}
 .resp small{color:var(--muted)}
+.upload{display:flex;align-items:center;gap:10px;border:1.5px dashed var(--line);border-radius:6px;padding:16px;cursor:pointer;font-size:15px}
+.upload input{position:absolute;opacity:0;width:1px;height:1px}
+.upload span{color:var(--accent);font-weight:600}
 .note{background:var(--accent-soft);border-radius:6px;padding:14px 16px;font-size:14px;margin-top:20px}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 .yn-item{background:var(--surface);border:1px solid var(--line);border-radius:6px}.yn-item.on{border-color:var(--accent)}.yn-item .yn-row{background:none;border:0}.follow{border-top:1px dashed var(--line);margin:0 16px;padding:12px 0 14px}.follow-q{font-size:14px;font-weight:500;margin-bottom:8px}.follow-q small{font-weight:400;color:var(--muted)}.follow .chip{font-size:14px;padding:7px 14px;background:var(--bg)}.follow .chip[aria-pressed="true"]{background:var(--accent)}.follow input[type=text]{margin-top:10px;font-size:15px;padding:10px 12px;background:var(--bg)}.sub-q{margin:12px 0 4px}.q-sub{display:block;font-size:14px;opacity:.7;margin-bottom:6px}</style>
@@ -144,6 +147,7 @@ input:focus-visible,textarea:focus-visible,button:focus-visible{outline:2px soli
 const TODOS="Todos los espacios";
 const ESPACIOS=["Sala","Comedor","Cocina","Recámara principal","Recámaras secundarias","Baños","Terraza / exterior","Estudio","Área de alberca"];
 const TIPOS=["Casa","Apartamento","Villa"];
+const M2R=["Hasta 50 m²","50 – 80 m²","80 – 120 m²","120 – 180 m²","180 – 250 m²","Más de 250 m²"];
 const USOS=["Uso propio","Renta","Ambos: uso propio y renta"];
 const ESTILOS=[
  {n:"Tropical contemporáneo",d:"Parota, chukum, lino y verde selva",c:["#8A5A3B","#D9D2C4","#4E6B4F","#F1EEE7"]},
@@ -272,7 +276,7 @@ const M2_OPC=["Hasta 50 m²","50 – 80 m²","80 – 120 m²","120 – 180 m²",
 const PISOS=["Planta baja","1","2","3","4 o más"]; const esLM=()=>S.paquete==="Llave en mano"&&!ARQ&&!OBRA; function lmHTML(){if(!esLM())return "";return `<div class="q"><span class="q-label">¿En qué piso está la unidad?</span>${chips_one(PISOS,S.piso,"piso")}</div>${esST()?"":`<div class="q"><span class="q-label">¿Quieres TV en las recámaras?</span>${chips_one(["Sí","No"],S.tvrec,"tvrec")}</div>`}`} const VENT_OPC=["Persianas enrollables","Cortinas de tela","Que lo recomiende Kiru"]; const pideVent=()=>!ARQ&&!OBRA&&(S.paquete==="Llave en mano"||(S.paquete==="Muebles y deco"&&S.cortmd==="Sí")); function ventHTML(){return pideVent()?`<div class="q"><span class="q-label">¿Qué prefieres en las ventanas? <em>· persianas: prácticas y económicas · cortinas: más cálidas y decorativas</em></span>${chips_one(VENT_OPC,S.ventpref,"ventpref")}</div>`:""} const OBRA_OPC=["Pisos","Iluminación","Muebles hechos a medida","Cocina","Baños"]; function extrasHTML(){return `${S.paquete==="Muebles y deco"?`<div class="q"><span class="q-label">¿Sumamos cortinas y persianas?</span>${chips_one(["Sí","No"],S.cortmd,"cortmd")}</div>`:""}${ventHTML()}<div class="q"><span class="q-label">¿También quieres cambiar algo de obra? <em>· pisos, iluminación, a medida, cocina o baños</em></span>${chips_one(["Sí","No"],S.obraq,"obraq")}${S.obraq==="Sí"?`<div class="follow"><div class="follow-q">¿Qué te gustaría cambiar? <small>· se cotiza aparte</small></div>${chips(OBRA_OPC,S.obrasel,"obrasel")}<input type="text" id="f-obratxt" placeholder="Detalle opcional (ej.: piso de la sala y closet de la recámara)" value="${esc(S.obratxt)}"></div>`:""}</div>`} function propHTML(){return `<div class="q"><span class="q-label">Baños</span>${chips_one(BANOS_OPC,S.pbanos,"pbanos")}</div><div class="q"><span class="q-label">¿Tiene exterior?</span>${chips_one(EXT_OPC,S.pext,"pext")}</div>`}
 const chips_one=(list,sel,key)=>`<div class="chips">${list.map(v=>`<button type="button" class="chip" data-one="${key}" data-v="${esc(v)}" aria-pressed="${sel===v}">${esc(v)}</button>`).join("")}</div>`;
 const CAMAS=["King","Queen","Matrimonial","2 individuales","Litera","Sofá cama"];
-const esST=()=>/-ST(-|$)/i.test(PRE.id||"");
+const esST=()=>/-ST(-|$)/i.test(PRE.id||"")||(PRE.lead&&PRE.rec==="0");
 const codeRec=()=>{const m=(PRE.id||"").match(/-(\d+)R(-|$)/i);return m?String(Math.min(+m[1],5)):""};
 const nRec=()=>{if(esST())return 1;if(S.recs_i===undefined&&codeRec())S.recs_i=codeRec();return parseInt(S.recs_i)||0};
 const recLabels=()=>{if(esST())return ["Área de descanso"];const n=nRec();return Array.from({length:n},(_,i)=>n===1?"Recámara":"Recámara "+(i+1))};
@@ -280,20 +284,21 @@ function camasHTML(){const askN=!esST();nRec();return `${askN?`<div class="q"><s
 
 const S={mat:{},sensacion:"",terreno:"",tubicacion:"",tm2:"",construir:"",cm2:"",recs:"",banos:"",extras:[],obra:[],m2:"",planos:"",vive:"",permisos:"",paquete:"",nombre:"",contacto:"",ubicacion:"",tipo:"",uso:"",espacios:[],estilos:[],colores:[],donde:[],term:{},muros:"",interv:Object.fromEntries(INTERV.map(i=>[i,"No"])),idet:{},itxt:{},presupuesto:"",plazo:"",notas:"",piso:"",tvrec:"",obraq:"No",obrasel:[],obratxt:"",cortmd:"No",ventpref:""};
 const PRE=(()=>{let q;try{q=new URLSearchParams(location.search)}catch(_){q=new URLSearchParams("")}
-  return {id:(q.get("c")||"").slice(0,80),nombre:(q.get("n")||"").slice(0,60),paquete:({LM:"Llave en mano",MD:"Muebles y deco",ARQ:"Arquitectura / diseño"})[(q.get("p")||"").toUpperCase()]||"",sp:q.get("sp")==="1",uso:(USOS.includes(q.get("u")||"")?q.get("u"):"")}})();/*PRE_DEMO*/
+  return {id:(q.get("c")||"").slice(0,80),nombre:(q.get("n")||"").slice(0,60),paquete:({LM:"Llave en mano",MD:"Muebles y deco",ARQ:"Arquitectura / diseño"})[(q.get("p")||"").toUpperCase()]||"",sp:q.get("sp")==="1",uso:(USOS.includes(q.get("u")||"")?q.get("u"):""),lead:(/^\d+$/.test(q.get("l")||"")?q.get("l"):""),tel:(q.get("t")||"").slice(0,40),zona:(q.get("d")||"").slice(0,60),tipo:(q.get("tp")||"").slice(0,40),rec:(q.get("r")||"").slice(0,2),rem:(q.get("p")||"").toUpperCase()==="REM"}})();/*PRE_DEMO*/
 if(PRE.nombre)S.nombre=PRE.nombre;
 if(PRE.paquete)S.paquete=PRE.paquete;
 if(PRE.uso)S.uso=PRE.uso;
+if(PRE.lead){S.nombre=PRE.nombre;S.contacto=PRE.tel;S.ubicacion=PRE.zona;S.tipo=PRE.tipo;if(/^[1-5]$/.test(PRE.rec))S.recs_i=PRE.rec;}
 // el código del cliente define el tipo de proyecto: C1120-REM / C1121-ARQ → obra; C1118-ST-M&D / C1116-3R-LM → interiores
-let OBRA=/-(ARQ|REM)\b/i.test(PRE.id)||PRE.paquete==="Arquitectura / diseño";
+let OBRA=/-(ARQ|REM)\b/i.test(PRE.id)||PRE.paquete==="Arquitectura / diseño"||PRE.rem;
 let ARQ=/-ARQ\b/i.test(PRE.id)||(PRE.paquete==="Arquitectura / diseño"&&!/-REM\b/i.test(PRE.id));
 if(OBRA&&PRE.paquete==="Arquitectura / diseño")S.paquete="";
 if(!S.paquete&&!OBRA){if(/-LM\b/i.test(PRE.id))S.paquete="Llave en mano";else if(/M&D/i.test(PRE.id))S.paquete="Muebles y deco";}
 const matsHTML=()=>Object.entries(TERM).map(([g,l])=>`<div class="q"><span class="q-sub">${g}</span><div class="mats">${l.map(v=>`<button type="button" class="mat" data-multi="term:${g}" data-v="${esc(v)}" aria-pressed="${(S.term[g]||[]).includes(v)}">${FOTOS[g+":"+v]?`<img class="swatch" src="${FOTOS[g+":"+v]}" alt="">`:`<svg class="swatch" viewBox="0 0 100 100" aria-hidden="true">${MUESTRAS[v]||""}</svg>`}<span>${esc(v)}</span></button>`).join("")}</div></div>`).join(""); const ST=()=>ARQ
   ?["intro","proyecto","terreno","programa","estilo","colores","materiales","presupuesto","amueblar","resumen","listo"]
   :OBRA
-  ?["intro","proyecto","obra","inmueble","estilo","colores","terminaciones","presupuesto","amueblar","resumen","listo"]
-  :["intro","paquete","proyecto","estilo","colores","presupuesto","resumen","listo"].filter(k=>!(k==="paquete"&&PRE.paquete));
+  ?["intro","proyecto","obra","inmueble","plano","estilo","colores","terminaciones","presupuesto","amueblar","resumen","listo"]
+  :["intro","paquete","proyecto","plano","estilo","colores","presupuesto","resumen","listo"].filter(k=>!(k==="paquete"&&PRE.paquete));
 const primerNombre=()=>(S.nombre||"").trim().split(/\s+/)[0]||"";
 let step=0, err="", saving=false, ownerView=false, responses=[];
 let db=null, user=null, isOwner=false, myId=null;
@@ -322,9 +327,17 @@ function view(){
       <li><b>1 min</b> Presupuesto y tiempos</li>`}
     </ul>
     `;
+  if(k==="plano") return `
+    <h2>El plano</h2>
+    <p class="lead">Con el plano medimos bien cada espacio y tu cotización sale más precisa.</p>
+    <div class="q"><span class="q-label">¿Tienes el plano de tu ${(!ARQ&&!OBRA)?"unidad":"inmueble"}?</span>${opts(["Sí, lo subo","No tengo plano"],S.planos==="Sí"?"Sí, lo subo":S.planos==="No"?"No tengo plano":"","planos_ui")}</div>
+    ${S.planos==="Sí"?`<div class="q"><label class="upload"><input type="file" id="f-plano" accept=".pdf,image/*"><span>${S.planoFile?"📄 "+esc(S.planoFile.name)+" · cambiar":"Elegir archivo (PDF o foto)"}</span></label><p class="note">Puede ser el plano del desarrollador, el de la escritura o una foto clara del plano impreso.</p></div>`:""}
+    ${S.planos==="No"?`${OBRA?"":`<div class="q"><span class="q-label">¿Cuántos m² tiene, más o menos?</span>${opts(M2R,S.m2r,"m2r")}</div>`}
+    <div class="q"><span class="q-label">Fotos del espacio <em>· opcional, hasta 6</em></span><label class="upload"><input type="file" id="f-fotos" accept="image/*" multiple><span>${(S.fotosF||[]).length?"📷 "+S.fotosF.length+" foto"+(S.fotosF.length>1?"s":"")+" · cambiar":"Elegir fotos"}</span></label></div>`:""}
+    ${S.leyendo?`<p class="note">Preparando archivo…</p>`:""}`;
   if(k==="proyecto") return `
     <h2>${(!ARQ&&!OBRA)?"Tu unidad":"Tu proyecto"}</h2>
-    ${PRE.id?"":`<div class="q fields">
+    ${(PRE.id||PRE.lead)?"":`<div class="q fields">
       <input type="text" id="f-nombre" placeholder="Tu nombre" value="${esc(S.nombre)}" autocomplete="name">
       <input type="text" id="f-contacto" placeholder="WhatsApp o email" value="${esc(S.contacto)}">
       <input type="text" id="f-ubicacion" placeholder="Ubicación del proyecto (ej. Tulum, Aldea Zamá)" value="${esc(S.ubicacion)}">
@@ -370,7 +383,6 @@ function view(){
     <h2>Sobre el inmueble</h2>
     <div class="q fields"><input type="text" id="f-m2" placeholder="m² aproximados (ej. 85 m²)" value="${esc(S.m2)}"></div>
     <div class="q yn">
-      <div class="yn-row"><span>¿Tienes planos del inmueble?<small class="yn-hint">Si los tienes, envíalos por WhatsApp</small></span><div class="seg" role="group" aria-label="¿Tienes planos del inmueble?">${["Sí","No"].map(v=>`<button type="button" data-one="planos" data-v="${v}" aria-pressed="${S.planos===v}">${v}</button>`).join("")}</div></div>
       <div class="yn-row"><span>¿Vas a vivir ahí durante la obra?</span><div class="seg" role="group" aria-label="¿Vas a vivir ahí durante la obra?">${["Sí","No"].map(v=>`<button type="button" data-one="vive" data-v="${v}" aria-pressed="${S.vive===v}">${v}</button>`).join("")}</div></div>
       <div class="yn-row"><span>¿El desarrollo o la administración pide permisos para obra?</span><div class="seg" role="group" aria-label="¿El desarrollo o la administración pide permisos para obra?">${["Sí","No","No sé"].map(v=>`<button type="button" data-one="permisos" data-v="${v}" aria-pressed="${S.permisos===v}">${v}</button>`).join("")}</div></div>
     </div>`;
@@ -427,7 +439,7 @@ function view(){
     ${err?`<p class="err">${esc(err)}</p>`:""}`;
   if(k==="listo") return `
     <h1>¡Gracias, ${esc(S.nombre.split(" ")[0])}!</h1>
-    <p class="lead">Recibimos tus respuestas. En los próximos días te compartimos una primera propuesta. Si tienes fotos o planos del espacio, envíalos por WhatsApp.</p>`;
+    <p class="lead">Recibimos tus respuestas. En los próximos días te compartimos una primera propuesta.</p>`;
 }
 function espaciosHTML(){
   const all=S.espacios.includes(TODOS);
@@ -447,6 +459,22 @@ function ownerHTML(){
   ${responses.length?responses.map(r=>`<div class="resp"><h3>${esc(r.nombre||"Sin nombre")}</h3><small>${r.enviado?new Date(r.enviado).toLocaleString("es-MX",{dateStyle:"medium",timeStyle:"short"}):""}</small>${summaryHTML(r)}</div>`).join(""):`<p class="note">Todavía no llegó ninguna respuesta. Cuando un cliente complete el cuestionario, aparece aquí.</p>`}`;
 }
 
+// Plano y fotos: se leen en el navegador; las fotos se achican para que el envío sea liviano
+const MAX_MB=15;
+function leerDataURL(f){return new Promise((ok,no)=>{const r=new FileReader();r.onload=()=>ok(r.result);r.onerror=no;r.readAsDataURL(f)})}
+async function achicar(f,max=2000){
+  if(!/^image\//.test(f.type)||/gif|svg/.test(f.type))return {name:f.name,type:f.type,data:await leerDataURL(f)};
+  const url=URL.createObjectURL(f);const img=await new Promise((ok,no)=>{const i=new Image();i.onload=()=>ok(i);i.onerror=no;i.src=url});
+  const k=Math.min(1,max/Math.max(img.width,img.height));const c=document.createElement("canvas");c.width=Math.round(img.width*k);c.height=Math.round(img.height*k);
+  c.getContext("2d").drawImage(img,0,0,c.width,c.height);URL.revokeObjectURL(url);
+  return {name:f.name.replace(/\.[^.]+$/,"")+".jpg",type:"image/jpeg",data:c.toDataURL("image/jpeg",0.85)};
+}
+function bindArchivos(){
+  const pl=$("#f-plano");if(pl)pl.onchange=async e=>{const f=e.target.files[0];if(!f)return;if(f.size>MAX_MB*1024*1024){alertInline("El archivo pesa más de "+MAX_MB+" MB. Prueba con una foto del plano.");return}
+    S.leyendo=true;refresh();try{S.planoFile=await achicar(f,2600)}catch(_){alertInline("No pudimos leer ese archivo. Prueba con otro.")}S.leyendo=false;refresh()};
+  const fo=$("#f-fotos");if(fo)fo.onchange=async e=>{const fs=[...e.target.files].slice(0,6);if(!fs.length)return;S.leyendo=true;refresh();
+    try{S.fotosF=[];for(const f of fs)S.fotosF.push(await achicar(f,1600))}catch(_){alertInline("No pudimos leer alguna foto.")}S.leyendo=false;refresh()};
+}
 function render(){
   const k=ST()[step];
   $("#screen").innerHTML=view();
@@ -460,6 +488,7 @@ function render(){
   $("#bar").hidden=k==="listo";
   const ob=$("#ownerBtn"); if(ob) ob.onclick=openOwner;
   ["nombre","contacto","ubicacion","notas","m2","tubicacion","tm2","cm2","obratxt"].forEach(f=>{const el=$("#f-"+f);if(el)el.oninput=e=>S[f]=e.target.value});document.querySelectorAll("[data-itxt]").forEach(el=>el.oninput=e=>S.itxt[el.dataset.itxt]=e.target.value);
+  bindArchivos();
   window.scrollTo(0,0);
 }
 
@@ -474,6 +503,7 @@ document.addEventListener("click",e=>{
     refresh(); return;
   }
   if(b.dataset.cama){S.camas=S.camas||{};S.camas[b.dataset.cama]=b.dataset.v;refresh();return}
+  if(b.dataset.one==="planos_ui"){S.planos=b.dataset.v.startsWith("Sí")?"Sí":"No";refresh();return}
   if(b.dataset.one){S[b.dataset.one]=S[b.dataset.one]===b.dataset.v?"":b.dataset.v;refresh();return}
   if(b.dataset.yn){S.interv[b.dataset.yn]=b.dataset.v;refresh();return}
   if(b.dataset.idet){const k=b.dataset.idet,v=b.dataset.v,a=S.idet[k]||[];if(TODO_DET.includes(v))S.idet[k]=a.includes(v)?[]:[v];else{S.idet[k]=a.filter(x=>!TODO_DET.includes(x));toggle(S.idet[k],v)}refresh();return}
@@ -481,6 +511,7 @@ document.addEventListener("click",e=>{
 function refresh(){ // update pressed states without losing scroll
   const y=window.scrollY; const k=ST()[step]; $("#screen").innerHTML=view();
   ["nombre","contacto","ubicacion","notas","m2","tubicacion","tm2","cm2","obratxt"].forEach(f=>{const el=$("#f-"+f);if(el)el.oninput=e=>S[f]=e.target.value});document.querySelectorAll("[data-itxt]").forEach(el=>el.oninput=e=>S.itxt[el.dataset.itxt]=e.target.value);
+  bindArchivos();
   window.scrollTo(0,y);
 }
 
@@ -495,11 +526,12 @@ $("#next").onclick=async()=>{
 function faltante(k){
   const v=x=>String(x||"").trim();
   if(k==="proyecto"){
-    if(!PRE.id){if(!v(S.nombre))return "Escribe tu nombre para continuar.";if(!v(S.contacto))return "Escribe tu WhatsApp o email.";if(!v(S.ubicacion))return "Escribe la ubicación del proyecto.";if(!S.tipo)return "Elige el tipo de propiedad.";}
+    if(!PRE.id&&!PRE.lead){if(!v(S.nombre))return "Escribe tu nombre para continuar.";if(!v(S.contacto))return "Escribe tu WhatsApp o email.";if(!v(S.ubicacion))return "Escribe la ubicación del proyecto.";if(!S.tipo)return "Elige el tipo de propiedad.";}
     if(!S.uso)return "Elige para qué la vas a usar.";
     if(!ARQ&&!esLM()&&!S.espacios.length)return OBRA?"Elige los espacios a intervenir.":"Elige los espacios a diseñar.";
     if(!ARQ&&!OBRA&&PRE.sp){if(!S.pbanos)return "Elige cuántos baños tiene.";if(!S.pext)return "Elige si tiene exterior.";}
     if(!ARQ&&!OBRA){if(!recLabels().length)return "Elige cuántas recámaras tiene.";const r=recLabels().find(r=>!(S.camas||{})[r]);if(r)return "Elige la cama de "+r+".";}}
+  if(k==="plano"){if(S.leyendo)return "Espera a que termine de cargar el archivo.";if(!S.planos)return "Elige si tienes plano.";if(S.planos==="Sí"&&!S.planoFile)return "Sube el plano (PDF o foto).";if(S.planos==="No"&&!OBRA&&!S.m2r)return "Elige los m² aproximados.";}
   if(k==="paquete"&&!S.paquete)return "Elige un paquete para continuar.";
   if(k==="estilo"&&!S.estilos.length)return "Elige al menos un estilo.";
   if(k==="colores"){if(!S.colores.length)return "Elige al menos un color.";if(!ARQ&&!S.donde.length)return "Elige dónde quieres esos colores.";}
@@ -508,7 +540,7 @@ function faltante(k){
   const lmErr=()=>esLM()?(!S.piso?"Elige en qué piso está la unidad.":(!esST()&&!S.tvrec?"Responde si quieres TV en las recámaras.":"")):""; if(k==="proyecto"&&lmErr())return lmErr(); if(k==="presupuesto"){if(!S.presupuesto)return "Elige un rango de presupuesto.";if(!ARQ&&!OBRA&&S.obraq==="Sí"&&!S.obrasel.length)return "Elige qué te gustaría cambiar de obra.";if(pideVent()&&!S.ventpref)return "Elige si prefieres persianas o cortinas.";if(!S.plazo)return "Elige para cuándo lo necesitas.";}
   if(k==="materiales"){const g=Object.keys(MAT_ARQ).find(g=>!(S.mat[g]||[]).length);if(g)return "Elige al menos una opción en "+g+".";if(!S.sensacion)return "Elige cómo quieres que se sienta la casa.";}
   if(k==="obra"&&!S.obra.length)return "Marca al menos una cosa que quieras cambiar.";
-  if(k==="inmueble"){if(!v(S.m2))return "Escribe los metros cuadrados aproximados.";if(!S.planos)return "Responde si tienes planos.";if(!S.vive)return "Responde si vas a vivir ahí durante la obra.";if(!S.permisos)return "Responde lo de los permisos (si no sabes, elige «No sé»).";}
+  if(k==="inmueble"){if(!v(S.m2))return "Escribe los metros cuadrados aproximados.";if(!S.vive)return "Responde si vas a vivir ahí durante la obra.";if(!S.permisos)return "Responde lo de los permisos (si no sabes, elige «No sé»).";}
   if(k==="terreno"){if(!S.terreno)return "Responde si ya tienes terreno.";if(!v(S.tubicacion))return S.terreno==="Sí"?"Escribe la ubicación del terreno.":"Escribe la zona donde lo buscas.";if(S.terreno==="Sí"&&!v(S.tm2))return "Escribe la medida del terreno.";}
   if(k==="programa"){if(!S.construir)return "Elige el tipo de construcción.";if(!v(S.cm2))return "Escribe los m² a construir aproximados.";if(!S.recs)return "Elige cuántas recámaras.";if(!S.banos)return "Elige cuántos baños.";}
   if(k==="amueblar"&&!S.paquete)return "Elige una opción para continuar.";
@@ -525,15 +557,15 @@ async function submit(){volcarExtras();
   err="";saving=true;render();
   const j=a=>[].concat(a||[]).join(", ");
   const fila={
-    "ID cliente":PRE.id,"Nombre":S.nombre,"Contacto":S.contacto,"Paquete":S.paquete,"Ubicación":S.ubicacion,"Tipo de propiedad":S.tipo,"Uso":S.uso,
+    "ID cliente":PRE.id,"ID lead":PRE.lead,"Nombre":S.nombre,"Contacto":S.contacto,"Paquete":S.paquete,"Ubicación":S.ubicacion,"Tipo de propiedad":S.tipo,"Uso":S.uso,
     "Espacios":(esLM()&&!S.espacios.length)?"Todos los espacios":j(S.espacios),"Estilos":j(S.estilos),"Colores":j(S.colores),"Dónde van los colores":j(S.donde),
     "Fachada":j(S.mat["Fachada"]),"Pisos":j(S.mat["Pisos"]),"Cancelería":j(S.mat["Ventanas y cancelería"]),"Carácter":S.sensacion,"Madera":j(S.term["Madera"]),"Piedra":j(S.term["Piedra"]),"Metales":j(S.term["Metales"]),"Textiles":j(S.term["Textiles"]),
     "Muros":S.muros,"Intervenir además":intervTxt(S),
-    "Presupuesto":S.presupuesto,"Plazo":S.plazo,"Baños":PRE.sp?(S.pbanos||""):"","Exterior":PRE.sp?(S.pext||""):"","Metros cuadrados":PRE.sp?"":S.m2,"Recámaras":(!ARQ&&!OBRA&&!esST())?(S.recs_i||""):"","Camas":(!ARQ&&!OBRA)?recLabels().map(r=>r+": "+((S.camas||{})[r]||"")).join(" · "):"","Notas":[S.notas,(S.obraq==="Sí"&&S.obratxt)?"Obra: "+S.obratxt:""].filter(Boolean).join(" · "),"Piso":esLM()?S.piso:"","TV en recámaras":(esLM()&&!esST())?S.tvrec:"","Cortinas o persianas":pideVent()?S.ventpref:"",
-    "Tipo de proyecto":ARQ?"Arquitectura (desde cero)":OBRA?"Remodelación":"Interiores","Terreno":[S.terreno,S.tubicacion,S.tm2].filter(Boolean).join(" · "),"Construir":[S.construir,S.cm2,S.recs&&(S.recs+" rec."),S.banos&&(S.banos+" baños"),j(S.extras)].filter(Boolean).join(" · "),"Obra":j(S.obra),"Planos":S.planos,"Vive durante la obra":S.vive,"Permisos":S.permisos
+    "Presupuesto":S.presupuesto,"Plazo":S.plazo,"Baños":PRE.sp?(S.pbanos||""):"","Exterior":PRE.sp?(S.pext||""):"","Metros cuadrados":PRE.sp?"":(S.m2||S.m2r||""),"Recámaras":(!ARQ&&!OBRA&&!esST())?(S.recs_i||""):"","Camas":(!ARQ&&!OBRA)?recLabels().map(r=>r+": "+((S.camas||{})[r]||"")).join(" · "):"","Notas":[S.notas,(S.obraq==="Sí"&&S.obratxt)?"Obra: "+S.obratxt:""].filter(Boolean).join(" · "),"Piso":esLM()?S.piso:"","TV en recámaras":(esLM()&&!esST())?S.tvrec:"","Cortinas o persianas":pideVent()?S.ventpref:"",
+    "Tipo de proyecto":ARQ?"Arquitectura (desde cero)":OBRA?"Remodelación":"Interiores","Terreno":[S.terreno,S.tubicacion,S.tm2].filter(Boolean).join(" · "),"Construir":[S.construir,S.cm2,S.recs&&(S.recs+" rec."),S.banos&&(S.banos+" baños"),j(S.extras)].filter(Boolean).join(" · "),"Obra":j(S.obra),"Planos":S.planos==="Sí"?"Sí (subido)":S.planos,"Vive durante la obra":S.vive,"Permisos":S.permisos
   };
   try{
-    await fetch(SCRIPT_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(fila)});
+    await fetch(SCRIPT_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(Object.assign({},fila,{_archivos:{plano:S.planos==="Sí"?S.planoFile||null:null,fotos:S.planos==="No"?(S.fotosF||[]):[]}}))});
     saving=false;step++;render();
   }catch(x){
     saving=false;err="No se pudo enviar. Revisa tu conexión y toca Enviar otra vez.";render();
