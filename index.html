@@ -1,1 +1,207 @@
-<!doctype html><meta charset="utf-8"><meta name="robots" content="noindex"><title>KIRU Studio</title><body style="font-family:sans-serif;padding:40px">KIRU Studio</body>
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>KIRU Studio · Interiorismo en la Riviera Maya</title>
+<meta name="description" content="Diseño, mobiliario y decoración para tu propiedad en la Riviera Maya. Entrega desde 3 semanas.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="KIRU Studio">
+<meta property="og:title" content="KIRU Studio · Tu propiedad lista para vivir o rentar">
+<meta property="og:description" content="Diseño, mobiliario y decoración llave en mano en la Riviera Maya.">
+<meta property="og:image" content="https://kiru-crypto.github.io/kiru-sitios/landing/hero.jpg">
+<link rel="icon" href="landing/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Marcellus&family=Figtree:wght@400;500;600&display=swap">
+
+<!-- Píxel de Meta: poner el ID en PIXEL_ID (abajo). Mientras esté vacío no carga nada. -->
+<script>
+const PIXEL_ID="1450842154780558";
+if(PIXEL_ID){!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');fbq('init',PIXEL_ID);fbq('track','PageView');}
+</script>
+
+<style>
+html,body{margin:0}img{max-width:100%;display:block}[hidden]{display:none!important}
+:root{
+  --bg:#EDEFEA; --surface:#F8F9F6; --ink:#1E2421; --muted:#5E6862; --line:#D3D8D1;
+  --accent:#2F4A3E; --accent-ink:#F4F6F2; --accent-soft:#DCE5DE; --warn:#9A3B2A;
+  --display:"Marcellus","Didot","Times New Roman",serif;
+  --body:"Figtree","Segoe UI",system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5}
+.wrap{max-width:640px;margin:0 auto;padding:0 20px}
+header{display:flex;justify-content:space-between;align-items:center;padding:18px 20px;max-width:1080px;margin:0 auto}
+.logo{font-family:var(--display);font-size:22px;letter-spacing:.32em}
+header a.cta-s{font-size:14px;color:var(--accent);text-decoration:none;border-bottom:1px solid currentColor}
+
+.hero{position:relative;max-width:1080px;margin:0 auto}
+.hero img{width:100%;aspect-ratio:16/10;object-fit:cover}
+@media (min-width:760px){.hero img{aspect-ratio:21/9;border-radius:6px}.hero{padding:0 20px}}
+.intro{padding:32px 0 8px}
+h1,h2{font-family:var(--display);font-weight:400;text-wrap:balance;margin:0}
+h1{font-size:clamp(32px,8vw,48px);line-height:1.08}
+h2{font-size:clamp(24px,6vw,32px);line-height:1.15}
+.lead{color:var(--muted);margin:14px 0 0;max-width:56ch}
+.btn{font:inherit;font-weight:600;font-size:16px;border:0;border-radius:4px;padding:15px 22px;cursor:pointer;background:var(--accent);color:var(--accent-ink);display:inline-block;text-decoration:none}
+.btn:disabled{opacity:.5;cursor:wait}
+.btn.ghost{background:none;color:var(--muted);padding:15px 6px;font-weight:500}
+.intro .btn{margin-top:24px;width:100%}
+@media (min-width:560px){.intro .btn{width:auto}}
+.points{list-style:none;padding:0;margin:36px 0 0;display:grid;gap:18px;border-top:1px solid var(--line);padding-top:28px}
+.points li{display:grid;grid-template-columns:28px 1fr;gap:12px}
+.points b{display:block;font-weight:600}
+.points span{color:var(--muted);font-size:15px}
+.points i{font-style:normal;font-family:var(--display);font-size:20px;color:var(--accent)}
+
+/* Formulario: una pregunta por pantalla, avanza solo al tocar */
+#form-wrap{background:var(--surface);border-top:1px solid var(--line);border-bottom:1px solid var(--line);margin-top:44px;padding:36px 0 40px;scroll-margin-top:0}
+.fhead{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px}
+.count{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-variant-numeric:tabular-nums}
+.progress{height:2px;background:var(--line);margin-bottom:28px}
+.progress i{display:block;height:100%;background:var(--accent);transition:width .3s ease}
+.options{display:grid;gap:8px;margin-top:22px}
+.options.two{grid-template-columns:1fr 1fr}
+.opt{font:inherit;text-align:left;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:14px 16px;cursor:pointer;display:flex;gap:12px;align-items:center;transition:border-color .15s,background .15s}
+.opt::before{content:"";flex:none;width:18px;height:18px;border-radius:50%;border:1.5px solid var(--muted)}
+.opt[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft)}
+.opt[aria-pressed="true"]::before{border:5px solid var(--accent)}
+.opt small{display:block;color:var(--muted);font-size:13px;line-height:1.35;margin-top:2px}
+.opt:focus-visible,.btn:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.fields{display:grid;gap:12px;margin-top:22px}
+.fields label{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:6px}
+.fields label em{font-style:normal;text-transform:none;letter-spacing:0}
+input[type=text],input[type=tel],input[type=email]{width:100%;font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:13px 14px}
+.nav{display:flex;justify-content:space-between;align-items:center;margin-top:26px;gap:12px}
+.err{color:var(--warn);font-size:14px;margin:14px 0 0}
+.fine{color:var(--muted);font-size:13px;margin:14px 0 0}
+.done{text-align:left}
+.done .check{width:52px;height:52px;border-radius:50%;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;font-size:24px;margin-bottom:20px}
+footer{color:var(--muted);font-size:13px;text-align:center;padding:28px 20px 40px}
+footer img{height:22px;width:auto;margin:0 auto 10px;opacity:.75}
+</style>
+</head>
+<body>
+
+<header>
+  <span class="logo">KIRU</span>
+  <a class="cta-s" href="#form-wrap">Cotiza tu proyecto</a>
+</header>
+
+<div class="hero"><img src="landing/hero.jpg" alt="Sala tropical contemporánea con vista a la selva" width="720" height="450" fetchpriority="high"></div>
+
+<main class="wrap">
+  <section class="intro">
+    <h1>Tu propiedad en la Riviera Maya, lista para vivir o rentar</h1>
+    <p class="lead">Nosotros diseñamos, compramos e instalamos todo: muebles, decoración, blancos y electrodomésticos. Tú solo recibes las llaves.</p>
+    <a class="btn" href="#form-wrap" id="go">Quiero cotizar</a>
+    <ul class="points">
+      <li><i>1</i><div><b>Diseño a tu medida</b><span>Una propuesta hecha para tu depa o tu casa, según cómo la vas a usar.</span></div></li>
+      <li><i>2</i><div><b>Entrega desde 3 semanas</b><span>Contadas desde que apruebas tu propuesta, según el paquete que elijas.</span></div></li>
+      <li><i>3</i><div><b>Sin complicaciones</b><span>Nos encargamos de proveedores, compras, armado y entrega. Tú no coordinas nada.</span></div></li>
+    </ul>
+  </section>
+</main>
+
+<section id="form-wrap">
+  <div class="wrap" id="screen" aria-live="polite"></div>
+</section>
+
+<footer>
+  <img src="landing/logo-kiru.png" alt="KIRU Studio">
+  KIRU Studio · Interiorismo y gestión de obra · Playa del Carmen
+</footer>
+
+<script>
+/* ---- Envío ----
+   LEAD_URL vacío = modo prueba: no manda nada, solo muestra la pantalla de gracias.
+   Cuando el Apps Script tenga la pestaña Leads, poner acá su URL. */
+const LEAD_URL="https://script.google.com/macros/s/AKfycbyPxz7iZikEmNlYQPzhr8ySz61Gay_cBFzjcXxhsDrdRfCl_8NN-Y5iY6d0kzbBJET88A/exec";
+
+/* Valores iguales a los del registro y el cuestionario (TIPOS, USOS, códigos de paquete) */
+const PASOS=[
+  {k:"paquete",h:"¿Qué necesitas para tu propiedad?",o:[
+    {v:"LM",t:"Llave en mano",d:"Muebles, deco, blancos, electrodomésticos y cocina. Lista para usar."},
+    {v:"MD",t:"Muebles y decoración",d:"Mobiliario, deco, arte, plantas e iluminación."},
+    {v:"REM",t:"Remodelación u obra",d:"Pisos, cocina, baños, muebles a medida."},
+    {v:"",t:"Todavía no sé",d:"Te ayudamos a elegir."}]},
+  {k:"tipo",h:"¿Qué tipo de propiedad es?",o:[
+    {v:"Apartamento",t:"Departamento"},{v:"Casa",t:"Casa"},{v:"Villa",t:"Villa"},{v:"Hotel / boutique",t:"Hotel o proyecto boutique"}]},
+  {k:"recamaras",h:"¿Cuántas recámaras tiene?",two:true,o:[
+    {v:"0",t:"Studio"},{v:"1",t:"1"},{v:"2",t:"2"},{v:"3",t:"3"},{v:"4",t:"4"},{v:"5",t:"5 o más"}]},
+  {k:"uso",h:"¿Para qué la vas a usar?",o:[
+    {v:"Uso propio",t:"Para vivir"},{v:"Renta",t:"Para rentar"},{v:"Ambos: uso propio y renta",t:"Para vivir y rentar"}]},
+  {k:"zona",h:"¿Dónde está?",o:[
+    {v:"Playa del Carmen",t:"Playa del Carmen"},{v:"Tulum",t:"Tulum"},{v:"Puerto Morelos",t:"Puerto Morelos"},{v:"Cancún",t:"Cancún"},{v:"Otra",t:"Otra zona"}]},
+  {k:"etapa",h:"¿En qué etapa va?",o:[
+    {v:"En construcción / preventa",t:"En construcción o preventa"},{v:"Entregada, vacía",t:"Ya me la entregaron, está vacía"},{v:"Amueblada, renovar",t:"Ya está amueblada, quiero renovarla"}]},
+  {k:"contacto",h:"¿Cómo te contactamos?"}
+];
+const S={nombre:"",whatsapp:"",email:""};
+let step=-1, err="", saving=false;
+
+/* Datos de campaña (vienen en el link del anuncio) */
+const Q=new URLSearchParams(location.search);
+const ORIGEN={utm_source:Q.get("utm_source")||"",utm_campaign:Q.get("utm_campaign")||"",utm_content:Q.get("utm_content")||"",fbclid:Q.get("fbclid")||""};
+
+const $=s=>document.querySelector(s);
+const esc=t=>String(t).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const pasos=()=>PASOS;
+
+function view(){
+  const L=pasos(), n=L.length;
+  if(step<0) return `<h2>Platícanos de tu propiedad</h2><p class="lead">Son ${n} preguntas rápidas, te toma menos de un minuto. Con esto te contactamos con una primera idea de alcance y precio.</p><div class="nav"><button class="btn" data-go="next">Empezar</button></div>`;
+  if(step>=n) return `<div class="done"><div class="check">✓</div><h2>¡Gracias${S.nombre?", "+esc(S.nombre.trim().split(/\s+/)[0]):""}!</h2><p class="lead">Ya recibimos tus datos. Te escribimos por WhatsApp en menos de 24 horas hábiles para platicar de tu proyecto.</p></div>`;
+  const p=L[step];
+  const head=`<div class="fhead"><span class="count">${step+1} / ${n}</span></div><div class="progress"><i style="width:${(step/n)*100}%"></i></div>`;
+  if(p.k==="contacto") return head+`<h2>${p.h}</h2>
+    <div class="fields">
+      <div><label for="f-nombre">Nombre</label><input type="text" id="f-nombre" autocomplete="name" value="${esc(S.nombre)}"></div>
+      <div><label for="f-wa">WhatsApp</label><input type="tel" id="f-wa" autocomplete="tel" inputmode="tel" placeholder="+52 984 000 0000" value="${esc(S.whatsapp)}"></div>
+      <div><label for="f-email">Email <em>· opcional</em></label><input type="email" id="f-email" autocomplete="email" value="${esc(S.email)}"></div>
+    </div>
+    ${err?`<p class="err">${esc(err)}</p>`:""}
+    <div class="nav"><button class="btn ghost" data-go="back">← Atrás</button><button class="btn" data-go="send" ${saving?"disabled":""}>${saving?"Enviando…":"Enviar"}</button></div>
+    <p class="fine">Solo usamos tus datos para contactarte sobre tu proyecto.</p>`;
+  return head+`<h2>${p.h}</h2>
+    <div class="options${p.two?" two":""}">${p.o.map(o=>`<button type="button" class="opt" data-k="${p.k}" data-v="${esc(o.v)}" data-t="${esc(o.t)}" aria-pressed="${S[p.k]===o.v&&S[p.k+"_t"]===o.t}"><span>${esc(o.t)}${o.d?`<small>${esc(o.d)}</small>`:""}</span></button>`).join("")}</div>
+    ${step>0?`<div class="nav"><button class="btn ghost" data-go="back">← Atrás</button></div>`:""}`;
+}
+function render(){$("#screen").innerHTML=view();}
+function guardarCampos(){const g=id=>{const e=$("#"+id);return e?e.value:""};if($("#f-nombre")){S.nombre=g("f-nombre");S.whatsapp=g("f-wa");S.email=g("f-email")}}
+
+document.addEventListener("click",e=>{
+  const o=e.target.closest(".opt");
+  if(o){S[o.dataset.k]=o.dataset.v;S[o.dataset.k+"_t"]=o.dataset.t;render();setTimeout(()=>{step++;render();},180);return}
+  const b=e.target.closest("[data-go]"); if(!b)return;
+  const go=b.dataset.go;
+  if(go==="next"){step++;render();}
+  else if(go==="back"){guardarCampos();err="";step--;render();}
+  else if(go==="send"){guardarCampos();enviar();}
+});
+$("#go").addEventListener("click",()=>{if(step<0){step=0;render();}});
+
+async function enviar(){
+  const wa=S.whatsapp.replace(/[^\d+]/g,"");
+  if(!S.nombre.trim()){err="Escribe tu nombre.";render();$("#f-nombre").focus();return}
+  if(wa.replace(/\D/g,"").length<10){err="Escribe tu WhatsApp a 10 dígitos (con lada).";render();$("#f-wa").focus();return}
+  if(S.email&&!/^\S+@\S+\.\S+$/.test(S.email)){err="Revisa el email (o déjalo vacío).";render();$("#f-email").focus();return}
+  err="";saving=true;render();
+  const fila={
+    "Fecha":new Date().toISOString(),"Nombre":S.nombre.trim(),"WhatsApp":wa,"Email":S.email.trim(),
+    "Paquete":S.paquete||"","Tipo de propiedad":S.tipo||"","Recámaras":S.recamaras||"","Uso":S.uso||"",
+    "Zona":S.zona||"","Etapa":S.etapa||"",
+    "Fuente":ORIGEN.utm_source,"Campaña":ORIGEN.utm_campaign,"Anuncio":ORIGEN.utm_content,"fbclid":ORIGEN.fbclid
+  };
+  try{
+    if(LEAD_URL) await fetch(LEAD_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({tipo:"lead",fila})});
+    else console.log("[modo prueba] lead: "+JSON.stringify(fila));
+    if(window.fbq) fbq("track","Lead",{content_name:S.paquete||"sin paquete"});
+    saving=false;step++;render();
+    $("#form-wrap").scrollIntoView({behavior:"smooth"});
+  }catch(x){saving=false;err="No se pudo enviar. Revisa tu conexión y toca Enviar otra vez.";render();}
+}
+render();
+</script>
+</body>
+</html>
