@@ -36,8 +36,8 @@ header{display:flex;justify-content:space-between;align-items:center;padding:18p
 header a.cta-s{font-size:14px;color:var(--accent);text-decoration:none;border-bottom:1px solid currentColor}
 
 .hero{position:relative;max-width:1080px;margin:0 auto}
-.hero img{display:block;width:100%;height:auto;aspect-ratio:16/10;object-fit:cover}
-@media (min-width:760px){.hero img{aspect-ratio:21/9;border-radius:6px}.hero{padding:0 20px}}
+.hero img,.hero video{display:block;width:100%;height:auto;object-fit:cover;aspect-ratio:16/10;object-fit:cover}
+@media (min-width:760px){.hero img,.hero video{aspect-ratio:21/9;border-radius:6px}.hero{padding:0 20px}}
 .intro{padding:32px 0 8px}
 h1,h2{font-family:var(--display);font-weight:400;text-wrap:balance;margin:0}
 h1{font-size:clamp(32px,8vw,48px);line-height:1.08}
@@ -53,7 +53,33 @@ h2{font-size:clamp(24px,6vw,32px);line-height:1.15}
 .points b{display:block;font-weight:600}
 .points span{color:var(--muted);font-size:15px}
 .points i{font-style:normal;font-family:var(--display);font-size:20px;color:var(--accent)}
-.gal{margin-top:40px}
+@media (min-width:900px){main.wrap{max-width:980px}.intro .lead{max-width:60ch}}
+.sec{margin-top:52px}
+.sec>h2{margin-bottom:6px}
+.sec>p.sub{color:var(--muted);margin:0 0 20px}
+.steps{list-style:none;padding:0;margin:0;display:grid;gap:12px}
+.steps li{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:18px 18px 18px 64px;position:relative}
+.steps li::before{content:attr(data-n);position:absolute;left:18px;top:16px;width:32px;height:32px;border-radius:50%;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;font-family:var(--display);font-size:17px}
+.steps b{display:block;font-weight:600;margin-bottom:2px}
+.steps span{color:var(--muted);font-size:15px}
+.paqs{display:grid;gap:12px}
+@media (min-width:760px){.paqs{grid-template-columns:repeat(3,1fr)}.steps{grid-template-columns:repeat(3,1fr)}.steps li{padding:56px 18px 18px}.steps li::before{top:16px}}
+.paq{border:1px solid var(--line);border-radius:8px;padding:20px;display:flex;flex-direction:column;background:var(--bg)}
+.paq.top{border:2px solid var(--accent)}
+.paq .tag{align-self:flex-start;font-size:12px;letter-spacing:.08em;text-transform:uppercase;background:var(--accent-soft);color:var(--accent);padding:3px 10px;border-radius:4px;margin-bottom:10px}
+.paq h3{font-family:var(--display);font-weight:400;font-size:22px;margin:0 0 4px}
+.paq p{color:var(--muted);font-size:15px;margin:0 0 12px}
+.paq ul{margin:0 0 16px;padding-left:18px;font-size:15px;flex:1}
+.paq li{margin:3px 0}
+.paq .btn{width:100%;text-align:center}
+.paq .btn.sec2{background:none;color:var(--accent);border:1px solid var(--accent)}
+.faq details{border-top:1px solid var(--line);padding:14px 0}
+.faq details:last-child{border-bottom:1px solid var(--line)}
+.faq summary{cursor:pointer;font-weight:600;list-style:none;display:flex;justify-content:space-between;gap:12px}
+.faq summary::after{content:"+";font-family:var(--display);font-size:22px;line-height:1;color:var(--accent)}
+.faq details[open] summary::after{content:"–"}
+.faq details p{color:var(--muted);margin:8px 0 0;font-size:15px}
+.gal{margin-top:52px}
 .gal h2{margin-bottom:6px}
 .gal p{color:var(--muted);margin:0 0 18px}
 .gal-row{display:grid;grid-auto-flow:column;grid-auto-columns:72%;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:8px;-webkit-overflow-scrolling:touch}
@@ -96,7 +122,7 @@ footer img{height:22px;width:auto;margin:0 auto 10px;opacity:.75}
   <a class="cta-s" href="#form-wrap">Cotiza tu proyecto</a>
 </header>
 
-<div class="hero"><img src="hero.jpg" alt="Sala de una villa diseñada por KIRU, abierta al jardín y la alberca" width="1800" height="1369" fetchpriority="high"></div>
+<div class="hero"><video src="hero.mp4" poster="hero.jpg" autoplay muted loop playsinline preload="auto" aria-label="Interiores diseñados por KIRU en la Riviera Maya"></video></div>
 
 <main class="wrap">
   <section class="intro">
@@ -109,17 +135,54 @@ footer img{height:22px;width:auto;margin:0 auto 10px;opacity:.75}
       <li><i>3</i><div><b>Sin complicaciones</b><span>Nos encargamos de proveedores, compras, armado y entrega. Tú no coordinas nada.</span></div></li>
     </ul>
   </section>
+  <section class="sec">
+    <h2>Cómo trabajamos</h2>
+    <p class="sub">Tres pasos, y tú no tienes que coordinar nada.</p>
+    <ol class="steps">
+      <li data-n="1"><b>Nos cuentas de tu propiedad</b><span>Llenas este formulario y un cuestionario corto con tus gustos. Si tienes el plano, lo subes ahí mismo.</span></li>
+      <li data-n="2"><b>Te mandamos tu propuesta</b><span>Recibes el moodboard con el estilo y una cotización con las piezas, para que veas cómo va a quedar y cuánto cuesta.</span></li>
+      <li data-n="3"><b>Compramos, instalamos y entregamos</b><span>Nos encargamos de proveedores, armado e instalación. Entregamos desde 3 semanas después de que apruebas.</span></li>
+    </ol>
+  </section>
+
+  <section class="sec">
+    <h2>Elige cómo la quieres</h2>
+    <p class="sub">Todos los paquetes incluyen el diseño, las compras y la instalación.</p>
+    <div class="paqs">
+      <div class="paq"><h3>Muebles y deco</h3><p>Para que tu espacio se vea terminado.</p>
+        <ul><li>Muebles de sala, comedor y recámaras</li><li>Decoración, arte y plantas</li><li>Iluminación</li></ul>
+        <button class="btn sec2" data-paq="MD" data-t="Muebles y decoración">Cotizar este paquete</button></div>
+      <div class="paq top"><span class="tag">El más pedido para rentar</span><h3>Llave en mano</h3><p>Lista para vivir o rentar desde el primer día.</p>
+        <ul><li>Todo lo de Muebles y deco</li><li>Blancos: sábanas, toallas y almohadas</li><li>Electrodomésticos y línea blanca</li><li>Cocina equipada y cortinas</li></ul>
+        <button class="btn" data-paq="LM" data-t="Llave en mano">Cotizar este paquete</button></div>
+      <div class="paq"><h3>Remodelación</h3><p>Cuando hay que cambiar algo antes de amueblar.</p>
+        <ul><li>Pisos, cocina y baños</li><li>Muebles a medida</li><li>Se puede sumar a cualquier paquete</li></ul>
+        <button class="btn sec2" data-paq="REM" data-t="Remodelación u obra">Cotizar remodelación</button></div>
+    </div>
+  </section>
+
   <section class="gal">
     <h2>Proyectos recientes</h2>
-    <p>Así quedan las propiedades que entregamos.</p>
+    <p>Departamentos, casas y villas que amueblamos en la Riviera Maya.</p>
     <div class="gal-row">
-      <figure><img src="g/g1.jpg?v=2" alt="Villa · Riviera Maya" width="720" height="900" loading="lazy"><figcaption>Villa · Riviera Maya</figcaption></figure>
-      <figure><img src="g/g2.jpg?v=2" alt="Sala · departamento" width="720" height="900" loading="lazy"><figcaption>Sala · departamento</figcaption></figure>
-      <figure><img src="g/g3.jpg?v=2" alt="Comedor · departamento" width="720" height="900" loading="lazy"><figcaption>Comedor · departamento</figcaption></figure>
-      <figure><img src="g/g4.jpg?v=2" alt="Recámara con terraza" width="720" height="900" loading="lazy"><figcaption>Recámara con terraza</figcaption></figure>
-      <figure><img src="g/g5.jpg?v=2" alt="Comedor y estudio" width="720" height="900" loading="lazy"><figcaption>Comedor y estudio</figcaption></figure>
-      <figure><img src="g/g6.jpg?v=2" alt="Rincón de lectura" width="720" height="900" loading="lazy"><figcaption>Rincón de lectura</figcaption></figure>
+      <figure><img src="g/p1.jpg" alt="Villa · Riviera Maya" width="720" height="900" loading="lazy"><figcaption>Villa · Riviera Maya</figcaption></figure>
+      <figure><img src="g/p2.jpg" alt="Recámara · departamento" width="720" height="900" loading="lazy"><figcaption>Recámara · departamento</figcaption></figure>
+      <figure><img src="g/p3.jpg" alt="Sala · departamento" width="720" height="900" loading="lazy"><figcaption>Sala · departamento</figcaption></figure>
+      <figure><img src="g/p4.jpg" alt="Rincón de lectura" width="720" height="900" loading="lazy"><figcaption>Rincón de lectura</figcaption></figure>
+      <figure><img src="g/p5.jpg" alt="Comedor · departamento" width="720" height="900" loading="lazy"><figcaption>Comedor · departamento</figcaption></figure>
+      <figure><img src="g/p6.jpg" alt="Recámara con terraza" width="720" height="900" loading="lazy"><figcaption>Recámara con terraza</figcaption></figure>
+      <figure><img src="g/p7.jpg" alt="Detalle de comedor" width="720" height="900" loading="lazy"><figcaption>Detalle de comedor</figcaption></figure>
+      <figure><img src="g/p8.jpg" alt="Recámara con vista" width="720" height="900" loading="lazy"><figcaption>Recámara con vista</figcaption></figure>
+      <figure><img src="g/p9.jpg" alt="Sala y cocina" width="720" height="900" loading="lazy"><figcaption>Sala y cocina</figcaption></figure>
     </div>
+  </section>
+  <section class="sec faq">
+    <h2>Preguntas frecuentes</h2>
+    <details><summary>¿Cuánto tardan en entregar?</summary><p>Desde 3 semanas, contadas desde que apruebas tu propuesta. El tiempo exacto depende del paquete y de lo que elijas; si podemos entregar antes, lo hacemos.</p></details>
+    <details><summary>¿Trabajan con propiedades para renta vacacional?</summary><p>Sí, es lo que más hacemos. El paquete Llave en mano deja la propiedad lista para recibir huéspedes: blancos, cocina y electrodomésticos incluidos.</p></details>
+    <details><summary>¿En qué zonas trabajan?</summary><p>Playa del Carmen, Tulum, Puerto Morelos, Cancún y alrededores de la Riviera Maya.</p></details>
+    <details><summary>¿Cómo se paga?</summary><p>Con un anticipo cuando apruebas la cotización y el resto antes de la entrega. Te damos las condiciones exactas en tu cotización.</p></details>
+    <details><summary>¿Tengo que estar presente?</summary><p>No. Nosotros coordinamos todo: compras, recepción, armado e instalación. Te mandamos fotos y te entregamos las llaves.</p></details>
   </section>
 </main>
 
@@ -193,6 +256,8 @@ function guardarCampos(){const g=id=>{const e=$("#"+id);return e?e.value:""};if(
 document.addEventListener("click",e=>{
   const o=e.target.closest(".opt");
   if(o){S[o.dataset.k]=o.dataset.v;S[o.dataset.k+"_t"]=o.dataset.t;render();setTimeout(()=>{step++;render();},180);return}
+  const pq=e.target.closest("[data-paq]");
+  if(pq){S.paquete=pq.dataset.paq;S.paquete_t=pq.dataset.t;step=1;render();$("#form-wrap").scrollIntoView({behavior:"smooth"});return}
   const b=e.target.closest("[data-go]"); if(!b)return;
   const go=b.dataset.go;
   if(go==="next"){step++;render();}
