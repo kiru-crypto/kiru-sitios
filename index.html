@@ -220,7 +220,7 @@ const PASOS=[
     {v:"En construcción / preventa",t:"En construcción o preventa"},{v:"Entregada, vacía",t:"Ya me la entregaron, está vacía"},{v:"Amueblada, renovar",t:"Ya está amueblada, quiero renovarla"}]},
   {k:"contacto",h:"¿Cómo te contactamos?"}
 ];
-const S={nombre:"",whatsapp:"",email:""};
+const S={nombre:"",whatsapp:""};
 let step=-1, err="", saving=false;
 
 /* Datos de campaña (vienen en el link del anuncio) */
@@ -241,7 +241,6 @@ function view(){
     <div class="fields">
       <div><label for="f-nombre">Nombre</label><input type="text" id="f-nombre" autocomplete="name" value="${esc(S.nombre)}"></div>
       <div><label for="f-wa">WhatsApp</label><input type="tel" id="f-wa" autocomplete="tel" inputmode="tel" placeholder="+52 984 000 0000" value="${esc(S.whatsapp)}"></div>
-      <div><label for="f-email">Email <em>· opcional</em></label><input type="email" id="f-email" autocomplete="email" value="${esc(S.email)}"></div>
     </div>
     ${err?`<p class="err">${esc(err)}</p>`:""}
     <div class="nav"><button class="btn ghost" data-go="back">← Atrás</button><button class="btn" data-go="send" ${saving?"disabled":""}>${saving?"Enviando…":"Enviar"}</button></div>
@@ -251,7 +250,7 @@ function view(){
     ${step>0?`<div class="nav"><button class="btn ghost" data-go="back">← Atrás</button></div>`:""}`;
 }
 function render(){$("#screen").innerHTML=view();}
-function guardarCampos(){const g=id=>{const e=$("#"+id);return e?e.value:""};if($("#f-nombre")){S.nombre=g("f-nombre");S.whatsapp=g("f-wa");S.email=g("f-email")}}
+function guardarCampos(){const g=id=>{const e=$("#"+id);return e?e.value:""};if($("#f-nombre")){S.nombre=g("f-nombre");S.whatsapp=g("f-wa")}}
 
 document.addEventListener("click",e=>{
   const o=e.target.closest(".opt");
@@ -270,10 +269,9 @@ async function enviar(){
   const wa=S.whatsapp.replace(/[^\d+]/g,"");
   if(!S.nombre.trim()){err="Escribe tu nombre.";render();$("#f-nombre").focus();return}
   if(wa.replace(/\D/g,"").length<10){err="Escribe tu WhatsApp a 10 dígitos (con lada).";render();$("#f-wa").focus();return}
-  if(S.email&&!/^\S+@\S+\.\S+$/.test(S.email)){err="Revisa el email (o déjalo vacío).";render();$("#f-email").focus();return}
   err="";saving=true;render();
   const fila={
-    "Fecha":new Date().toISOString(),"Nombre":S.nombre.trim(),"WhatsApp":wa,"Email":S.email.trim(),
+    "Fecha":new Date().toISOString(),"Nombre":S.nombre.trim(),"WhatsApp":wa,"Email":"",
     "Paquete":S.paquete||"","Tipo de propiedad":S.tipo||"","Recámaras":S.recamaras||"","Uso":S.uso||"",
     "Zona":S.zona||"","Etapa":S.etapa||"",
     "Fuente":ORIGEN.utm_source,"Campaña":ORIGEN.utm_campaign,"Anuncio":ORIGEN.utm_content,"fbclid":ORIGEN.fbclid
