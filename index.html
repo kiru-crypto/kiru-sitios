@@ -113,6 +113,13 @@ input[type=text],input[type=tel],input[type=email]{width:100%;font:inherit;color
 .done .check{width:52px;height:52px;border-radius:50%;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;font-size:24px;margin-bottom:20px}
 footer{color:var(--muted);font-size:13px;text-align:center;padding:28px 20px 40px}
 footer img{height:22px;width:auto;margin:0 auto 10px;opacity:.75}
+.solo-brand{display:none;text-align:center;padding:28px 20px 0}
+.solo-brand img{height:44px;width:auto;margin:0 auto}
+body.solo header,body.solo .hero,body.solo main{display:none}
+body.solo .solo-brand{display:block}
+body.solo #form-wrap{padding-top:12px}
+.after{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
+.after a{text-decoration:none}
 </style>
 </head>
 <body>
@@ -186,6 +193,8 @@ footer img{height:22px;width:auto;margin:0 auto 10px;opacity:.75}
   </section>
 </main>
 
+<div class="solo-brand"><img src="landing/logo-kiru.png" alt="KIRU Studio"></div>
+
 <section id="form-wrap">
   <div class="wrap" id="screen" aria-live="polite"></div>
 </section>
@@ -225,6 +234,7 @@ let step=-1, err="", saving=false;
 
 /* Datos de campaña (vienen en el link del anuncio) */
 const Q=new URLSearchParams(location.search);
+const SOLO=Q.get("f")==="1"; if(SOLO){document.body.classList.add("solo");step=0;}
 const ORIGEN={utm_source:Q.get("utm_source")||"",utm_campaign:Q.get("utm_campaign")||"",utm_content:Q.get("utm_content")||"",fbclid:Q.get("fbclid")||""};
 
 const $=s=>document.querySelector(s);
@@ -234,7 +244,7 @@ const pasos=()=>PASOS;
 function view(){
   const L=pasos(), n=L.length;
   if(step<0) return `<h2>Platícanos de tu propiedad</h2><p class="lead">Son ${n} preguntas rápidas, te toma menos de un minuto. Con esto te contactamos con una primera idea de alcance y precio.</p><div class="nav"><button class="btn" data-go="next">Empezar</button></div>`;
-  if(step>=n) return `<div class="done"><div class="check">✓</div><h2>¡Gracias${S.nombre?", "+esc(S.nombre.trim().split(/\s+/)[0]):""}!</h2><p class="lead">Ya recibimos tus datos. Te escribimos por WhatsApp en menos de 24 horas hábiles para platicar de tu proyecto.</p></div>`;
+  if(step>=n) return `<div class="done"><div class="check">✓</div><h2>¡Gracias${S.nombre?", "+esc(S.nombre.trim().split(/\s+/)[0]):""}!</h2><p class="lead">Ya recibimos tus datos. Te escribimos por WhatsApp en menos de 24 horas hábiles para platicar de tu proyecto.</p><p class="sub">Mientras tanto, si quieres conocernos:</p><div class="after"><a class="btn sec2" href="/" data-salir>Ver nuestros proyectos</a><a class="btn sec2" href="https://www.instagram.com/kiruinteriors/" target="_blank" rel="noopener">Instagram</a></div></div>`;
   const p=L[step];
   const head=`<div class="fhead"><span class="count">${step+1} / ${n}</span></div><div class="progress"><i style="width:${(step/n)*100}%"></i></div>`;
   if(p.k==="contacto") return head+`<h2>${p.h}</h2>
