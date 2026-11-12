@@ -231,7 +231,7 @@ const PASOS=[
     {v:"En construcción / preventa",t:"En construcción o preventa"},{v:"Entregada, vacía",t:"Ya me la entregaron, está vacía"},{v:"Amueblada, renovar",t:"Ya está amueblada, quiero renovarla"}]},
   {k:"contacto",h:"¿Cómo te contactamos?"}
 ];
-const S={nombre:"",whatsapp:""};
+const S={nombre:"",apellido:"",whatsapp:""};
 let step=-1, err="", saving=false;
 
 /* Datos de campaña (vienen en el link del anuncio) */
@@ -251,8 +251,9 @@ function view(){
   const head=`<div class="fhead"><span class="count">${step+1} / ${n}</span></div><div class="progress"><i style="width:${(step/n)*100}%"></i></div>`;
   if(p.k==="contacto") return head+`<h2>${p.h}</h2>
     <div class="fields">
-      <div><label for="f-nombre">Nombre</label><input type="text" id="f-nombre" autocomplete="name" value="${esc(S.nombre)}"></div>
-      <div><label for="f-wa">WhatsApp</label><input type="tel" id="f-wa" autocomplete="tel" inputmode="tel" placeholder="+52 984 000 0000" value="${esc(S.whatsapp)}"></div>
+      <div><label for="f-nombre">Nombre</label><input type="text" id="f-nombre" autocomplete="given-name" value="${esc(S.nombre)}"></div>
+      <div><label for="f-apellido">Apellido</label><input type="text" id="f-apellido" autocomplete="family-name" value="${esc(S.apellido)}"></div>
+      <div><label for="f-wa">WhatsApp (10 dígitos)</label><input type="tel" id="f-wa" autocomplete="tel-national" inputmode="numeric" placeholder="984 123 4567" value="${esc(S.whatsapp)}"></div>
     </div>
     ${err?`<p class="err">${esc(err)}</p>`:""}
     <div class="nav"><button class="btn ghost" data-go="back">← Atrás</button><button class="btn" data-go="send" ${saving?"disabled":""}>${saving?"Enviando…":"Enviar"}</button></div>
@@ -262,7 +263,7 @@ function view(){
     ${step>0?`<div class="nav"><button class="btn ghost" data-go="back">← Atrás</button></div>`:""}`;
 }
 function render(){$("#screen").innerHTML=view();}
-function guardarCampos(){const g=id=>{const e=$("#"+id);return e?e.value:""};if($("#f-nombre")){S.nombre=g("f-nombre");S.whatsapp=g("f-wa")}}
+function guardarCampos(){const g=id=>{const e=$("#"+id);return e?e.value:""};if($("#f-nombre")){S.nombre=g("f-nombre");S.apellido=g("f-apellido");S.whatsapp=g("f-wa")}}
 
 document.addEventListener("click",e=>{
   const o=e.target.closest(".opt");
@@ -278,12 +279,16 @@ document.addEventListener("click",e=>{
 $("#go").addEventListener("click",()=>{if(step<0){step=0;render();}});
 
 async function enviar(){
-  const wa=S.whatsapp.replace(/[^\d+]/g,"");
-  if(!S.nombre.trim()){err="Escribe tu nombre.";render();$("#f-nombre").focus();return}
-  if(wa.replace(/\D/g,"").length<10){err="Escribe tu WhatsApp a 10 dígitos (con lada).";render();$("#f-wa").focus();return}
+  let wa=S.whatsapp.replace(/\D/g,"");
+  if(wa.length===13&&wa.startsWith("521"))wa=wa.slice(3);
+  else if(wa.length===12&&wa.startsWith("52"))wa=wa.slice(2);
+  const letras=t=>t.trim().replace(/[^A-Za-zÁÉÍÓÚÜÑáéíóúüñ]/g,"").length>=2;
+  if(!letras(S.nombre)){err="Escribe tu nombre.";render();$("#f-nombre").focus();return}
+  if(!letras(S.apellido)){err="Escribe tu apellido.";render();$("#f-apellido").focus();return}
+  if(wa.length!==10){err="Revisa tu WhatsApp: debe tener 10 dígitos, por ejemplo 984 123 4567.";render();$("#f-wa").focus();return}
   err="";saving=true;render();
   const fila={
-    "Fecha":new Date().toISOString(),"Nombre":S.nombre.trim(),"WhatsApp":wa,"Email":"",
+    "Fecha":new Date().toISOString(),"Nombre":(S.nombre.trim()+" "+S.apellido.trim()).replace(/\s+/g," "),"WhatsApp":wa,"Email":"",
     "Paquete":S.paquete||"","Tipo de propiedad":S.tipo||"","Recámaras":S.recamaras||"","Uso":S.uso||"",
     "Zona":S.zona||"","Etapa":S.etapa||"",
     "Fuente":ORIGEN.utm_source,"Campaña":ORIGEN.utm_campaign,"Anuncio":ORIGEN.utm_content,"fbclid":ORIGEN.fbclid
