@@ -425,7 +425,7 @@ function view(){
     <p class="lead">${ARQ?"La paleta general de tu casa. Familias de color, no tonos exactos.":"Elige lo que te guste en cada grupo. Familias, no tonos exactos."}</p>
     <div class="blk"><div class="blk-h">Colores<small>elige uno o más</small></div><div class="colors">${COLORES.map(([n,c])=>`
       <button type="button" class="color" data-multi="colores" data-v="${n}" aria-pressed="${S.colores.includes(n)}"><span class="dot" style="background:${c}"></span>${n}</button>`).join("")}</div></div>
-    ${ARQ?"":`<div class="blk"><div class="blk-h">¿Dónde van esos colores?<small>puedes elegir varias</small></div>
+    ${(ARQ||EXPRESS())?"":`<div class="blk"><div class="blk-h">¿Dónde van esos colores?<small>puedes elegir varias</small></div>
       <div class="options">${DONDE.map(v=>`<button type="button" class="opt multi" data-multi="donde" data-v="${esc(v)}" aria-pressed="${S.donde.includes(v)}">${esc(v)}</button>`).join("")}</div></div>`}${(ARQ||OBRA)?"":`<div class="blk-sep">Materiales que te gustan</div>${matsHTML()}`}`;
   if(k==="terminaciones") return `
     <h2>Terminaciones preferidas</h2>
@@ -550,7 +550,7 @@ function faltante(k){
   if(k==="plano"){if(S.leyendo)return "Espera a que termine de cargar el archivo.";if(!S.planos)return "Elige si tienes plano.";if(S.planos==="Sí"&&!S.planoFile)return "Sube el plano (PDF o foto).";if(S.planos==="No"&&!OBRA&&!EXPRESS()&&!S.m2r)return "Elige los m² aproximados.";}
   if(k==="paquete"&&!S.paquete)return "Elige un paquete para continuar.";
   if(k==="estilo"&&!S.estilos.length)return "Elige al menos un estilo.";
-  if(k==="colores"){if(!S.colores.length)return "Elige al menos un color.";if(!ARQ&&!S.donde.length)return "Elige dónde quieres esos colores.";}
+  if(k==="colores"){if(!S.colores.length)return "Elige al menos un color.";if(!ARQ&&!EXPRESS()&&!S.donde.length)return "Elige dónde quieres esos colores.";}
   if(k==="terminaciones"){const g=Object.keys(TERM).find(g=>!(S.term[g]||[]).length);if(g)return "Elige al menos una opción en "+g+".";}
   if(k==="intervenciones"){if(!S.muros)return "Elige qué hacemos con los muros.";const i=intervVisibles().find(i=>S.interv[i]==="Sí"&&INTERV_DET[i]&&!(S.idet[i]||[]).length);if(i)return "En «"+i+"» elige al menos una opción ("+INTERV_DET[i].q.toLowerCase()+").";}
   const lmErr=()=>esLM()?(!S.piso?"Elige en qué piso está la unidad.":(!esST()&&!S.tvrec?"Responde si quieres TV en las recámaras.":"")):""; if(k==="proyecto"&&lmErr())return lmErr(); if(k==="presupuesto"){if(!S.presupuesto)return "Elige un rango de presupuesto.";if(!ARQ&&!OBRA&&!EXPRESS()&&S.obraq==="Sí"&&!S.obrasel.length)return "Elige qué te gustaría cambiar de obra.";if(!EXPRESS()&&pideVent()&&!S.ventpref)return "Elige si prefieres persianas o cortinas.";if(!S.plazo)return "Elige para cuándo lo necesitas.";}
