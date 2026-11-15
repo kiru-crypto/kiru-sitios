@@ -329,7 +329,7 @@ function view(){
   if(ownerView) return ownerHTML();
   if(k==="intro") return `
     <h1>${PRE.nombre?`Hola ${esc(primerNombre())}, cuéntanos cómo imaginas tu espacio`:"Cuéntanos cómo imaginas tu espacio"}</h1>
-    <p class="lead">Son ${["","uno","dos","tres","cuatro","cinco","seis","siete","ocho","nueve"][ST().length-2]} pasos cortos${EXPRESS()?", unos 2 minutos":""}. Toca lo que te guste, no hay respuestas incorrectas. ${ARQ?"Con esto preparamos una primera propuesta para tu proyecto.":OBRA?"Con esto preparamos una primera propuesta para tu obra.":"Con esto armamos una primera propuesta de mobiliario y decoración a tu medida."}</p>
+    <p class="lead">Son ${["","uno","dos","tres","cuatro","cinco","seis","siete","ocho","nueve"][ST().length-2]} pasos cortos${EXPRESS()?". Te toma unos 2 minutos":""}. Toca lo que te guste, no hay respuestas incorrectas. ${ARQ?"Con esto preparamos una primera propuesta para tu proyecto.":OBRA?"Con esto preparamos una primera propuesta para tu obra.":"Con esto armamos una primera propuesta de mobiliario y decoración a tu medida."}</p>
     <ul class="intro-list">${ARQ?`
       <li><b>3 min</b> Tu terreno y qué quieres construir</li>
       <li><b>3 min</b> Estilo, colores y terminaciones</li>
@@ -337,9 +337,9 @@ function view(){
       <li><b>3 min</b> Tu proyecto, qué quieres cambiar y el estado del inmueble</li>
       <li><b>3 min</b> Estilo, colores y terminaciones</li>
       <li><b>1 min</b> Presupuesto, tiempos y si también amueblamos</li>`:`
-      ${EXPRESS()?`<li><b>30 s</b> El plano, si lo tienes</li>
-      <li><b>1 min</b> Estilo, colores y materiales</li>
-      <li><b>30 s</b> Presupuesto y tiempos</li>`:`<li><b>1 min</b> Tu unidad: recámaras, camas y piso</li>
+      ${EXPRESS()?`<li><b>·</b> El plano, si lo tienes</li>
+      <li><b>·</b> Estilo, colores y materiales</li>
+      <li><b>·</b> Presupuesto y tiempos</li>`:`<li><b>1 min</b> Tu unidad: recámaras, camas y piso</li>
       <li><b>2 min</b> Estilo, colores y materiales</li>
       <li><b>1 min</b> Presupuesto y tiempos</li>`}`}
     </ul>
