@@ -292,12 +292,15 @@ if(PRE.lead){S.nombre=PRE.nombre;S.contacto=PRE.tel;S.ubicacion=PRE.zona;S.tipo=
 // el código del cliente define el tipo de proyecto: C1120-REM / C1121-ARQ → obra; C1118-ST-M&D / C1116-3R-LM → interiores
 let OBRA=/-(ARQ|REM)\b/i.test(PRE.id)||PRE.paquete==="Arquitectura / diseño"||PRE.rem;
 let ARQ=/-ARQ\b/i.test(PRE.id)||(PRE.paquete==="Arquitectura / diseño"&&!/-REM\b/i.test(PRE.id));
+const EXPRESS=()=>!!PRE.lead&&!ARQ&&!OBRA; /* leads de la landing: cuestionario corto */
 if(OBRA&&PRE.paquete==="Arquitectura / diseño")S.paquete="";
 if(!S.paquete&&!OBRA){if(/-LM\b/i.test(PRE.id))S.paquete="Llave en mano";else if(/M&D/i.test(PRE.id))S.paquete="Muebles y deco";}
 const matsHTML=()=>Object.entries(TERM).map(([g,l])=>`<div class="q"><span class="q-sub">${g}</span><div class="mats">${l.map(v=>`<button type="button" class="mat" data-multi="term:${g}" data-v="${esc(v)}" aria-pressed="${(S.term[g]||[]).includes(v)}">${FOTOS[g+":"+v]?`<img class="swatch" src="${FOTOS[g+":"+v]}" alt="">`:`<svg class="swatch" viewBox="0 0 100 100" aria-hidden="true">${MUESTRAS[v]||""}</svg>`}<span>${esc(v)}</span></button>`).join("")}</div></div>`).join(""); const ST=()=>ARQ
   ?["intro","proyecto","terreno","programa","estilo","colores","materiales","presupuesto","amueblar","resumen","listo"]
   :OBRA
   ?["intro","proyecto","obra","inmueble","plano","estilo","colores","terminaciones","presupuesto","amueblar","resumen","listo"]
+  :EXPRESS()
+  ?["intro","plano","estilo","colores","presupuesto","resumen","listo"]
   :["intro","paquete","proyecto","plano","estilo","colores","presupuesto","resumen","listo"].filter(k=>!(k==="paquete"&&PRE.paquete));
 const primerNombre=()=>(S.nombre||"").trim().split(/\s+/)[0]||"";
 let step=0, err="", saving=false, ownerView=false, responses=[];
@@ -322,7 +325,7 @@ function view(){
       <li><b>3 min</b> Tu proyecto, qué quieres cambiar y el estado del inmueble</li>
       <li><b>3 min</b> Estilo, colores y terminaciones</li>
       <li><b>1 min</b> Presupuesto, tiempos y si también amueblamos</li>`:`
-      <li><b>1 min</b> Tu unidad: recámaras, camas y piso</li>
+      ${EXPRESS()?`<li><b>1 min</b> El plano, si lo tienes</li>`:`<li><b>1 min</b> Tu unidad: recámaras, camas y piso</li>`}
       <li><b>2 min</b> Estilo, colores y materiales</li>
       <li><b>1 min</b> Presupuesto y tiempos</li>`}
     </ul>
@@ -332,7 +335,7 @@ function view(){
     <p class="lead">Con el plano medimos bien cada espacio y tu cotización sale más precisa.</p>
     <div class="q"><span class="q-label">¿Tienes el plano de tu ${(!ARQ&&!OBRA)?"unidad":"inmueble"}?</span>${opts(["Sí, lo subo","No tengo plano"],S.planos==="Sí"?"Sí, lo subo":S.planos==="No"?"No tengo plano":"","planos_ui")}</div>
     ${S.planos==="Sí"?`<div class="q"><label class="upload"><input type="file" id="f-plano" accept=".pdf,image/*"><span>${S.planoFile?"📄 "+esc(S.planoFile.name)+" · cambiar":"Elegir archivo (PDF o foto)"}</span></label><p class="note">Puede ser el plano del desarrollador, el de la escritura o una foto clara del plano impreso.</p></div>`:""}
-    ${S.planos==="No"?`${OBRA?"":`<div class="q"><span class="q-label">¿Cuántos m² tiene, más o menos?</span>${opts(M2R,S.m2r,"m2r")}</div>`}
+    ${(S.planos==="No"&&!EXPRESS())?`${OBRA?"":`<div class="q"><span class="q-label">¿Cuántos m² tiene, más o menos?</span>${opts(M2R,S.m2r,"m2r")}</div>`}
     <div class="q"><span class="q-label">Fotos del espacio <em>· opcional, hasta 6</em></span><label class="upload"><input type="file" id="f-fotos" accept="image/*" multiple><span>${(S.fotosF||[]).length?"📷 "+S.fotosF.length+" foto"+(S.fotosF.length>1?"s":"")+" · cambiar":"Elegir fotos"}</span></label></div>`:""}
     ${S.leyendo?`<p class="note">Preparando archivo…</p>`:""}`;
   if(k==="proyecto") return `
@@ -429,7 +432,7 @@ function view(){
   if(k==="presupuesto") return `
     <h2>Presupuesto y tiempos</h2>
     <div class="q"><span class="q-label">${ARQ?"Presupuesto de construcción (MXN)":OBRA?"Presupuesto para la obra (MXN)":(S.paquete?"Presupuesto para tu paquete "+esc(S.paquete)+" (MXN)":"Presupuesto para mobiliario y decoración (MXN)")}</span>${(!ARQ&&!OBRA&&S.paquete)?alcanceBox():""}${opts(ARQ?PRESU_ARQ:OBRA?PRESU_OBRA:PRESU,S.presupuesto,"presupuesto")}</div>
-    <div class="q"><span class="q-label">¿Para cuándo lo necesitas?</span>${opts(PLAZO,S.plazo,"plazo")}</div>${(!ARQ&&!OBRA)?extrasHTML():""}
+    <div class="q"><span class="q-label">¿Para cuándo lo necesitas?</span>${opts(PLAZO,S.plazo,"plazo")}</div>${(!ARQ&&!OBRA&&!EXPRESS())?extrasHTML():""}
     <div class="q"><span class="q-label">Algo más que debamos saber <em>· opcional</em></span>
       <textarea id="f-notas" placeholder="Mascotas, niños, piezas que quieres conservar, referencias…">${esc(S.notas)}</textarea></div>`;
   if(k==="resumen") return `
@@ -532,13 +535,13 @@ function faltante(k){
     if(!ARQ&&!esLM()&&!S.espacios.length)return OBRA?"Elige los espacios a intervenir.":"Elige los espacios a diseñar.";
     if(!ARQ&&!OBRA&&PRE.sp){if(!S.pbanos)return "Elige cuántos baños tiene.";if(!S.pext)return "Elige si tiene exterior.";}
     if(!ARQ&&!OBRA){if(!recLabels().length)return "Elige cuántas recámaras tiene.";const r=recLabels().find(r=>!(S.camas||{})[r]);if(r)return "Elige la cama de "+r+".";}}
-  if(k==="plano"){if(S.leyendo)return "Espera a que termine de cargar el archivo.";if(!S.planos)return "Elige si tienes plano.";if(S.planos==="Sí"&&!S.planoFile)return "Sube el plano (PDF o foto).";if(S.planos==="No"&&!OBRA&&!S.m2r)return "Elige los m² aproximados.";}
+  if(k==="plano"){if(S.leyendo)return "Espera a que termine de cargar el archivo.";if(!S.planos)return "Elige si tienes plano.";if(S.planos==="Sí"&&!S.planoFile)return "Sube el plano (PDF o foto).";if(S.planos==="No"&&!OBRA&&!EXPRESS()&&!S.m2r)return "Elige los m² aproximados.";}
   if(k==="paquete"&&!S.paquete)return "Elige un paquete para continuar.";
   if(k==="estilo"&&!S.estilos.length)return "Elige al menos un estilo.";
   if(k==="colores"){if(!S.colores.length)return "Elige al menos un color.";if(!ARQ&&!S.donde.length)return "Elige dónde quieres esos colores.";}
   if(k==="terminaciones"){const g=Object.keys(TERM).find(g=>!(S.term[g]||[]).length);if(g)return "Elige al menos una opción en "+g+".";}
   if(k==="intervenciones"){if(!S.muros)return "Elige qué hacemos con los muros.";const i=intervVisibles().find(i=>S.interv[i]==="Sí"&&INTERV_DET[i]&&!(S.idet[i]||[]).length);if(i)return "En «"+i+"» elige al menos una opción ("+INTERV_DET[i].q.toLowerCase()+").";}
-  const lmErr=()=>esLM()?(!S.piso?"Elige en qué piso está la unidad.":(!esST()&&!S.tvrec?"Responde si quieres TV en las recámaras.":"")):""; if(k==="proyecto"&&lmErr())return lmErr(); if(k==="presupuesto"){if(!S.presupuesto)return "Elige un rango de presupuesto.";if(!ARQ&&!OBRA&&S.obraq==="Sí"&&!S.obrasel.length)return "Elige qué te gustaría cambiar de obra.";if(pideVent()&&!S.ventpref)return "Elige si prefieres persianas o cortinas.";if(!S.plazo)return "Elige para cuándo lo necesitas.";}
+  const lmErr=()=>esLM()?(!S.piso?"Elige en qué piso está la unidad.":(!esST()&&!S.tvrec?"Responde si quieres TV en las recámaras.":"")):""; if(k==="proyecto"&&lmErr())return lmErr(); if(k==="presupuesto"){if(!S.presupuesto)return "Elige un rango de presupuesto.";if(!ARQ&&!OBRA&&!EXPRESS()&&S.obraq==="Sí"&&!S.obrasel.length)return "Elige qué te gustaría cambiar de obra.";if(!EXPRESS()&&pideVent()&&!S.ventpref)return "Elige si prefieres persianas o cortinas.";if(!S.plazo)return "Elige para cuándo lo necesitas.";}
   if(k==="materiales"){const g=Object.keys(MAT_ARQ).find(g=>!(S.mat[g]||[]).length);if(g)return "Elige al menos una opción en "+g+".";if(!S.sensacion)return "Elige cómo quieres que se sienta la casa.";}
   if(k==="obra"&&!S.obra.length)return "Marca al menos una cosa que quieras cambiar.";
   if(k==="inmueble"){if(!v(S.m2))return "Escribe los metros cuadrados aproximados.";if(!S.vive)return "Responde si vas a vivir ahí durante la obra.";if(!S.permisos)return "Responde lo de los permisos (si no sabes, elige «No sé»).";}
@@ -562,7 +565,7 @@ async function submit(){volcarExtras();
     "Espacios":(esLM()&&!S.espacios.length)?"Todos los espacios":j(S.espacios),"Estilos":j(S.estilos),"Colores":j(S.colores),"Dónde van los colores":j(S.donde),
     "Fachada":j(S.mat["Fachada"]),"Pisos":j(S.mat["Pisos"]),"Cancelería":j(S.mat["Ventanas y cancelería"]),"Carácter":S.sensacion,"Madera":j(S.term["Madera"]),"Piedra":j(S.term["Piedra"]),"Metales":j(S.term["Metales"]),"Textiles":j(S.term["Textiles"]),
     "Muros":S.muros,"Intervenir además":intervTxt(S),
-    "Presupuesto":S.presupuesto,"Plazo":S.plazo,"Baños":PRE.sp?(S.pbanos||""):"","Exterior":PRE.sp?(S.pext||""):"","Metros cuadrados":PRE.sp?"":(S.m2||S.m2r||""),"Recámaras":(!ARQ&&!OBRA&&!esST())?(S.recs_i||""):"","Camas":(!ARQ&&!OBRA)?recLabels().map(r=>r+": "+((S.camas||{})[r]||"")).join(" · "):"","Notas":[S.notas,(S.obraq==="Sí"&&S.obratxt)?"Obra: "+S.obratxt:""].filter(Boolean).join(" · "),"Piso":esLM()?S.piso:"","TV en recámaras":(esLM()&&!esST())?S.tvrec:"","Cortinas o persianas":pideVent()?S.ventpref:"",
+    "Presupuesto":S.presupuesto,"Plazo":S.plazo,"Baños":PRE.sp?(S.pbanos||""):"","Exterior":PRE.sp?(S.pext||""):"","Metros cuadrados":PRE.sp?"":(S.m2||S.m2r||""),"Recámaras":(!ARQ&&!OBRA&&!esST())?(S.recs_i||""):"","Camas":EXPRESS()?"Propone KIRU":(!ARQ&&!OBRA)?recLabels().map(r=>r+": "+((S.camas||{})[r]||"")).join(" · "):"","Notas":[S.notas,(S.obraq==="Sí"&&S.obratxt)?"Obra: "+S.obratxt:""].filter(Boolean).join(" · "),"Piso":esLM()?S.piso:"","TV en recámaras":(esLM()&&!esST())?S.tvrec:"","Cortinas o persianas":pideVent()?S.ventpref:"",
     "Tipo de proyecto":ARQ?"Arquitectura (desde cero)":OBRA?"Remodelación":"Interiores","Terreno":[S.terreno,S.tubicacion,S.tm2].filter(Boolean).join(" · "),"Construir":[S.construir,S.cm2,S.recs&&(S.recs+" rec."),S.banos&&(S.banos+" baños"),j(S.extras)].filter(Boolean).join(" · "),"Obra":j(S.obra),"Planos":S.planos==="Sí"?"Sí (subido)":S.planos,"Vive durante la obra":S.vive,"Permisos":S.permisos
   };
   try{
