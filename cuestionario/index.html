@@ -124,7 +124,19 @@ input:focus-visible,textarea:focus-visible,button:focus-visible{outline:2px soli
 .upload span{color:var(--accent);font-weight:600}
 .note{background:var(--accent-soft);border-radius:6px;padding:14px 16px;font-size:14px;margin-top:20px}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
-.yn-item{background:var(--surface);border:1px solid var(--line);border-radius:6px}.yn-item.on{border-color:var(--accent)}.yn-item .yn-row{background:none;border:0}.follow{border-top:1px dashed var(--line);margin:0 16px;padding:12px 0 14px}.follow-q{font-size:14px;font-weight:500;margin-bottom:8px}.follow-q small{font-weight:400;color:var(--muted)}.follow .chip{font-size:14px;padding:7px 14px;background:var(--bg)}.follow .chip[aria-pressed="true"]{background:var(--accent)}.follow input[type=text]{margin-top:10px;font-size:15px;padding:10px 12px;background:var(--bg)}.sub-q{margin:12px 0 4px}.q-sub{display:block;font-size:14px;opacity:.7;margin-bottom:6px}</style>
+.yn-item{background:var(--surface);border:1px solid var(--line);border-radius:6px}.yn-item.on{border-color:var(--accent)}.yn-item .yn-row{background:none;border:0}.follow{border-top:1px dashed var(--line);margin:0 16px;padding:12px 0 14px}.follow-q{font-size:14px;font-weight:500;margin-bottom:8px}.follow-q small{font-weight:400;color:var(--muted)}.follow .chip{font-size:14px;padding:7px 14px;background:var(--bg)}.follow .chip[aria-pressed="true"]{background:var(--accent)}.follow input[type=text]{margin-top:10px;font-size:15px;padding:10px 12px;background:var(--bg)}.sub-q{margin:12px 0 4px}.q-sub{display:block;font-size:14px;opacity:.7;margin-bottom:6px}.blk{background:#fff;border:1px solid var(--line);border-radius:12px;padding:16px 14px 14px;margin:0 0 14px}
+.blk-h{display:flex;justify-content:space-between;align-items:baseline;font-size:15px;font-weight:600;color:var(--ink);margin:0 0 14px}
+.blk-h small{font-weight:400;font-size:12px;color:var(--muted)}
+.blk .colors{grid-template-columns:repeat(5,1fr);gap:12px 6px}
+.blk .color{font-size:11px;text-align:center;line-height:1.2}
+.blk .dot{width:40px;height:40px}
+.blk .mats{grid-template-columns:repeat(4,1fr);gap:8px}
+.blk .mat{font-size:11.5px;gap:6px}
+.blk .options .opt{padding:10px 12px;font-size:14px}
+.blk .colors,.blk .mats{align-items:start}
+.blk .color,.blk .mat{align-content:start}
+.blk-sep{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:22px 0 10px}
+</style>
 </head>
 <body>
 
@@ -295,7 +307,7 @@ let ARQ=/-ARQ\b/i.test(PRE.id)||(PRE.paquete==="Arquitectura / diseño"&&!/-REM\
 const EXPRESS=()=>!!PRE.lead&&!ARQ&&!OBRA; /* leads de la landing: cuestionario corto */
 if(OBRA&&PRE.paquete==="Arquitectura / diseño")S.paquete="";
 if(!S.paquete&&!OBRA){if(/-LM\b/i.test(PRE.id))S.paquete="Llave en mano";else if(/M&D/i.test(PRE.id))S.paquete="Muebles y deco";}
-const matsHTML=()=>Object.entries(TERM).map(([g,l])=>`<div class="q"><span class="q-sub">${g}</span><div class="mats">${l.map(v=>`<button type="button" class="mat" data-multi="term:${g}" data-v="${esc(v)}" aria-pressed="${(S.term[g]||[]).includes(v)}">${FOTOS[g+":"+v]?`<img class="swatch" src="${FOTOS[g+":"+v]}" alt="">`:`<svg class="swatch" viewBox="0 0 100 100" aria-hidden="true">${MUESTRAS[v]||""}</svg>`}<span>${esc(v)}</span></button>`).join("")}</div></div>`).join(""); const ST=()=>ARQ
+const matsHTML=()=>Object.entries(TERM).map(([g,l])=>`<div class="blk"><div class="blk-h">${g}<small>opcional</small></div><div class="mats">${l.map(v=>`<button type="button" class="mat" data-multi="term:${g}" data-v="${esc(v)}" aria-pressed="${(S.term[g]||[]).includes(v)}">${FOTOS[g+":"+v]?`<img class="swatch" src="${FOTOS[g+":"+v]}" alt="">`:`<svg class="swatch" viewBox="0 0 100 100" aria-hidden="true">${MUESTRAS[v]||""}</svg>`}<span>${esc(v)}</span></button>`).join("")}</div></div>`).join(""); const ST=()=>ARQ
   ?["intro","proyecto","terreno","programa","estilo","colores","materiales","presupuesto","amueblar","resumen","listo"]
   :OBRA
   ?["intro","proyecto","obra","inmueble","plano","estilo","colores","terminaciones","presupuesto","amueblar","resumen","listo"]
@@ -410,11 +422,11 @@ function view(){
       </button>`).join("")}</div>`;
   if(k==="colores") return `
     <h2>${ARQ?"Tus colores favoritos":"Colores y materiales"}</h2>
-    <p class="lead">${ARQ?"La paleta general de tu casa. Familias de color, no tonos exactos.":"Familias de color, no tonos exactos. Elige los que te gusten."}</p>
-    <div class="q colors">${COLORES.map(([n,c])=>`
-      <button type="button" class="color" data-multi="colores" data-v="${n}" aria-pressed="${S.colores.includes(n)}"><span class="dot" style="background:${c}"></span>${n}</button>`).join("")}</div>
-    ${ARQ?"":`<div class="q"><span class="q-label">¿Dónde quieres esos colores? <em>· puedes elegir varias</em></span>
-      <div class="options">${DONDE.map(v=>`<button type="button" class="opt multi" data-multi="donde" data-v="${esc(v)}" aria-pressed="${S.donde.includes(v)}">${esc(v)}</button>`).join("")}</div></div>`}${(ARQ||OBRA)?"":`<div class="q"><span class="q-label">Materiales que te gustan <em>· opcional</em></span></div>${matsHTML()}`}`;
+    <p class="lead">${ARQ?"La paleta general de tu casa. Familias de color, no tonos exactos.":"Elige lo que te guste en cada grupo. Familias, no tonos exactos."}</p>
+    <div class="blk"><div class="blk-h">Colores<small>elige uno o más</small></div><div class="colors">${COLORES.map(([n,c])=>`
+      <button type="button" class="color" data-multi="colores" data-v="${n}" aria-pressed="${S.colores.includes(n)}"><span class="dot" style="background:${c}"></span>${n}</button>`).join("")}</div></div>
+    ${ARQ?"":`<div class="blk"><div class="blk-h">¿Dónde van esos colores?<small>puedes elegir varias</small></div>
+      <div class="options">${DONDE.map(v=>`<button type="button" class="opt multi" data-multi="donde" data-v="${esc(v)}" aria-pressed="${S.donde.includes(v)}">${esc(v)}</button>`).join("")}</div></div>`}${(ARQ||OBRA)?"":`<div class="blk-sep">Materiales que te gustan</div>${matsHTML()}`}`;
   if(k==="terminaciones") return `
     <h2>Terminaciones preferidas</h2>
     <p class="lead">Elige al menos una opción en cada grupo.</p>
