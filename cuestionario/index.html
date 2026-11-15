@@ -475,8 +475,9 @@ function bindArchivos(){
   const fo=$("#f-fotos");if(fo)fo.onchange=async e=>{const fs=[...e.target.files].slice(0,6);if(!fs.length)return;S.leyendo=true;refresh();
     try{S.fotosF=[];for(const f of fs)S.fotosF.push(await achicar(f,1600))}catch(_){alertInline("No pudimos leer alguna foto.")}S.leyendo=false;refresh()};
 }
+const _vt={};function track(n){if(!PRE.lead||ownerView||_vt[n])return;_vt[n]=1;try{(new Image()).src="https://kiru.smarketics.com/r/q"+PRE.lead+"s"+n}catch(_){}}
 function render(){
-  const k=ST()[step];
+  const k=ST()[step];track(step);
   $("#screen").innerHTML=view();
   const total=ST().length-2;
   $("#count").textContent=ownerView?"Panel interno":(step>0&&step<=total?`Paso ${step} de ${total}`:"");
