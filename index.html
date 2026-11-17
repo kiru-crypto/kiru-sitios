@@ -44,7 +44,7 @@ h1{font-size:clamp(32px,8vw,48px);line-height:1.08}
 h2{font-size:clamp(24px,6vw,32px);line-height:1.15}
 .lead{color:var(--muted);margin:14px 0 0;max-width:56ch}
 .btn{font:inherit;font-weight:600;font-size:16px;border:0;border-radius:4px;padding:15px 22px;cursor:pointer;background:var(--accent);color:var(--accent-ink);display:inline-block;text-decoration:none}
-.btn:disabled{opacity:.5;cursor:wait}
+.btn:disabled{opacity:.45;cursor:not-allowed}
 .btn.ghost{background:none;color:var(--muted);padding:15px 6px;font-weight:500}
 .intro .btn{margin-top:24px;width:100%}
 @media (min-width:560px){.intro .btn{width:auto}}
@@ -252,17 +252,21 @@ function view(){
   if(p.k==="contacto") return head+`<h2>${p.h}</h2>
     <div class="fields">
       <div><label for="f-nombre">Nombre</label><input type="text" id="f-nombre" autocomplete="given-name" value="${esc(S.nombre)}"></div>
-      <div><label for="f-apellido">Apellido</label><input type="text" id="f-apellido" autocomplete="family-name" value="${esc(S.apellido)}"></div>
+      <div><label for="f-apellido">Apellido (opcional)</label><input type="text" id="f-apellido" autocomplete="family-name" value="${esc(S.apellido)}"></div>
       <div><label for="f-wa">WhatsApp (10 dígitos)</label><input type="tel" id="f-wa" autocomplete="tel-national" inputmode="numeric" placeholder="984 123 4567" value="${esc(S.whatsapp)}"></div>
     </div>
     ${err?`<p class="err">${esc(err)}</p>`:""}
-    <div class="nav"><button class="btn ghost" data-go="back">← Atrás</button><button class="btn" data-go="send" ${saving?"disabled":""}>${saving?"Enviando…":"Enviar"}</button></div>
+    <div class="nav"><button class="btn ghost" data-go="back">← Atrás</button><button class="btn" id="b-send" data-go="send" ${saving||!listo()?"disabled":""}>${saving?"Enviando…":"Enviar"}</button></div>
     <p class="fine">Solo usamos tus datos para contactarte sobre tu proyecto.</p>`;
   return head+`<h2>${p.h}</h2>
     <div class="options${p.two?" two":""}">${p.o.map(o=>`<button type="button" class="opt" data-k="${p.k}" data-v="${esc(o.v)}" data-t="${esc(o.t)}" aria-pressed="${S[p.k]===o.v&&S[p.k+"_t"]===o.t}"><span>${esc(o.t)}${o.d?`<small>${esc(o.d)}</small>`:""}</span></button>`).join("")}</div>
     ${step>0?`<div class="nav"><button class="btn ghost" data-go="back">← Atrás</button></div>`:""}`;
 }
 function render(){$("#screen").innerHTML=view();}
+const letras=t=>t.trim().replace(/[^A-Za-zÁÉÍÓÚÜÑáéíóúüñ]/g,"").length>=2;
+function normWa(t){let w=String(t).replace(/\D/g,"");if(w.length===13&&w.startsWith("521"))w=w.slice(3);else if(w.length===12&&w.startsWith("52"))w=w.slice(2);return w}
+const listo=()=>letras(S.nombre)&&normWa(S.whatsapp).length===10;
+document.addEventListener("input",e=>{if(!e.target.closest("#f-nombre,#f-apellido,#f-wa"))return;guardarCampos();const b=$("#b-send");if(b&&!saving)b.disabled=!listo();});
 function guardarCampos(){const g=id=>{const e=$("#"+id);return e?e.value:""};if($("#f-nombre")){S.nombre=g("f-nombre");S.apellido=g("f-apellido");S.whatsapp=g("f-wa")}}
 
 document.addEventListener("click",e=>{
@@ -279,12 +283,8 @@ document.addEventListener("click",e=>{
 $("#go").addEventListener("click",()=>{if(step<0){step=0;render();}});
 
 async function enviar(){
-  let wa=S.whatsapp.replace(/\D/g,"");
-  if(wa.length===13&&wa.startsWith("521"))wa=wa.slice(3);
-  else if(wa.length===12&&wa.startsWith("52"))wa=wa.slice(2);
-  const letras=t=>t.trim().replace(/[^A-Za-zÁÉÍÓÚÜÑáéíóúüñ]/g,"").length>=2;
+  const wa=normWa(S.whatsapp);
   if(!letras(S.nombre)){err="Escribe tu nombre.";render();$("#f-nombre").focus();return}
-  if(!letras(S.apellido)){err="Escribe tu apellido.";render();$("#f-apellido").focus();return}
   if(wa.length!==10){err="Revisa tu WhatsApp: debe tener 10 dígitos, por ejemplo 984 123 4567.";render();$("#f-wa").focus();return}
   err="";saving=true;render();
   const fila={
