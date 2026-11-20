@@ -337,7 +337,7 @@ const UBI={playa_del_carmen:'Playa del Carmen',tulum:'Tulum',cancun:'Cancún',pu
 const nice=u=>u?(UBI[u]||(u.includes('_')?u.replace(/_/g,' ').replace(/\b\w/g,c=>c.toUpperCase()):u)):u;
 const CRM=SHORT?SHORT:FROM_CRM?{id:P.get('id'),c:P.get('c'),n:P.get('n'),t:P.get('t'),d:P.get('d'),r:P.get('r'),p:P.get('p'),u:nice(P.get('u')),b:P.get('b'),cam:P.get('cam'),h:P.get('h'),vent:P.get('vent'),vimg:P.get('vimg')}
   :{c:'C1120-2R-LM',n:'Mariana Ortiz',t:'+52 984 000 0000',d:'Aldea Zamá · Torre B 304',r:'2',p:'Llave en mano',u:'Tulum',b:'2',cam:'Recámara 1: King · Recámara 2: 2 Individual',h:'4'};
-const HOOK='https://kiru.smarketics.com/web/hook/f34066ba-67c5-418d-afb2-5c7c8840cabe';
+const HOOK='https://kiru.odoo.com/web/hook/f34066ba-67c5-418d-afb2-5c7c8840cabe';
 const pkgOf=(p,c)=>/muebles|m&d|md/i.test(p||'')||/-M&?D$/i.test(c||'')?'MD':(/llave|lm/i.test(p||'')||/-LM$/i.test(c||'')?'LM':null);
 const KEY='kiru-checklist-visita-v2:'+(CRM.c||'sin-codigo');
 let S={meta:{},v:{}};

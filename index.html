@@ -238,6 +238,9 @@ let step=-1, err="", saving=false;
 const Q=new URLSearchParams(location.search);
 const SOLO=Q.get("f")==="1"; if(SOLO){document.body.classList.add("solo");step=0;}
 const ORIGEN={utm_source:Q.get("utm_source")||"",utm_campaign:Q.get("utm_campaign")||"",utm_content:Q.get("utm_content")||"",fbclid:Q.get("fbclid")||""};
+/* Seguimiento de abandono (solo tráfico de anuncios): kiru.odoo.com/r/lp<n> — 0 entró, 1-7 pregunta vista, 8 error al enviar, 9 enviado */
+const _lt={};const AD=!!(ORIGEN.fbclid||ORIGEN.utm_source)&&!Q.has("prueba");function lt(n){if(!AD||_lt[n])return;_lt[n]=1;try{(new Image()).src="https://kiru.odoo.com/r/lp"+n}catch(_){}}
+lt(0);
 
 const $=s=>document.querySelector(s);
 const esc=t=>String(t).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
@@ -262,7 +265,7 @@ function view(){
     <div class="options${p.two?" two":""}">${p.o.map(o=>`<button type="button" class="opt" data-k="${p.k}" data-v="${esc(o.v)}" data-t="${esc(o.t)}" aria-pressed="${S[p.k]===o.v&&S[p.k+"_t"]===o.t}"><span>${esc(o.t)}${o.d?`<small>${esc(o.d)}</small>`:""}</span></button>`).join("")}</div>
     ${step>0?`<div class="nav"><button class="btn ghost" data-go="back">← Atrás</button></div>`:""}`;
 }
-function render(){$("#screen").innerHTML=view();}
+function render(){if(step>=0&&step<PASOS.length)lt(step+1);$("#screen").innerHTML=view();}
 const letras=t=>t.trim().replace(/[^A-Za-zÁÉÍÓÚÜÑáéíóúüñ]/g,"").length>=2;
 function normWa(t){let w=String(t).replace(/\D/g,"");if(w.length===13&&w.startsWith("521"))w=w.slice(3);else if(w.length===12&&w.startsWith("52"))w=w.slice(2);return w}
 const listo=()=>letras(S.nombre)&&normWa(S.whatsapp).length===10;
@@ -284,8 +287,8 @@ $("#go").addEventListener("click",()=>{if(step<0){step=0;render();}});
 
 async function enviar(){
   const wa=normWa(S.whatsapp);
-  if(!letras(S.nombre)){err="Escribe tu nombre.";render();$("#f-nombre").focus();return}
-  if(wa.length!==10){err="Revisa tu WhatsApp: debe tener 10 dígitos, por ejemplo 984 123 4567.";render();$("#f-wa").focus();return}
+  if(!letras(S.nombre)){lt(8);err="Escribe tu nombre.";render();$("#f-nombre").focus();return}
+  if(wa.length!==10){lt(8);err="Revisa tu WhatsApp: debe tener 10 dígitos, por ejemplo 984 123 4567.";render();$("#f-wa").focus();return}
   err="";saving=true;render();
   const fila={
     "Fecha":new Date().toISOString(),"Nombre":(S.nombre.trim()+" "+S.apellido.trim()).replace(/\s+/g," "),"WhatsApp":wa,"Email":"",
@@ -297,7 +300,7 @@ async function enviar(){
     if(LEAD_URL) await fetch(LEAD_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({tipo:"lead",fila})});
     else console.log("[modo prueba] lead: "+JSON.stringify(fila));
     if(window.fbq) fbq("track","Lead",{content_name:S.paquete||"sin paquete"});
-    saving=false;step++;render();
+    lt(9);saving=false;step++;render();
     $("#form-wrap").scrollIntoView({behavior:"smooth"});
   }catch(x){saving=false;err="No se pudo enviar. Revisa tu conexión y toca Enviar otra vez.";render();}
 }
